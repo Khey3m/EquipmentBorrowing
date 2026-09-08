@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:EquipmentBorrowing.Desktop.ViewModels"
+             x:Class="EquipmentBorrowing.Desktop.Views.EquipmentView"
+             x:DataType="vm:EquipmentViewModel">
+    <Grid RowDefinitions="Auto, *, Auto">
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="Equipment Inventory" FontSize="20" FontWeight="Bold" Margin="0,0,0,15"/>
+
+        <!-- Form & List Split -->
+        <Grid Grid.Row="1" ColumnDefinitions="2*, 1*">
+            <!-- Equipment List -->
+            <ListBox Grid.Column="0" ItemsSource="{Binding EquipmentList}" SelectedItem="{Binding SelectedEquipment}" Margin="0,0,15,0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderThickness="1" BorderBrush="#E0E0E0" CornerRadius="4" Padding="10" Margin="0,2">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Id, StringFormat='ID: {0}'}" FontSize="12" Foreground="Gray"/>
+                                <TextBlock Text="{Binding IsAvailable, StringFormat='Available: {0}'}" 
+                                           Foreground="{Binding IsAvailable, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Borrow Form -->
+            <StackPanel Grid.Column="1" Spacing="10">
+                <TextBlock Text="Borrow Transaction" FontWeight="Bold" FontSize="16"/>
+                
+                <TextBlock Text="Select Student:"/>
+                <ComboBox ItemsSource="{Binding StudentList}" SelectedItem="{Binding SelectedStudent}" HorizontalAlignment="Stretch">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding FullName}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock Text="Duration (Days):"/>
+                <NumericUpDown Value="{Binding BorrowDays}" Minimum="1" Maximum="30"/>
+
+                <Button Content="Borrow Equipment" Command="{Binding BorrowCommand}" 
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                        Background="#2C3E50" Foreground="White" Padding="10"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Status Message Banner -->
+        <Border Grid.Row="2" Margin="0,15,0,0" Padding="10" CornerRadius="4"
+                Background="{Binding IsSuccess, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <TextBlock Text="{Binding StatusMessage}" FontWeight="Medium"/>
+        </Border>
+    </Grid>
+</UserControl>
