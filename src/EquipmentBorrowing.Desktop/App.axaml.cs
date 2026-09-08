@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EquipmentBorrowing.Desktop;
 
-public partial class App : Application
+public partial class App : Avalonia.Application
 {
     public static IServiceProvider? Services { get; private set; }
 
@@ -22,16 +23,16 @@ public partial class App : Application
     {
         var serviceCollection = new ServiceCollection();
 
-        // 1. Repositories (Singletons preserve state across views)
+        // Repositories (Singletons preserve state across views)
         serviceCollection.AddSingleton<IStudentRepository, InMemoryStudentRepository>();
         serviceCollection.AddSingleton<IEquipmentRepository, InMemoryEquipmentRepository>();
         serviceCollection.AddSingleton<IBorrowingRepository, InMemoryBorrowingRepository>();
 
-        // 2. Application Services
+        // Application Services
         serviceCollection.AddTransient<BorrowEquipmentService>();
         serviceCollection.AddTransient<ReturnEquipmentService>();
 
-        // 3. ViewModels
+        // ViewModels
         serviceCollection.AddTransient<EquipmentViewModel>();
         serviceCollection.AddTransient<BorrowingsViewModel>();
         serviceCollection.AddTransient<MainWindowViewModel>();

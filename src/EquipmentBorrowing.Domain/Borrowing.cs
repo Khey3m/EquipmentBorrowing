@@ -1,4 +1,4 @@
-﻿namespace EquipmentBorrowing.Domain;
+namespace EquipmentBorrowing.Domain;
 
 public class Borrowing
 {
@@ -17,5 +17,10 @@ public class Borrowing
         BorrowedAt = DateTime.UtcNow;
         ExpectedReturnAt = BorrowedAt.Add(duration);
         Status = BorrowingStatus.Active;
+    }
+
+    public void MarkAsReturned()
+    {
+        Status = BorrowingStatus.Returned;
     }
 }

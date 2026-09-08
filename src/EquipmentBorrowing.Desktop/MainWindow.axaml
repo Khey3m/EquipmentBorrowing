@@ -1,9 +1,34 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:vm="clr-namespace:EquipmentBorrowing.Desktop.ViewModels"
+        xmlns:views="clr-namespace:EquipmentBorrowing.Desktop.Views"
         x:Class="EquipmentBorrowing.Desktop.MainWindow"
-        Title="EquipmentBorrowing.Desktop">
-    Welcome to Avalonia!
+        x:DataType="vm:MainWindowViewModel"
+        Title="Campus Equipment Borrowing System" Width="900" Height="600" WindowStartupLocation="CenterScreen">
+    
+    <Grid ColumnDefinitions="200, *">
+        <!-- Navigation Panel -->
+        <Border Grid.Column="0" Background="#2C3E50" Padding="15">
+            <StackPanel Spacing="10">
+                <TextBlock Text="CAMPUSEQ" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
+                
+                <Button Content="Equipment" Command="{Binding NavigateToEquipmentCommand}" 
+                        HorizontalAlignment="Stretch" Background="Transparent" Foreground="White"/>
+                <Button Content="Active Borrowings" Command="{Binding NavigateToBorrowingsCommand}" 
+                        HorizontalAlignment="Stretch" Background="Transparent" Foreground="White"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content Host -->
+        <TransitioningContentControl Grid.Column="1" Content="{Binding CurrentView}" Margin="20">
+            <TransitioningContentControl.DataTemplates>
+                <DataTemplate DataType="{x:Type vm:EquipmentViewModel}">
+                    <views:EquipmentView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:BorrowingsViewModel}">
+                    <views:BorrowingsView/>
+                </DataTemplate>
+            </TransitioningContentControl.DataTemplates>
+        </TransitioningContentControl>
+    </Grid>
 </Window>
