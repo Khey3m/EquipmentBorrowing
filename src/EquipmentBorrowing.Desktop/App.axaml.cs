@@ -5,7 +5,9 @@ using Avalonia.Markup.Xaml;
 using EquipmentBorrowing.Application.Interfaces;
 using EquipmentBorrowing.Application.Services;
 using EquipmentBorrowing.Desktop.ViewModels;
+using EquipmentBorrowing.Infrastructure.Persistence;
 using EquipmentBorrowing.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EquipmentBorrowing.Desktop;
@@ -19,25 +21,37 @@ public partial class App : Avalonia.Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
         var serviceCollection = new ServiceCollection();
 
-        // Repositories (Singletons preserve state across views)
-        serviceCollection.AddSingleton<IStudentRepository, InMemoryStudentRepository>();
-        serviceCollection.AddSingleton<IEquipmentRepository, InMemoryEquipmentRepository>();
-        serviceCollection.AddSingleton<IBorrowingRepository, InMemoryBorrowingRepository>();
+        // 1. Configure SQLite DbContext
+        string dbPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "equipment_borrowing.db");
+        serviceCollection.AddDbContext<EquipmentBorrowingDbContext>(options =>
+            options.UseSqlite($"Data Source={dbPath}"));
 
-        // Application Services
+        // 2. Register EF Repositories
+        serviceCollection.AddScoped<IStudentRepository, EfStudentRepository>();
+        serviceCollection.AddScoped<IEquipmentRepository, EfEquipmentRepository>();
+        serviceCollection.AddScoped<IBorrowingRepository, EfBorrowingRepository>();
+
+        // 3. Register Application Services
         serviceCollection.AddTransient<BorrowEquipmentService>();
         serviceCollection.AddTransient<ReturnEquipmentService>();
 
-        // ViewModels
+        // 4. Register ViewModels
         serviceCollection.AddTransient<EquipmentViewModel>();
         serviceCollection.AddTransient<BorrowingsViewModel>();
         serviceCollection.AddTransient<MainWindowViewModel>();
 
         Services = serviceCollection.BuildServiceProvider();
+
+        // 5. Initialize and seed database asynchronously
+        using (var scope = Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<EquipmentBorrowingDbContext>();
+            await DbInitializer.SeedAsync(dbContext);
+        }
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
