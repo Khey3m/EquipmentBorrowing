@@ -19,6 +19,16 @@ public class Borrowing
         Status = BorrowingStatus.Active;
     }
 
+    public Borrowing(int id, int studentId, int equipmentId, DateTime borrowedAt, DateTime expectedReturnAt, BorrowingStatus status)
+    {
+        Id = id;
+        StudentId = studentId;
+        EquipmentId = equipmentId;
+        BorrowedAt = borrowedAt;
+        ExpectedReturnAt = expectedReturnAt;
+        Status = status;
+    }
+
     public void MarkAsReturned()
     {
         Status = BorrowingStatus.Returned;
