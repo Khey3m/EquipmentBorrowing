@@ -44,6 +44,8 @@ public partial class App : Avalonia.Application
         serviceCollection.AddTransient<ExistingWorkflowQueryService>();
         serviceCollection.AddTransient<IHistoryQueries, EfHistoryQueries>();
         serviceCollection.AddTransient<BorrowingHistoryService>();
+        serviceCollection.AddTransient<IBorrowingSearchQueries, EfBorrowingSearchQueries>();
+        serviceCollection.AddTransient<BorrowingSearchService>();
         serviceCollection.AddTransient<BorrowEquipmentService>();
         serviceCollection.AddTransient<MultiItemCheckoutService>();
         serviceCollection.AddTransient<ReturnEquipmentService>();

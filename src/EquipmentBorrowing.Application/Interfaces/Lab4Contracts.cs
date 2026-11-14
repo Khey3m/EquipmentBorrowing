@@ -39,10 +39,8 @@ public interface IEquipmentManagementRepository : IEquipmentRepository
     Task AddAsync(Equipment equipment, CancellationToken cancellationToken = default);
 }
 
-// Implementations follow in PostgreSQL/workflow sessions; unknown outcomes must never auto-retry.
-public interface ILab4BorrowingQueries
+// History reads use IHistoryQueries; this interface covers borrowing-list retrieval only.
+public interface IBorrowingSearchQueries
 {
     Task<IReadOnlyList<BorrowingDetails>> SearchAsync(BorrowingSearchRequest request, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<BorrowingDetails>> GetStudentHistoryAsync(int studentId, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<BorrowingDetails>> GetEquipmentHistoryAsync(int equipmentId, CancellationToken cancellationToken = default);
 }

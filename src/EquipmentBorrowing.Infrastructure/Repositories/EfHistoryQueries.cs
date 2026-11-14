@@ -11,18 +11,18 @@ public sealed class EfHistoryQueries(IDbContextFactory<EquipmentBorrowingDbConte
         await using var context = await factory.CreateDbContextAsync(cancellationToken);
         return kind == HistoryKind.Student
             ? await context.Students.AsNoTracking().OrderBy(s => s.FullName).ThenBy(s => s.Id)
-                .Select(s => new HistorySubject(s.Id, s.StudentNumber + " ? " + s.FullName)).ToListAsync(cancellationToken)
+                .Select(s => new HistorySubject(s.Id, s.StudentNumber + " - " + s.FullName)).ToListAsync(cancellationToken)
             : await context.Equipment.AsNoTracking().OrderBy(e => e.Name).ThenBy(e => e.Id)
-                .Select(e => new HistorySubject(e.Id, e.EquipmentIdentifier + " ? " + e.Name)).ToListAsync(cancellationToken);
+                .Select(e => new HistorySubject(e.Id, e.EquipmentIdentifier + " - " + e.Name)).ToListAsync(cancellationToken);
     }
     public async Task<HistorySnapshot?> GetHistoryAsync(HistoryKind kind, int subjectId, CancellationToken cancellationToken = default)
     {
         await using var context = await factory.CreateDbContextAsync(cancellationToken);
         HistorySubject? subject = kind == HistoryKind.Student
             ? await context.Students.AsNoTracking().Where(s => s.Id == subjectId)
-                .Select(s => new HistorySubject(s.Id, s.StudentNumber + " ? " + s.FullName)).SingleOrDefaultAsync(cancellationToken)
+                .Select(s => new HistorySubject(s.Id, s.StudentNumber + " - " + s.FullName)).SingleOrDefaultAsync(cancellationToken)
             : await context.Equipment.AsNoTracking().Where(e => e.Id == subjectId)
-                .Select(e => new HistorySubject(e.Id, e.EquipmentIdentifier + " ? " + e.Name)).SingleOrDefaultAsync(cancellationToken);
+                .Select(e => new HistorySubject(e.Id, e.EquipmentIdentifier + " - " + e.Name)).SingleOrDefaultAsync(cancellationToken);
         if (subject is null) return null;
         var query = context.Borrowings.AsNoTracking().Where(b => kind == HistoryKind.Student ? b.StudentId == subjectId : b.EquipmentId == subjectId);
         var rows = await (from b in query
