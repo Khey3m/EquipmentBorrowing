@@ -38,7 +38,7 @@ Historical report/review files under this directory describe the earlier impleme
 
 ### Next session
 
-Session 9: borrowing search/filter/sort (UC-09). Current backend suite passes 66/66 with PostgreSQL integration. Desktop still fails at Avalonia task loading; rendered workflow, startup seed, restart and concurrency acceptance work remains pending.
+Session 10: integrated verification and recovery. Session 8 recorded a 66/66 backend pass, but Session 9 rebuilt assemblies again hit Application Control; current search and regression execution remain unverified. Desktop still fails at Avalonia task loading. Close runtime, startup seed, restart, concurrency and acceptance evidence gaps before claiming completion.
 
 ## Session 2 — domain and contract foundations completed
 
@@ -96,6 +96,12 @@ Date: 2026-11-14. Queries/services `5f84474` add subject lists and student/equip
 
 Observed results: targeted history run passed 7/7; complete suite with local PostgreSQL integration enabled passed 66/66, zero failures/skips. Earlier model comparison, EF disposable clean migrations and actual checkout success/rollback tests now pass too. Fresh psql reads confirm migration history and borrowing counts in retained disposable databases. This supersedes earlier backend test-loading blocks for current binaries; no security policy was changed. Desktop still fails Avalonia MSB4061. AXAML is well-formed XML but rendering/bindings/UI responsiveness remain unverified. Development DB startup/seeding and broader restart/concurrency checks remain pending. Details: [Session 8 evidence](session8-evidence.md).
 
+## Session 9 — search/filter/sort source implemented; current runtime blocked
+
+Date: 2026-11-14. Backend `358b2bb` adds trimmed literal case-insensitive partial search over the three required fields, composable statuses and either-date/direction sorting with ID ascending tie-breaks, all executed in PostgreSQL. UI `dff3d7f` adds Search borrowings, Apply/Retry, clear/reset, cancellation/latest-result guards and distinct result/error states. Tests `a289aae` add six service cases and one opt-in PostgreSQL case covering controlled matching, literal wildcard inputs, all statuses/sorts/ties, combined criteria and reset.
+
+Non-Desktop code/Tests compile with zero warnings/errors. Initial targeted search execution had seven assembly-load failures. Final full-suite execution was unsuccessful under Application Control; an isolated PostgreSQL search test confirmed Domain.dll blocked before assertions (0x800711C7). No current search or full-suite pass is claimed. Session 8's 66/66 result remains historical for its revision. Desktop still fails Avalonia MSB4061; edited AXAML is well-formed XML but rendering is unverified. No schema/database/security-policy changes were performed. Details: [Session 9 evidence](session9-evidence.md).
+
 ## Session status
 
 1. Baseline/traceability: done with documented external execution blocker.
@@ -106,6 +112,6 @@ Observed results: targeted history run passed 7/7; complete suite with local Pos
 6. Equipment management: source implemented and non-Desktop code compiled; A15–A16 runtime acceptance pending.
 7. Atomic multi-item checkout: source implemented and non-Desktop code compiled; A06 runtime/concurrency/restart evidence pending.
 8. Histories: source implemented; backend service/coordination and PostgreSQL integration verified; A07–A08 rendered UI/responsiveness acceptance pending.
-9. Search/filter/sort: pending.
+9. Search/filter/sort: source implemented and non-Desktop code compiled; A09 backend/current-runtime and rendered acceptance pending.
 10. Integrated verification: pending.
 11. Submission documentation: pending.

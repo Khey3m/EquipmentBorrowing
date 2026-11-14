@@ -8,7 +8,9 @@ Latest progress: [Session 7 — atomic multi-item checkout and verification plan
 
 Current verification: [Session 8 — histories and 66 passing backend tests, including PostgreSQL integration](docs/lab4/session8-evidence.md).
 
-> **Lab 4 in progress:** PostgreSQL replaces operational SQLite. Follow [PostgreSQL setup](docs/lab4/postgres-setup.md), [progress](docs/lab4/progress.md), and the [acceptance matrix](docs/lab4/acceptance-matrix.md). Sessions 1–8 implement transactional borrowing/returns, management, multi-item checkout and histories. The backend suite passes 66/66 with real PostgreSQL migration/history/checkout rollback tests. Desktop still fails at Avalonia task loading; rendered UI, startup seeding, restart and broader concurrency acceptance remain pending. Earlier sections below retain historical in-memory/SQLite documentation.
+Latest progress: [Session 9 — borrowing search/filter/sort; rebuilt binaries currently blocked during test execution](docs/lab4/session9-evidence.md).
+
+> **Lab 4 in progress:** PostgreSQL replaces operational SQLite. Follow [PostgreSQL setup](docs/lab4/postgres-setup.md), [progress](docs/lab4/progress.md), and the [acceptance matrix](docs/lab4/acceptance-matrix.md). Sessions 1–9 implement transactional borrowing/returns, management, multi-item checkout, histories and borrowing search/filter/sort. Session 8 recorded 66 passing backend tests with PostgreSQL integration; Session 9 rebuilt binaries again hit Application Control, so current search/runtime verification is pending. Desktop still fails at Avalonia task loading; rendered UI, startup seeding, restart and concurrency acceptance remain pending. Earlier sections below retain historical documentation.
 
 ## 1. Solution Structure
 * **EquipmentBorrowing.Domain**: Contains the core concepts and business rules (Ex: `Student`, `Equipment`, `Borrowing`, and `BorrowingStatus`). This layer is independent and has zero external dependencies.

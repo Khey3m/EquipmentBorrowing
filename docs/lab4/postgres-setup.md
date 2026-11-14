@@ -20,6 +20,8 @@ On another machine, create an empty development database and set the variable lo
 
 ## Migrate and run
 
+Latest execution note (Session 9): rebuilt Application/Domain assemblies again encounter Application Control in tests. The Session 8 successes documented below remain valid for that earlier revision; they do not establish current search behavior or a current full-suite pass. See [Session 9 results](session9-evidence.md).
+
 From the repository root on an approved development environment:
 
 ```powershell
