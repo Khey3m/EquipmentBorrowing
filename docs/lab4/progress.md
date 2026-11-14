@@ -36,7 +36,7 @@ Historical report/review files under this directory describe the earlier impleme
 
 ### Next session
 
-Session 3: PostgreSQL schema/migrations, Npgsql configuration, database constraints and per-operation context/transaction lifetimes. Read domain-decisions.md before changing mappings. Desktop execution remains blocked by Windows policy.
+Session 4: integrate IBorrowingSessionFactory around single borrowing/return validation and writes; add conflict/error/unknown-outcome feedback, related queries and complete the five existing workflows. Before operational acceptance, verify EF snapshot/model agreement, migration execution/history and seeding in an approved environment. Desktop execution remains blocked by Windows policy.
 
 ## Session 2 — domain and contract foundations completed
 
@@ -48,11 +48,23 @@ Validation: test project and ConsoleDemo compile. An initial execution passed 10
 
 Important: the model intentionally advances beyond the historical SQLite schema. Do not treat this intermediate commit as database-runnable; clean PostgreSQL migrations are Session 3. Atomic repository writes and concurrency guarantees remain later-session work. Details and exact evidence limits: [domain-decisions.md](domain-decisions.md).
 
+## Session 3 — PostgreSQL foundation implemented; SQL verified, EF execution pending
+
+Date: 2026-11-14. Implementation commit `9b996d4` pushed. Added Npgsql 10.0.3, aligned EF runtime dependencies to 10.0.12, pinned the local EF tool, and archived historical SQLite migrations outside compiled discovery. Added authored InitialPostgres migration/frozen target model, date/required/normalized-unique/foreign-key/active-item constraints and fresh-context repositories. Registered the Infrastructure bootstrap and serializable write-session factory; the existing borrowing/return services do not consume the session yet (Session 4).
+
+Verified supplied credentials against local PostgreSQL without printing or committing them. Created empty equipment_borrowing_lab4 and saved its connection setting in the current Windows user's environment. Restart IDE or load that user variable into the process before running tools. No credential file was created; repository scan found no supplied password.
+
+Validation: test project and references compile with zero warnings/errors after package alignment. Full solution's non-Desktop projects compile; Desktop remains blocked at Avalonia MSB4061. EF scaffolding and the model-comparison test hit confirmed Application Control assembly-load failures. Migration/history/model agreement, startup seeding and desktop operation remain unverified.
+
+Real PostgreSQL verification applied exact migration Up SQL in a separate disposable database and passed uniqueness (case variants), whitespace/blank checks (including tabs), FK/date/state checks, single-active-item protection, history retention and rollback after attempted writes with fresh-connection readback. No EF history was fabricated. The development database is still empty pending approved EF execution. Details: [setup](postgres-setup.md) and [observed evidence](session3-evidence.md).
+
+README was converted from UTF-16 to UTF-8 for editable current setup links; historical content remains. Every source/documentation change is committed; generated output and local secrets remain outside Git.
+
 ## Session status
 
 1. Baseline/traceability: done with documented external execution blocker.
 2. Domain/contracts: implemented and compiled; partial runtime verification, external policy blocker remains.
-3. PostgreSQL/schema/lifetimes: pending.
+3. PostgreSQL/schema/lifetimes: implemented, SQL verified; EF/runtime acceptance pending external policy blocker.
 4. Existing workflows: pending.
 5. Student management: pending.
 6. Equipment management: pending.
