@@ -6,6 +6,8 @@ Session 4 update: UC-01–05 are implemented in source, including transactional 
 
 Session 5 update: UC-12–14 services, PostgreSQL repository operations, Students screen and stale-edit checks are implemented. A12–A14 remain pending runtime verification; see [Session 5 evidence](session5-evidence.md).
 
+Session 6 update: UC-15–16 equipment registration/edit services, repository operations, management screen and stale-availability checks are implemented. A15–A16 remain pending runtime verification; see [Session 6 evidence](session6-evidence.md).
+
 Primary actor: Laboratory Staff / Equipment Custodian. All database access belongs behind Application abstractions in Infrastructure; Views/ViewModels contain no SQL, connection setup or migrations.
 
 | Case / evidence | Behavior and rules | Planned implementation | Session | Verification |

@@ -2,9 +2,9 @@
 
 Detailed current report: [Lab 4 development progress — Sessions 1–4](docs/lab4/development-report-sessions-1-4.md).
 
-Latest progress: [Session 5 — student registration, editing and eligibility](docs/lab4/session5-evidence.md).
+Recent progress: [Session 5 — student management](docs/lab4/session5-evidence.md) and [Session 6 — equipment registration and editing](docs/lab4/session6-evidence.md).
 
-> **Lab 4 in progress:** PostgreSQL replaces operational SQLite. Follow [PostgreSQL setup](docs/lab4/postgres-setup.md), [progress](docs/lab4/progress.md), and the [acceptance matrix](docs/lab4/acceptance-matrix.md) for current instructions. Earlier sections below retain historical in-memory/SQLite documentation. Sessions 1–5 source work includes transactional borrowing/returns, catalog/active-loan screens, and student registration/editing/eligibility. SQL constraints are verified; EF migration execution, Desktop and workflow runtime acceptance remain blocked locally by Windows Application Control.
+> **Lab 4 in progress:** PostgreSQL replaces operational SQLite. Follow [PostgreSQL setup](docs/lab4/postgres-setup.md), [progress](docs/lab4/progress.md), and the [acceptance matrix](docs/lab4/acceptance-matrix.md) for current instructions. Earlier sections below retain historical in-memory/SQLite documentation. Sessions 1–6 source work includes transactional borrowing/returns, catalog/active-loan screens, student management and equipment registration/editing. SQL constraints are verified; EF migration execution, Desktop and workflow runtime acceptance remain blocked locally by Windows Application Control.
 
 ## 1. Solution Structure
 * **EquipmentBorrowing.Domain**: Contains the core concepts and business rules (Ex: `Student`, `Equipment`, `Borrowing`, and `BorrowingStatus`). This layer is independent and has zero external dependencies.

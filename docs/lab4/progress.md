@@ -38,7 +38,7 @@ Historical report/review files under this directory describe the earlier impleme
 
 ### Next session
 
-Session 6: equipment registration and descriptive editing (UC-15–16). Before operational acceptance, complete pending EF model/migration/seed checks and implemented-workflow acceptance walkthroughs on an approved environment. Desktop and test execution remain blocked by Windows policy.
+Session 7: atomic multi-item checkout (UC-06). Before operational acceptance, complete pending EF model/migration/seed checks and implemented-workflow acceptance walkthroughs on an approved environment. Desktop and test execution remain blocked by Windows policy.
 
 ## Session 2 — domain and contract foundations completed
 
@@ -78,6 +78,12 @@ Test project and Domain/Application/Infrastructure compile with zero warnings/er
 
 User's commit preference: action-oriented titles naming the progress added, with detailed bodies explaining the session, changed behavior and actual validation/limits. Commit/push backend, UI, tests and evidence as separate coherent parts. Do not rewrite earlier commits to change their wording.
 
+## Session 6 — equipment-management source implemented; runtime acceptance pending
+
+Date: 2026-11-14. Backend `e6e9b20` implements UC-15 registration with available defaults and UC-16 descriptive updates through serializable sessions, PostgreSQL uniqueness prevalidation and stale snapshots including availability. UI `f9c7ceb` adds Manage Equipment navigation, lookup, registration/edit forms, description clearing and read-only availability. Tests `e4760d7` add ten service cases. Each part was committed/pushed independently with descriptive titles and detailed progress/validation bodies.
+
+Non-Desktop projects and tests compile with zero warnings/errors on the targeted build. Test discovery remains blocked by Application Control loading Tests.dll (0x800711C7); Desktop still fails at Avalonia MSB4061. Edited AXAML parses as XML, but bindings/rendering and A15–A16 database/restart evidence remain pending. No schema/database change or security-policy modification was made. Details: [Session 6 evidence](session6-evidence.md).
+
 ## Session status
 
 1. Baseline/traceability: done with documented external execution blocker.
@@ -85,7 +91,7 @@ User's commit preference: action-oriented titles naming the progress added, with
 3. PostgreSQL/schema/lifetimes: implemented, SQL verified; EF/runtime acceptance pending external policy blocker.
 4. Existing workflows: source integrated and non-Desktop code compiled; runtime acceptance blocked/pending.
 5. Student management: source implemented and non-Desktop code compiled; A12–A14 runtime acceptance pending.
-6. Equipment management: pending.
+6. Equipment management: source implemented and non-Desktop code compiled; A15–A16 runtime acceptance pending.
 7. Atomic multi-item checkout: pending.
 8. Histories: pending.
 9. Search/filter/sort: pending.
