@@ -6,11 +6,15 @@ Recent progress: [Session 5 — student management](docs/lab4/session5-evidence.
 
 Latest progress: [Session 7 — atomic multi-item checkout and verification plan](docs/lab4/session7-evidence.md).
 
-Current verification: [Session 8 — histories and 66 passing backend tests, including PostgreSQL integration](docs/lab4/session8-evidence.md).
+Earlier verification: [Session 8 — histories and 66 passing backend tests, including PostgreSQL integration](docs/lab4/session8-evidence.md).
 
 Latest progress: [Session 9 — borrowing search/filter/sort; rebuilt binaries currently blocked during test execution](docs/lab4/session9-evidence.md).
 
-> **Lab 4 in progress:** PostgreSQL replaces operational SQLite. Follow [PostgreSQL setup](docs/lab4/postgres-setup.md), [progress](docs/lab4/progress.md), and the [acceptance matrix](docs/lab4/acceptance-matrix.md). Sessions 1–9 implement transactional borrowing/returns, management, multi-item checkout, histories and borrowing search/filter/sort. Session 8 recorded 66 passing backend tests with PostgreSQL integration; Session 9 rebuilt binaries again hit Application Control, so current search/runtime verification is pending. Desktop still fails at Avalonia task loading; rendered UI, startup seeding, restart and concurrency acceptance remain pending. Earlier sections below retain historical documentation.
+Current verification: [Session 10 — full Linux build, integrated PostgreSQL, headless UI and process-persistence evidence](docs/lab4/session10-evidence.md). See [automated verification](docs/lab4/continuous-verification.md) and the [remaining manual walkthrough](docs/lab4/manual-verification-checklist.md).
+
+Verified CI: [79 tests and five persistence process stages passed; full build has zero warnings/errors](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43558553901).
+
+> **Lab 4 in progress:** Sessions 1–10 implement all fourteen required use cases and automated integration verification. Linux CI successfully builds the full Avalonia solution and passes 76 backend tests against PostgreSQL, including search, management/borrowing lifecycle, seeding, concurrency and rollback. Local Windows assembly restrictions remain; full manual visual/real Desktop restart acceptance and Session 11 submission documentation are still pending. Follow the current evidence links above; earlier sections below retain historical documentation.
 
 ## 1. Solution Structure
 * **EquipmentBorrowing.Domain**: Contains the core concepts and business rules (Ex: `Student`, `Equipment`, `Borrowing`, and `BorrowingStatus`). This layer is independent and has zero external dependencies.

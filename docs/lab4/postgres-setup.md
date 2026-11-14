@@ -20,7 +20,7 @@ On another machine, create an empty development database and set the variable lo
 
 ## Migrate and run
 
-Latest execution note (Session 9): rebuilt Application/Domain assemblies again encounter Application Control in tests. The Session 8 successes documented below remain valid for that earlier revision; they do not establish current search behavior or a current full-suite pass. See [Session 9 results](session9-evidence.md).
+Latest execution note (Session 10): local Windows restrictions remain, but Linux CI now builds the complete solution and passes all 76 backend tests with PostgreSQL enabled, including current search, clean migrations/model comparison, repeat-safe seeding and lifecycle/concurrency/recovery checks. Use [continuous verification](continuous-verification.md) and [Session 10 results](session10-evidence.md). Earlier blocked local results remain historical, not a substitute for the successful CI evidence.
 
 From the repository root on an approved development environment:
 
@@ -34,7 +34,7 @@ dotnet run --project src/EquipmentBorrowing.Desktop
 
 Infrastructure is the design-time startup project, avoiding Avalonia for migration commands. Runtime bootstrap delegates migration/seeding to Infrastructure. Seed data is inserted only when the corresponding table is empty; existing records are not overwritten. Generated IDs avoid sequence collisions; example staff identifiers remain STU-001..003 and EQ-101..103.
 
-**Session 8 verification update:** the current backend binaries execute successfully. The complete test suite passes 66/66 with PostgreSQL integration enabled, including frozen-model comparison, clean EF migrations in disposable databases, actual checkout success/rollback and joined history reads. See [Session 8 evidence](session8-evidence.md). Earlier sessions' assembly-loading failures are retained as historical results. Desktop still fails loading Avalonia build tasks. Production startup seeding and desktop launch remain unverified, and the development database is still empty; no fake migration-history entries were written and no security policy was changed.
+**Session 8 verification update:** the current backend binaries execute successfully. The complete test suite passes 66/66 with PostgreSQL integration enabled, including frozen-model comparison, clean EF migrations in disposable databases, actual checkout success/rollback and joined history reads. See [Session 8 evidence](session8-evidence.md). Earlier sessions' assembly-loading failures are retained as historical results. Desktop still fails loading Avalonia build tasks. Session 10 subsequently verifies repeat-safe bootstrap/seeding, 79 automated tests and separate-process persistence in CI. The actual Desktop close/reopen walkthrough remains pending and the local development database is still empty; no fake migration-history entries were written and no security policy was changed.
 
 `20261114000100_InitialPostgres` is an authored EF migration because CLI scaffolding was blocked. Its target model is frozen in InitialPostgresModel, separately from live configurations. PostgresModelTests checks snapshot/runtime agreement and migration discovery without connecting to a database; it must pass before EF reproduction is considered verified.
 

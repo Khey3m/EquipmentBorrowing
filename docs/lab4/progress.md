@@ -38,7 +38,7 @@ Historical report/review files under this directory describe the earlier impleme
 
 ### Next session
 
-Session 10: integrated verification and recovery. Session 8 recorded a 66/66 backend pass, but Session 9 rebuilt assemblies again hit Application Control; current search and regression execution remain unverified. Desktop still fails at Avalonia task loading. Close runtime, startup seed, restart, concurrency and acceptance evidence gaps before claiming completion.
+Session 11: final documentation, diagram/catalog/fourteen-case suite, traceability and demonstration handoff. Session 10 establishes Linux CI full-build/backend evidence and adds headless/process verification. Local Windows policy remains restricted; actual Desktop close/reopen and manual visual acceptance remain separate checks.
 
 ## Session 2 — domain and contract foundations completed
 
@@ -102,16 +102,26 @@ Date: 2026-11-14. Backend `358b2bb` adds trimmed literal case-insensitive partia
 
 Non-Desktop code/Tests compile with zero warnings/errors. Initial targeted search execution had seven assembly-load failures. Final full-suite execution was unsuccessful under Application Control; an isolated PostgreSQL search test confirmed Domain.dll blocked before assertions (0x800711C7). No current search or full-suite pass is claimed. Session 8's 66/66 result remains historical for its revision. Desktop still fails Avalonia MSB4061; edited AXAML is well-formed XML but rendering is unverified. No schema/database/security-policy changes were performed. Details: [Session 9 evidence](session9-evidence.md).
 
+## Session 10 — integrated PostgreSQL and full-build verification
+
+Date: 2026-11-14. Added GitHub Actions Linux verification (`64d6f4a`) to build the complete solution and run PostgreSQL tests independently of local Windows policy. The first CI run passed all 73 existing tests and compiled Desktop. Integrated lifecycle/concurrency/recovery tests (`d8bb810`) then passed with the complete 76-test backend suite. Repeat-safe startup seeding, registration/edits, restriction/return/permit, quota and active-item competition, histories/search and connection recovery now have real PostgreSQL evidence.
+
+Added headless UI tests (`2da327d`) and a five-process persistence probe (`8ad740b`). CI exposed and prompted fixes for four Desktop warnings (`9109b66`), test-app namespace ambiguity (`9399d10`), xUnit v3 executable-host configuration (`3de02f3`) and two headless test assumptions (`1e5328d`). Zero-warning full builds and 76 backend passes are confirmed; the corrected combined UI/process run is recorded in [Session 10 evidence](session10-evidence.md).
+
+Final combined CI run [43558553901](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43558553901) at `1e5328d` passed the complete Release build with zero warnings/errors, all 76 backend tests, all 3 headless UI tests (79 total; zero failed/skipped), and all five separate-process init/borrow/readback/return/readback stages. TRX evidence is retained on the run. This closes automated current-search, headless selection/binding and service-process persistence gaps; full manual real-Desktop visual/restart acceptance remains separate.
+
+No Windows security policy was changed and the local development database was not overwritten. Automated headless/control/process checks do not replace manual pixel/usability review or restarting the real Desktop executable. Use [continuous verification instructions](continuous-verification.md) and the [remaining manual checklist](manual-verification-checklist.md). Preserve earlier failed/blocked runs as historical evidence rather than presenting them as current code defects or passes.
+
 ## Session status
 
 1. Baseline/traceability: done with documented external execution blocker.
 2. Domain/contracts: implemented and compiled; partial runtime verification, external policy blocker remains.
-3. PostgreSQL/schema/lifetimes: implemented, SQL verified; EF/runtime acceptance pending external policy blocker.
-4. Existing workflows: source integrated and non-Desktop code compiled; runtime acceptance blocked/pending.
-5. Student management: source implemented and non-Desktop code compiled; A12–A14 runtime acceptance pending.
-6. Equipment management: source implemented and non-Desktop code compiled; A15–A16 runtime acceptance pending.
-7. Atomic multi-item checkout: source implemented and non-Desktop code compiled; A06 runtime/concurrency/restart evidence pending.
-8. Histories: source implemented; backend service/coordination and PostgreSQL integration verified; A07–A08 rendered UI/responsiveness acceptance pending.
-9. Search/filter/sort: source implemented and non-Desktop code compiled; A09 backend/current-runtime and rendered acceptance pending.
-10. Integrated verification: pending.
+3. PostgreSQL/schema/lifetimes: clean EF migrations/model/constraints and repeat-safe bootstrap verified in disposable CI databases; local execution policy remains restricted.
+4. Existing workflows: full source builds in CI; integrated PostgreSQL lifecycle passes; complete staff visual/restart walkthrough remains pending.
+5. Student management: service and real integrated lifecycle verification passes; full staff UI acceptance remains pending.
+6. Equipment management: service and real integrated lifecycle verification passes; full staff UI acceptance remains pending.
+7. Atomic multi-item checkout: real success/after-write rollback and competing-request integrity tests pass; manual UI/real Desktop restart acceptance remains pending.
+8. Histories: backend service/coordination and PostgreSQL integration verified; headless/manual UI evidence in Session 10.
+9. Search/filter/sort: actual PostgreSQL matching/filtering/all sort directions/ties/reset pass in CI; headless/manual UI evidence in Session 10.
+10. Integrated verification: successful full zero-warning build, 79 tests and five persistence process stages in CI; remaining manual visual/real-Desktop restart checks documented.
 11. Submission documentation: pending.

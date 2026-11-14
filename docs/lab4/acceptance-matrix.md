@@ -2,6 +2,10 @@
 
 Status at Session 1: planned unless stated otherwise. Existing source is not proof of PostgreSQL acceptance. Based on the supplied Lab 4 handout and Use Case Suite, BR-01–19.
 
+Current Session 10 update: Linux CI builds the entire Avalonia solution and passes all 76 backend tests, including search, clean migrations, integrated management/borrowing/return, repeat-safe seeding, concurrency, recovery and rollback. Headless UI/process checks and manual limits are recorded in [Session 10 evidence](session10-evidence.md). Earlier blocked notes below remain historical for their original revisions; do not apply them to the successful CI results or mark all manual acceptance complete from automation alone.
+
+Final Session 10 combined run [43558553901](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43558553901) additionally passes 3 headless UI tests and all five separate-process persistence stages, for 79 tests total with no failures/skips and a zero-warning build. Actual Desktop close/reopen, full visual/usability review and final A19 submission artifacts still require completion.
+
 Current Session 8 verification: the complete backend suite passes 66/66 with PostgreSQL integration enabled. Clean EF migration/model comparison, multi-item success/rollback and related history queries now have automated evidence. Earlier execution-blocked notes below describe their original sessions. Desktop rendering, restart/concurrency and complete acceptance demonstrations remain pending. See [Session 8 evidence](session8-evidence.md).
 
 Latest Session 9 update: UC-09 search/filter/sort/reset source and tests are implemented, but rebuilt assemblies again hit Application Control. A09 runtime verification and a current full-suite pass remain pending; the Session 8 pass above applies to that revision. See [Session 9 evidence](session9-evidence.md).
