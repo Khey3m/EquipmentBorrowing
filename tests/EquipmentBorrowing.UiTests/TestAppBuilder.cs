@@ -12,7 +12,8 @@ public static class TestAppBuilder
         .UseHeadless(new AvaloniaHeadlessPlatformOptions());
 }
 
-public class HeadlessApp : Application
+public class HeadlessApp : Avalonia.Application
 {
     public override void Initialize() => Styles.Add(new FluentTheme());
 }
+
