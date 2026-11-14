@@ -1,9 +1,13 @@
 # Campus Equipment Borrowing System — Lab 4 Development Progress Report
 
-**Reporting date:** 14 November 2026  
-**Coverage:** Sessions 1–4 of the Lab 4 implementation plan  
-**Repository:** https://github.com/Khey3m/EquipmentBorrowing  
-**Development branch:** `lab4/postgresql-workflows`  
+**Reporting date:** 14 November 2026
+
+**Coverage:** Sessions 1–4 of the Lab 4 implementation plan
+
+**Repository:** https://github.com/Khey3m/EquipmentBorrowing
+
+**Development branch:** `lab4/postgresql-workflows`
+
 **Implementation baseline reviewed:** `fb81574`
 
 ## 1. Overall status
