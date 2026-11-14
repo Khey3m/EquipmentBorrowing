@@ -54,6 +54,7 @@ public partial class App : Avalonia.Application
 
         // 4. Register ViewModels
         serviceCollection.AddTransient<EquipmentViewModel>();
+        serviceCollection.AddTransient<BorrowingSearchViewModel>();
         serviceCollection.AddTransient<BorrowingHistoryViewModel>();
         serviceCollection.AddTransient<MultiItemCheckoutViewModel>();
         serviceCollection.AddTransient<BorrowingsViewModel>();

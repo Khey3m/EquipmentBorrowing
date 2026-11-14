@@ -37,13 +37,15 @@ public partial class MainWindowViewModel : ObservableObject
     public BorrowingsViewModel BorrowingsVm { get; }
     public StudentsViewModel StudentsVm { get; }
     public BorrowingHistoryViewModel HistoryVm { get; }
+    public BorrowingSearchViewModel SearchVm { get; }
     public MultiItemCheckoutViewModel MultiCheckoutVm { get; }
     public EquipmentManagementViewModel EquipmentManagementVm { get; }
 
-    public MainWindowViewModel(EquipmentViewModel equipmentVm, BorrowingsViewModel borrowingsVm, ApplicationStartupService startup, StudentsViewModel studentsVm, EquipmentManagementViewModel equipmentManagementVm, MultiItemCheckoutViewModel multiCheckoutVm, BorrowingHistoryViewModel historyVm)
+    public MainWindowViewModel(EquipmentViewModel equipmentVm, BorrowingsViewModel borrowingsVm, ApplicationStartupService startup, StudentsViewModel studentsVm, EquipmentManagementViewModel equipmentManagementVm, MultiItemCheckoutViewModel multiCheckoutVm, BorrowingHistoryViewModel historyVm, BorrowingSearchViewModel searchVm)
     {
         _startup = startup;
         HistoryVm = historyVm;
+        SearchVm = searchVm;
         StudentsVm = studentsVm;
         EquipmentManagementVm = equipmentManagementVm;
         MultiCheckoutVm = multiCheckoutVm;
@@ -85,6 +87,7 @@ public partial class MainWindowViewModel : ObservableObject
     }
     partial void OnCurrentViewChanged(ObservableObject oldValue, ObservableObject newValue)
     {
+        if (ReferenceEquals(oldValue, SearchVm) && !ReferenceEquals(newValue, SearchVm)) SearchVm.Deactivate();
         if (ReferenceEquals(oldValue, HistoryVm) && !ReferenceEquals(newValue, HistoryVm)) HistoryVm.Deactivate();
     }
 
@@ -93,5 +96,11 @@ public partial class MainWindowViewModel : ObservableObject
     {
         CurrentView = HistoryVm;
         await HistoryVm.InitializeAsync();
+    }
+    [RelayCommand]
+    private async Task NavigateToSearchAsync()
+    {
+        CurrentView = SearchVm;
+        await SearchVm.InitializeAsync();
     }
 }

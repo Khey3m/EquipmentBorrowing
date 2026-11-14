@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:EquipmentBorrowing.Desktop.ViewModels"
+             xmlns:app="clr-namespace:EquipmentBorrowing.Application.Interfaces;assembly=EquipmentBorrowing.Application"
+             x:Class="EquipmentBorrowing.Desktop.Views.BorrowingSearchView" x:DataType="vm:BorrowingSearchViewModel">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="10">
+        <TextBlock Text="Search Borrowings" FontSize="20" FontWeight="Bold"/>
+        <TextBox Grid.Row="1" Text="{Binding SearchText}" Watermark="Student name, institutional number, or equipment name"/>
+        <WrapPanel Grid.Row="2">
+            <StackPanel Margin="0,0,10,5"><TextBlock Text="Status"/><ComboBox ItemsSource="{Binding StatusOptions}" SelectedItem="{Binding StatusFilter}"/></StackPanel>
+            <StackPanel Margin="0,0,10,5"><TextBlock Text="Sort date"/><ComboBox ItemsSource="{Binding SortOptions}" SelectedItem="{Binding SortBy}"/></StackPanel>
+            <CheckBox Content="Descending" IsChecked="{Binding Descending}" Margin="0,0,10,0"/>
+            <Button Content="Apply / Retry" Command="{Binding ApplyCommand}" Margin="0,0,10,0"/>
+            <Button Content="Clear criteria" Command="{Binding ClearCommand}"/>
+        </WrapPanel>
+        <ListBox Grid.Row="3" ItemsSource="{Binding Rows}">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="app:BorrowingDetails">
+                    <StackPanel Margin="5" Spacing="3">
+                        <TextBlock Text="{Binding Id, StringFormat='Borrowing #{0}'}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding StudentName}"/>
+                        <TextBlock Text="{Binding StudentNumber}"/>
+                        <TextBlock Text="{Binding EquipmentName}"/>
+                        <TextBlock Text="{Binding EquipmentIdentifier}"/>
+                        <TextBlock Text="{Binding CheckoutDate, StringFormat='Checkout: {0:yyyy-MM-dd}'}"/>
+                        <TextBlock Text="{Binding ExpectedReturnDate, StringFormat='Expected return: {0:yyyy-MM-dd}'}"/>
+                        <TextBlock Text="{Binding ActualReturnDate, StringFormat='Actual return: {0:yyyy-MM-dd}', TargetNullValue='Actual return: pending'}"/>
+                        <TextBlock Text="{Binding Status}" FontWeight="Medium"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Grid.Row="4" Spacing="5">
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}"/>
+            <TextBlock Text="{Binding Message}" TextWrapping="Wrap"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
