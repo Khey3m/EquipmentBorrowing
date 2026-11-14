@@ -14,6 +14,7 @@
                 <Button Content="Retry startup" Command="{Binding RetryStartupCommand}"/>
                 <TextBlock Text="CAMPUSEQ" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
                 
+                <Button Content="Students" Command="{Binding NavigateToStudentsCommand}" HorizontalAlignment="Stretch"/>
                 <Button Content="Equipment" Command="{Binding NavigateToEquipmentCommand}" 
                         HorizontalAlignment="Stretch" Background="Transparent" Foreground="White"/>
                 <Button Content="Active Borrowings" Command="{Binding NavigateToBorrowingsCommand}" 
@@ -24,6 +25,9 @@
         <!-- Main Content Host -->
         <TransitioningContentControl Grid.Column="1" Content="{Binding CurrentView}" Margin="20">
             <TransitioningContentControl.DataTemplates>
+                <DataTemplate DataType="{x:Type vm:StudentsViewModel}">
+                    <views:StudentsView/>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:EquipmentViewModel}">
                     <views:EquipmentView/>
                 </DataTemplate>

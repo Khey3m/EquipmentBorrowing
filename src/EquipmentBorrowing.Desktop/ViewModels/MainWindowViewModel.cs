@@ -35,10 +35,12 @@ public partial class MainWindowViewModel : ObservableObject
 
     public EquipmentViewModel EquipmentVm { get; }
     public BorrowingsViewModel BorrowingsVm { get; }
+    public StudentsViewModel StudentsVm { get; }
 
-    public MainWindowViewModel(EquipmentViewModel equipmentVm, BorrowingsViewModel borrowingsVm, ApplicationStartupService startup)
+    public MainWindowViewModel(EquipmentViewModel equipmentVm, BorrowingsViewModel borrowingsVm, ApplicationStartupService startup, StudentsViewModel studentsVm)
     {
         _startup = startup;
+        StudentsVm = studentsVm;
         EquipmentVm = equipmentVm;
         BorrowingsVm = borrowingsVm;
         _currentView = EquipmentVm;
@@ -56,5 +58,11 @@ public partial class MainWindowViewModel : ObservableObject
     {
         await BorrowingsVm.InitializeAsync();
         CurrentView = BorrowingsVm;
+    }
+    [RelayCommand]
+    private async Task NavigateToStudentsAsync()
+    {
+        CurrentView = StudentsVm;
+        await StudentsVm.InitializeAsync();
     }
 }
