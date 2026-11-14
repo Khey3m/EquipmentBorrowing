@@ -6,7 +6,7 @@
     <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="10">
         <TextBlock Text="Student Management" FontSize="20" FontWeight="Bold"/>
         <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
-            <TextBox Text="{Binding SearchText}" Watermark="Find by institutional number or full name"/>
+            <TextBox Text="{Binding SearchText}" PlaceholderText="Find by institutional number or full name"/>
             <Button Grid.Column="1" Content="Search / Refresh" Command="{Binding RefreshCommand}"/>
         </Grid>
         <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="15">

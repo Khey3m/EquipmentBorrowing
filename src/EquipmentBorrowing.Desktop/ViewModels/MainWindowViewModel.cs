@@ -85,7 +85,7 @@ public partial class MainWindowViewModel : ObservableObject
         CurrentView = MultiCheckoutVm;
         await MultiCheckoutVm.InitializeAsync();
     }
-    partial void OnCurrentViewChanged(ObservableObject oldValue, ObservableObject newValue)
+    partial void OnCurrentViewChanged(ObservableObject? oldValue, ObservableObject newValue)
     {
         if (ReferenceEquals(oldValue, SearchVm) && !ReferenceEquals(newValue, SearchVm)) SearchVm.Deactivate();
         if (ReferenceEquals(oldValue, HistoryVm) && !ReferenceEquals(newValue, HistoryVm)) HistoryVm.Deactivate();
