@@ -3,25 +3,25 @@
              xmlns:vm="clr-namespace:EquipmentBorrowing.Desktop.ViewModels"
              xmlns:domain="clr-namespace:EquipmentBorrowing.Domain;assembly=EquipmentBorrowing.Domain"
              x:Class="EquipmentBorrowing.Desktop.Views.StudentsView" x:DataType="vm:StudentsViewModel">
-    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="10">
-        <TextBlock Text="Student Management" FontSize="20" FontWeight="Bold"/>
+    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="18">
+        <StackPanel Spacing="5"><TextBlock Text="Student Management" Classes="pageTitle"/><TextBlock Text="Manage student profiles and borrowing eligibility in one place." Classes="subtitle"/></StackPanel>
         <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
             <TextBox Text="{Binding SearchText}" PlaceholderText="Find by institutional number or full name"/>
             <Button Grid.Column="1" Content="Search / Refresh" Command="{Binding RefreshCommand}"/>
         </Grid>
-        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="15">
+        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="22">
             <ListBox ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudent}" IsEnabled="{Binding CanEdit}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="domain:Student">
-                        <StackPanel Margin="5" Spacing="3">
+                        <StackPanel Margin="0" Spacing="6">
                             <TextBlock Text="{Binding FullName}" FontWeight="Bold"/>
                             <TextBlock Text="{Binding StudentNumber}"/>
-                            <TextBlock Text="{Binding IsEligibleToBorrow, StringFormat='Eligible: {0}'}"/>
+                            <StackPanel><TextBlock Text="Eligible to borrow" IsVisible="{Binding IsEligibleToBorrow}" Foreground="#08786C" FontSize="12"/><TextBlock Text="Borrowing restricted" IsVisible="{Binding !IsEligibleToBorrow}" Foreground="#9A6118" FontSize="12"/></StackPanel>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <ScrollViewer Grid.Column="1">
+            <Border Grid.Column="1" Classes="card"><ScrollViewer>
                 <StackPanel Spacing="8" IsEnabled="{Binding CanEdit}">
                     <Button Content="New student" Command="{Binding NewStudentCommand}"/>
                     <TextBlock Text="Institutional student number (required)"/>
@@ -30,14 +30,14 @@
                     <TextBox Text="{Binding FullName}"/>
                     <TextBlock Text="Contact information (optional; blank clears it)" TextWrapping="Wrap"/>
                     <TextBox Text="{Binding ContactInformation}"/>
-                    <Button Content="Register student" Command="{Binding RegisterCommand}"/>
+                    <Button Classes="primary" Content="Register student" Command="{Binding RegisterCommand}"/>
                     <Button Content="Save selected student's details" Command="{Binding SaveChangesCommand}"/>
                     <TextBlock Text="{Binding EligibilityText}" TextWrapping="Wrap"/>
                     <Button Content="Permit borrowing" Command="{Binding PermitCommand}"/>
                     <Button Content="Restrict new borrowing" Command="{Binding RestrictCommand}"/>
                     <TextBlock Text="Eligibility changes preserve existing loans and allow returns." TextWrapping="Wrap"/>
                 </StackPanel>
-            </ScrollViewer>
+            </ScrollViewer></Border>
         </Grid>
         <StackPanel Grid.Row="3" Spacing="5">
             <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}"/>

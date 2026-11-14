@@ -1,0 +1,26 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Styles.Resources>
+        <Color x:Key="SystemAccentColor">#087F8C</Color>
+        <Color x:Key="SystemAccentColorLight1">#1096A3</Color>
+        <Color x:Key="SystemAccentColorDark1">#066673</Color>
+    </Styles.Resources>
+        <FluentTheme />
+        <Style Selector="Window"><Setter Property="Background" Value="#F3F6FA"/><Setter Property="FontFamily" Value="Inter, Segoe UI"/><Setter Property="FontSize" Value="13"/><Setter Property="Foreground" Value="#233247"/></Style>
+        <Style Selector="TextBlock"><Setter Property="Foreground" Value="#34465D"/></Style>
+        <Style Selector="TextBlock.pageTitle"><Setter Property="FontSize" Value="27"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Foreground" Value="#14283F"/><Setter Property="Margin" Value="0,0,0,4"/></Style>
+        <Style Selector="TextBlock.subtitle"><Setter Property="Foreground" Value="#6B7B90"/><Setter Property="FontSize" Value="13"/><Setter Property="TextWrapping" Value="Wrap"/></Style>
+        <Style Selector="Button"><Setter Property="CornerRadius" Value="8"/><Setter Property="Padding" Value="15,10"/><Setter Property="MinHeight" Value="40"/><Setter Property="FontWeight" Value="Medium"/><Setter Property="Background" Value="White"/><Setter Property="BorderBrush" Value="#DBE3EC"/><Setter Property="BorderThickness" Value="1"/><Setter Property="Cursor" Value="Hand"/></Style>
+        <Style Selector="Button.primary"><Setter Property="Background" Value="#087F8C"/><Setter Property="Foreground" Value="White"/><Setter Property="BorderThickness" Value="0"/></Style>
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter"><Setter Property="Background" Value="#066673"/><Setter Property="Foreground" Value="White"/></Style>
+        <Style Selector="Button.nav"><Setter Property="HorizontalAlignment" Value="Stretch"/><Setter Property="HorizontalContentAlignment" Value="Left"/><Setter Property="Background" Value="Transparent"/><Setter Property="Foreground" Value="#CAD5E4"/><Setter Property="BorderThickness" Value="0"/><Setter Property="Padding" Value="15,13"/><Setter Property="CornerRadius" Value="8"/></Style>
+        <Style Selector="Button.nav:pointerover /template/ ContentPresenter"><Setter Property="Background" Value="#243951"/><Setter Property="Foreground" Value="White"/></Style>
+        <Style Selector="Button.nav.active"><Setter Property="Background" Value="#087F8C"/><Setter Property="Foreground" Value="White"/></Style>
+        <Style Selector="TextBox"><Setter Property="CornerRadius" Value="8"/><Setter Property="MinHeight" Value="42"/><Setter Property="Padding" Value="12,9"/><Setter Property="BorderBrush" Value="#D9E2EC"/><Setter Property="Background" Value="White"/></Style>
+        <Style Selector="ComboBox"><Setter Property="CornerRadius" Value="8"/><Setter Property="MinHeight" Value="42"/><Setter Property="MinWidth" Value="130"/><Setter Property="BorderBrush" Value="#D9E2EC"/></Style>
+        <Style Selector="DatePicker"><Setter Property="HorizontalAlignment" Value="Stretch"/></Style>
+        <Style Selector="ListBox"><Setter Property="Background" Value="White"/><Setter Property="BorderBrush" Value="#DFE6EF"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="12"/><Setter Property="Padding" Value="8"/></Style>
+        <Style Selector="ListBoxItem"><Setter Property="Padding" Value="14,12"/><Setter Property="Margin" Value="0,0,0,5"/><Setter Property="CornerRadius" Value="8"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/></Style>
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter"><Setter Property="Background" Value="#DDF2F1"/><Setter Property="BorderBrush" Value="#83C8C6"/></Style>
+        <Style Selector="Border.card"><Setter Property="Background" Value="White"/><Setter Property="BorderBrush" Value="#DFE6EF"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="12"/><Setter Property="Padding" Value="20"/></Style>
+        <Style Selector="ProgressBar"><Setter Property="Height" Value="3"/><Setter Property="Foreground" Value="#087F8C"/></Style>
+</Styles>

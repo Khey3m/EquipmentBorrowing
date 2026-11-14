@@ -3,26 +3,26 @@
              xmlns:vm="clr-namespace:EquipmentBorrowing.Desktop.ViewModels"
              xmlns:domain="clr-namespace:EquipmentBorrowing.Domain;assembly=EquipmentBorrowing.Domain"
              x:Class="EquipmentBorrowing.Desktop.Views.EquipmentView" x:DataType="vm:EquipmentViewModel">
-    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="10">
-        <TextBlock Text="Equipment Catalog" FontSize="20" FontWeight="Bold"/>
+    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="18">
+        <StackPanel Spacing="5"><TextBlock Text="Equipment Catalog" Classes="pageTitle"/><TextBlock Text="Browse the catalog, check availability, and issue equipment to a student." Classes="subtitle"/></StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="12">
             <CheckBox Content="Available items only" IsChecked="{Binding AvailableOnly}"/>
             <Button Content="Apply filter / Refresh" Command="{Binding RefreshCommand}"/>
         </StackPanel>
-        <Grid Grid.Row="2" ColumnDefinitions="2*,*" ColumnSpacing="15">
+        <Grid Grid.Row="2" ColumnDefinitions="*,340" ColumnSpacing="22">
             <ListBox ItemsSource="{Binding EquipmentList}" SelectedItem="{Binding SelectedEquipment}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="domain:Equipment">
-                        <StackPanel Margin="5" Spacing="3">
+                        <StackPanel Margin="0" Spacing="6">
                             <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
                             <TextBlock Text="{Binding EquipmentIdentifier}"/>
                             <TextBlock Text="{Binding Description}" TextWrapping="Wrap"/>
-                            <TextBlock Text="{Binding IsAvailable, StringFormat='Available: {0}'}"/>
+                            <StackPanel><TextBlock Text="Available" IsVisible="{Binding IsAvailable}" Foreground="#08786C" FontWeight="Medium" FontSize="12"/><TextBlock Text="On loan" IsVisible="{Binding !IsAvailable}" Foreground="#9A6118" FontWeight="Medium" FontSize="12"/></StackPanel>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <StackPanel Grid.Column="1" Spacing="10">
+            <Border Grid.Column="1" Classes="card"><ScrollViewer><StackPanel Spacing="10">
                 <TextBlock Text="Borrow Equipment" FontWeight="Bold" FontSize="16"/>
                 <TextBlock Text="Student"/>
                 <ComboBox ItemsSource="{Binding StudentList}" SelectedItem="{Binding SelectedStudent}" HorizontalAlignment="Stretch">
@@ -37,9 +37,9 @@
                 </ComboBox>
                 <TextBlock Text="Expected return date (campus calendar)" TextWrapping="Wrap"/>
                 <DatePicker SelectedDate="{Binding ExpectedReturnDate}"/>
-                <Button Content="Borrow selected item" Command="{Binding BorrowCommand}"/>
+                <Button Classes="primary" Content="Borrow selected item" Command="{Binding BorrowCommand}"/>
                 <TextBlock Text="Refresh is required after an unknown outcome." IsVisible="{Binding NeedsVerification}" TextWrapping="Wrap"/>
-            </StackPanel>
+            </StackPanel></ScrollViewer></Border>
         </Grid>
         <StackPanel Grid.Row="3" Spacing="5">
             <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}"/>

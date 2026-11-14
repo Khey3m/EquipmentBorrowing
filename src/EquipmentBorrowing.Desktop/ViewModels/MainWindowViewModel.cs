@@ -10,6 +10,25 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly ApplicationStartupService _startup;
     [ObservableProperty] private string _startupMessage = "";
     [ObservableProperty, NotifyCanExecuteChangedFor(nameof(RetryStartupCommand))] private bool _isStarting;
+    public bool HasStartupMessage => !string.IsNullOrWhiteSpace(StartupMessage);
+    partial void OnStartupMessageChanged(string value) => OnPropertyChanged(nameof(HasStartupMessage));
+    public string PageLabel => CurrentView switch
+    {
+        EquipmentViewModel => "Equipment catalog",
+        BorrowingsViewModel => "Active borrowings",
+        StudentsViewModel => "Student management",
+        EquipmentManagementViewModel => "Equipment management",
+        MultiItemCheckoutViewModel => "Multiple checkout",
+        BorrowingHistoryViewModel => "Borrowing histories",
+        _ => "Search borrowings"
+    };
+    public bool IsEquipment => ReferenceEquals(CurrentView, EquipmentVm);
+    public bool IsBorrowings => ReferenceEquals(CurrentView, BorrowingsVm);
+    public bool IsMultiCheckout => ReferenceEquals(CurrentView, MultiCheckoutVm);
+    public bool IsStudents => ReferenceEquals(CurrentView, StudentsVm);
+    public bool IsEquipmentManagement => ReferenceEquals(CurrentView, EquipmentManagementVm);
+    public bool IsHistory => ReferenceEquals(CurrentView, HistoryVm);
+    public bool IsSearch => ReferenceEquals(CurrentView, SearchVm);
     private bool CanStart() => !IsStarting;
 
     [RelayCommand(CanExecute = nameof(CanStart))]
@@ -87,6 +106,14 @@ public partial class MainWindowViewModel : ObservableObject
     }
     partial void OnCurrentViewChanged(ObservableObject? oldValue, ObservableObject newValue)
     {
+        OnPropertyChanged(nameof(PageLabel));
+        OnPropertyChanged(nameof(IsEquipment));
+        OnPropertyChanged(nameof(IsBorrowings));
+        OnPropertyChanged(nameof(IsMultiCheckout));
+        OnPropertyChanged(nameof(IsStudents));
+        OnPropertyChanged(nameof(IsEquipmentManagement));
+        OnPropertyChanged(nameof(IsHistory));
+        OnPropertyChanged(nameof(IsSearch));
         if (ReferenceEquals(oldValue, SearchVm) && !ReferenceEquals(newValue, SearchVm)) SearchVm.Deactivate();
         if (ReferenceEquals(oldValue, HistoryVm) && !ReferenceEquals(newValue, HistoryVm)) HistoryVm.Deactivate();
     }

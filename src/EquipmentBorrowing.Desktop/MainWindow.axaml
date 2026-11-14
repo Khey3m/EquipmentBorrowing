@@ -1,33 +1,38 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:EquipmentBorrowing.Desktop.ViewModels"
-        xmlns:views="clr-namespace:EquipmentBorrowing.Desktop.Views"
-        x:Class="EquipmentBorrowing.Desktop.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
-        Title="Campus Equipment Borrowing System" Width="900" Height="600" WindowStartupLocation="CenterScreen">
-    
-    <Grid ColumnDefinitions="200, *">
-        <!-- Navigation Panel -->
-        <Border Grid.Column="0" Background="#2C3E50" Padding="15">
-            <StackPanel Spacing="10">
-                <TextBlock Text="{Binding StartupMessage}" Foreground="White" TextWrapping="Wrap"/>
-                <Button Content="Retry startup" Command="{Binding RetryStartupCommand}"/>
-                <TextBlock Text="CAMPUSEQ" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
-                
-                <Button Content="Search borrowings" Command="{Binding NavigateToSearchCommand}" HorizontalAlignment="Stretch"/>
-                <Button Content="Borrowing histories" Command="{Binding NavigateToHistoryCommand}" HorizontalAlignment="Stretch"/>
-                <Button Content="Checkout multiple" Command="{Binding NavigateToMultiCheckoutCommand}" HorizontalAlignment="Stretch"/>
-                <Button Content="Manage Equipment" Command="{Binding NavigateToEquipmentManagementCommand}" HorizontalAlignment="Stretch"/>
-                <Button Content="Students" Command="{Binding NavigateToStudentsCommand}" HorizontalAlignment="Stretch"/>
-                <Button Content="Equipment" Command="{Binding NavigateToEquipmentCommand}" 
-                        HorizontalAlignment="Stretch" Background="Transparent" Foreground="White"/>
-                <Button Content="Active Borrowings" Command="{Binding NavigateToBorrowingsCommand}" 
-                        HorizontalAlignment="Stretch" Background="Transparent" Foreground="White"/>
-            </StackPanel>
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:EquipmentBorrowing.Desktop.ViewModels" xmlns:views="clr-namespace:EquipmentBorrowing.Desktop.Views"
+        x:Class="EquipmentBorrowing.Desktop.MainWindow" x:DataType="vm:MainWindowViewModel"
+        Title="Campus Equipment Borrowing System" Width="1120" Height="660" MinWidth="1000" MinHeight="620" WindowStartupLocation="CenterScreen">
+    <Grid ColumnDefinitions="238,*">
+        <Border Background="#14263D" Padding="18,28,18,20">
+            <Grid RowDefinitions="Auto,Auto,*,Auto">
+                <StackPanel Spacing="8" Margin="12,0,0,32">
+                    <Border Background="#087F8C" CornerRadius="10" Width="42" Height="42" HorizontalAlignment="Left"><TextBlock Text="CE" Foreground="White" FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                    <TextBlock Text="CampusEQ" Foreground="White" FontSize="24" FontWeight="SemiBold"/>
+                    <TextBlock Text="Equipment &amp; borrowing" Foreground="#94A8BF" FontSize="12"/>
+                </StackPanel>
+                <TextBlock Grid.Row="1" Text="WORKSPACE" Foreground="#8299B3" FontSize="10" FontWeight="SemiBold" Margin="14,0,0,12"/>
+                <StackPanel Grid.Row="2" Spacing="5">
+                    <Button Classes="nav" Classes.active="{Binding IsEquipment}" Command="{Binding NavigateToEquipmentCommand}"><Grid ColumnDefinitions="30,*"><TextBlock Text="01" Foreground="#8EB8C1" FontSize="11" VerticalAlignment="Center"/><TextBlock Grid.Column="1" Text="Equipment catalog" Foreground="{Binding $parent[Button].Foreground}"/></Grid></Button>
+                    <Button Classes="nav" Classes.active="{Binding IsBorrowings}" Command="{Binding NavigateToBorrowingsCommand}"><Grid ColumnDefinitions="30,*"><TextBlock Text="02" Foreground="#8EB8C1" FontSize="11" VerticalAlignment="Center"/><TextBlock Grid.Column="1" Text="Active borrowings" Foreground="{Binding $parent[Button].Foreground}"/></Grid></Button>
+                    <Button Classes="nav" Classes.active="{Binding IsMultiCheckout}" Command="{Binding NavigateToMultiCheckoutCommand}"><Grid ColumnDefinitions="30,*"><TextBlock Text="03" Foreground="#8EB8C1" FontSize="11" VerticalAlignment="Center"/><TextBlock Grid.Column="1" Text="Multiple checkout" Foreground="{Binding $parent[Button].Foreground}"/></Grid></Button>
+                    <Button Classes="nav" Classes.active="{Binding IsStudents}" Command="{Binding NavigateToStudentsCommand}"><Grid ColumnDefinitions="30,*"><TextBlock Text="04" Foreground="#8EB8C1" FontSize="11" VerticalAlignment="Center"/><TextBlock Grid.Column="1" Text="Students" Foreground="{Binding $parent[Button].Foreground}"/></Grid></Button>
+                    <Button Classes="nav" Classes.active="{Binding IsEquipmentManagement}" Command="{Binding NavigateToEquipmentManagementCommand}"><Grid ColumnDefinitions="30,*"><TextBlock Text="05" Foreground="#8EB8C1" FontSize="11" VerticalAlignment="Center"/><TextBlock Grid.Column="1" Text="Manage equipment" Foreground="{Binding $parent[Button].Foreground}"/></Grid></Button>
+                    <Button Classes="nav" Classes.active="{Binding IsHistory}" Command="{Binding NavigateToHistoryCommand}"><Grid ColumnDefinitions="30,*"><TextBlock Text="06" Foreground="#8EB8C1" FontSize="11" VerticalAlignment="Center"/><TextBlock Grid.Column="1" Text="Borrowing histories" Foreground="{Binding $parent[Button].Foreground}"/></Grid></Button>
+                    <Button Classes="nav" Classes.active="{Binding IsSearch}" Command="{Binding NavigateToSearchCommand}"><Grid ColumnDefinitions="30,*"><TextBlock Text="07" Foreground="#8EB8C1" FontSize="11" VerticalAlignment="Center"/><TextBlock Grid.Column="1" Text="Search borrowings" Foreground="{Binding $parent[Button].Foreground}"/></Grid></Button>
+                </StackPanel>
+                <Border Grid.Row="3" BorderBrush="#304158" BorderThickness="0,1,0,0" Padding="12,18,0,0">
+                    <StackPanel Spacing="5"><TextBlock Text="Laboratory workspace" Foreground="#DCE5EF" FontWeight="Medium"/><TextBlock Text="Campus equipment services" Foreground="#8299B3" FontSize="11"/></StackPanel>
+                </Border>
+            </Grid>
         </Border>
-
-        <!-- Main Content Host -->
-        <TransitioningContentControl Grid.Column="1" Content="{Binding CurrentView}" Margin="20">
+        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*">
+            <Border Background="White" BorderBrush="#DFE6EF" BorderThickness="0,0,0,1" Padding="30,19">
+                <Grid ColumnDefinitions="*,Auto"><StackPanel Spacing="4"><TextBlock Text="CAMPUS OPERATIONS" FontSize="10" Foreground="#087F8C" FontWeight="SemiBold"/><TextBlock Text="{Binding PageLabel}" FontSize="15" FontWeight="SemiBold"/></StackPanel><Border Grid.Column="1" Background="#EDF5F6" CornerRadius="16" Padding="14,8" VerticalAlignment="Center"><TextBlock Text="Laboratory staff" Foreground="#226672" FontSize="12"/></Border></Grid>
+            </Border>
+            <Border Grid.Row="1" Margin="28,18,28,0" Padding="16" Background="#FFF3DD" CornerRadius="10" IsVisible="{Binding HasStartupMessage}">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16"><TextBlock Text="{Binding StartupMessage}" TextWrapping="Wrap" VerticalAlignment="Center"/><Button Grid.Column="1" Content="Retry connection" Command="{Binding RetryStartupCommand}"/></Grid>
+            </Border>
+            <TransitioningContentControl Grid.Row="2" Content="{Binding CurrentView}" Margin="28,24,28,20">
             <TransitioningContentControl.DataTemplates>
                 <DataTemplate DataType="{x:Type vm:BorrowingSearchViewModel}">
                     <views:BorrowingSearchView/>
@@ -51,6 +56,7 @@
                     <views:BorrowingsView/>
                 </DataTemplate>
             </TransitioningContentControl.DataTemplates>
-        </TransitioningContentControl>
+            </TransitioningContentControl>
+        </Grid>
     </Grid>
 </Window>

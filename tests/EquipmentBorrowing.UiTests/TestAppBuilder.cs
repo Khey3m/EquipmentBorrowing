@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Headless;
-using Avalonia.Themes.Fluent;
+using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Styling;
+using System;
 
 [assembly: AvaloniaTestApplication(typeof(EquipmentBorrowing.UiTests.TestAppBuilder))]
 
@@ -14,6 +16,13 @@ public static class TestAppBuilder
 
 public class HeadlessApp : Avalonia.Application
 {
-    public override void Initialize() => Styles.Add(new FluentTheme());
+    public override void Initialize()
+    {
+        RequestedThemeVariant = ThemeVariant.Light;
+        Styles.Add(new StyleInclude(new Uri("avares://EquipmentBorrowing.Desktop/"))
+        {
+            Source = new Uri("avares://EquipmentBorrowing.Desktop/Styles/CampusTheme.axaml")
+        });
+    }
 }
 
