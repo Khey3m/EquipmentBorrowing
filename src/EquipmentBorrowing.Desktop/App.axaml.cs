@@ -51,6 +51,7 @@ public partial class App : Avalonia.Application
         serviceCollection.AddTransient<EquipmentViewModel>();
         serviceCollection.AddTransient<BorrowingsViewModel>();
         serviceCollection.AddTransient<StudentsViewModel>();
+        serviceCollection.AddTransient<EquipmentManagementViewModel>();
         serviceCollection.AddTransient<MainWindowViewModel>();
 
         Services = serviceCollection.BuildServiceProvider();
