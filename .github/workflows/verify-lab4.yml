@@ -1,4 +1,4 @@
-﻿name: Verify Lab 4
+name: Verify Lab 4
 on:
   push:
     branches: [main, lab4/postgresql-workflows]
@@ -40,6 +40,8 @@ jobs:
         run: dotnet build EquipmentBorrowing.slnx --no-restore --configuration Release
       - name: Verify model and all tests against PostgreSQL
         run: dotnet test tests/EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj --no-build --configuration Release --logger "trx;LogFileName=lab4.trx" --results-directory TestResults
+      - name: Verify headless workflow controls and asynchronous bindings
+        run: dotnet test tests/EquipmentBorrowing.UiTests/EquipmentBorrowing.UiTests.csproj --no-build --configuration Release --logger "trx;LogFileName=ui.trx" --results-directory TestResults
       - name: Keep test evidence
         if: always()
         uses: actions/upload-artifact@v4
