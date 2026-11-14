@@ -8,10 +8,13 @@ using Npgsql;
 namespace EquipmentBorrowing.Infrastructure.Persistence;
 
 public sealed class PostgresBorrowingSessionFactory(IDbContextFactory<EquipmentBorrowingDbContext> factory)
-    : IBorrowingSessionFactory, IStudentManagementSessionFactory
+    : IBorrowingSessionFactory, IStudentManagementSessionFactory, IEquipmentManagementSessionFactory
 {
     async Task<IStudentManagementSession> IStudentManagementSessionFactory.OpenAsync(CancellationToken cancellationToken) =>
         (IStudentManagementSession)await OpenAsync(cancellationToken);
+
+    async Task<IEquipmentManagementSession> IEquipmentManagementSessionFactory.OpenAsync(CancellationToken cancellationToken) =>
+        (IEquipmentManagementSession)await OpenAsync(cancellationToken);
 
     public async Task<IBorrowingSession> OpenAsync(CancellationToken cancellationToken = default)
     {
@@ -25,13 +28,14 @@ public sealed class PostgresBorrowingSessionFactory(IDbContextFactory<EquipmentB
     }
 }
 
-internal sealed class PostgresBorrowingSession : IBorrowingSession, IStudentManagementSession
+internal sealed class PostgresBorrowingSession : IBorrowingSession, IStudentManagementSession, IEquipmentManagementSession
 {
     private readonly EquipmentBorrowingDbContext _context;
     private readonly IDbContextTransaction _transaction;
     public IStudentRepository Students { get; }
     IStudentManagementRepository IStudentManagementSession.Students => (IStudentManagementRepository)Students;
     public IEquipmentRepository Equipment { get; }
+    IEquipmentManagementRepository IEquipmentManagementSession.Equipment => (IEquipmentManagementRepository)Equipment;
     public IBorrowingRepository Borrowings { get; }
 
     public PostgresBorrowingSession(EquipmentBorrowingDbContext context, IDbContextTransaction transaction)

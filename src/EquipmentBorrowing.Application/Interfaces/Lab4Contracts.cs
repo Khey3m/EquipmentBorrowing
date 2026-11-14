@@ -11,7 +11,11 @@ public record StudentSnapshot(string StudentNumber, string FullName, string? Con
 public record UpdateStudentRequest(int StudentId, string StudentNumber, string FullName, string? ContactInformation, StudentSnapshot Expected);
 public record SetStudentEligibilityRequest(int StudentId, bool IsEligible, StudentSnapshot Expected);
 public record RegisterEquipmentRequest(string EquipmentIdentifier, string Name, string? Description);
-public record UpdateEquipmentRequest(int EquipmentId, string EquipmentIdentifier, string Name, string? Description);
+public record EquipmentSnapshot(string EquipmentIdentifier, string Name, string? Description, bool IsAvailable)
+{
+    public static EquipmentSnapshot From(Equipment equipment) => new(equipment.EquipmentIdentifier, equipment.Name, equipment.Description, equipment.IsAvailable);
+}
+public record UpdateEquipmentRequest(int EquipmentId, string EquipmentIdentifier, string Name, string? Description, EquipmentSnapshot Expected);
 public record MultiItemCheckoutRequest(int StudentId, IReadOnlyList<int> EquipmentIds, DateOnly ExpectedReturnDate);
 public enum BorrowingSortField { CheckoutDate, ExpectedReturnDate }
 public record BorrowingSearchRequest(string? SearchText = null, BorrowingStatus? Status = null,
@@ -31,7 +35,7 @@ public interface IStudentManagementRepository : IStudentRepository
 
 public interface IEquipmentManagementRepository : IEquipmentRepository
 {
-    Task<bool> IdentifierExistsAsync(string normalizedIdentifier, int? excludingId = null, CancellationToken cancellationToken = default);
+    Task<bool> IdentifierExistsAsync(string equipmentIdentifier, int? excludingId = null, CancellationToken cancellationToken = default);
     Task AddAsync(Equipment equipment, CancellationToken cancellationToken = default);
 }
 

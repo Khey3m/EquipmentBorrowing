@@ -34,6 +34,7 @@ public partial class App : Avalonia.Application
         serviceCollection.AddSingleton<PostgresBorrowingSessionFactory>();
         serviceCollection.AddSingleton<IBorrowingSessionFactory>(sp => sp.GetRequiredService<PostgresBorrowingSessionFactory>());
         serviceCollection.AddSingleton<IStudentManagementSessionFactory>(sp => sp.GetRequiredService<PostgresBorrowingSessionFactory>());
+        serviceCollection.AddSingleton<IEquipmentManagementSessionFactory>(sp => sp.GetRequiredService<PostgresBorrowingSessionFactory>());
         serviceCollection.AddTransient<IStudentRepository, EfStudentRepository>();
         serviceCollection.AddTransient<IEquipmentRepository, EfEquipmentRepository>();
         serviceCollection.AddTransient<IBorrowingRepository, EfBorrowingRepository>();
@@ -44,6 +45,7 @@ public partial class App : Avalonia.Application
         serviceCollection.AddTransient<BorrowEquipmentService>();
         serviceCollection.AddTransient<ReturnEquipmentService>();
         serviceCollection.AddTransient<StudentManagementService>();
+        serviceCollection.AddTransient<EquipmentManagementService>();
 
         // 4. Register ViewModels
         serviceCollection.AddTransient<EquipmentViewModel>();
