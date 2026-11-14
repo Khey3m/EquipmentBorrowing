@@ -1,0 +1,49 @@
+﻿name: Verify Lab 4
+on:
+  push:
+    branches: [main, lab4/postgresql-workflows]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: ci-${{ github.run_id }}-${{ github.run_attempt }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      POSTGRES_INTEGRATION_ADMIN_CONNECTION: Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=ci-${{ github.run_id }}-${{ github.run_attempt }};Include Error Detail=false
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore tools and packages
+        run: |
+          dotnet tool restore
+          dotnet restore EquipmentBorrowing.slnx
+      - name: Build complete solution including Avalonia
+        run: dotnet build EquipmentBorrowing.slnx --no-restore --configuration Release
+      - name: Verify model and all tests against PostgreSQL
+        run: dotnet test tests/EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj --no-build --configuration Release --logger "trx;LogFileName=lab4.trx" --results-directory TestResults
+      - name: Keep test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab4-test-results
+          path: TestResults
+          if-no-files-found: ignore
