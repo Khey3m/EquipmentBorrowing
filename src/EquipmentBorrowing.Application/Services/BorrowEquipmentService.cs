@@ -3,11 +3,12 @@ using EquipmentBorrowing.Domain;
 
 namespace EquipmentBorrowing.Application.Services;
 
-public record BorrowRequest(int StudentId, int EquipmentId, TimeSpan Duration);
+public record BorrowRequest(int StudentId, int EquipmentId, DateOnly ExpectedReturnDate);
 public record BorrowResult(bool Success, string Message, Borrowing? Borrowing = null);
 
 public class BorrowEquipmentService
 {
+    private readonly ICampusClock _clock;
     private readonly IStudentRepository _studentRepo;
     private readonly IEquipmentRepository _equipmentRepo;
     private readonly IBorrowingRepository _borrowingRepo;
@@ -15,8 +16,9 @@ public class BorrowEquipmentService
     public BorrowEquipmentService(
         IStudentRepository studentRepo,
         IEquipmentRepository equipmentRepo,
-        IBorrowingRepository borrowingRepo)
+        IBorrowingRepository borrowingRepo, ICampusClock? clock = null)
     {
+        _clock = clock ?? new CampusClock();
         _studentRepo = studentRepo;
         _equipmentRepo = equipmentRepo;
         _borrowingRepo = borrowingRepo;
@@ -24,6 +26,10 @@ public class BorrowEquipmentService
 
     public async Task<BorrowResult> ExecuteAsync(BorrowRequest request, CancellationToken cancellationToken = default)
     {
+        var checkoutDate = _clock.Today;
+        if (request.ExpectedReturnDate <= checkoutDate)
+            return new BorrowResult(false, "Expected return must be later than checkout.");
+
         var student = await _studentRepo.GetByIdAsync(request.StudentId, cancellationToken);
         if (student == null)
             return new BorrowResult(false, $"Student with ID {request.StudentId} was not found.");
@@ -39,8 +45,8 @@ public class BorrowEquipmentService
         if (!student.CanBorrow(activeCount))
             return new BorrowResult(false, $"Student '{student.FullName}' is not allowed to borrow.");
 
+        var borrowing = new Borrowing(student.Id, equipment.Id, checkoutDate, request.ExpectedReturnDate);
         equipment.MarkAsBorrowed();
-        var borrowing = new Borrowing(Random.Shared.Next(1000, 9999), student.Id, equipment.Id, request.Duration);
 
         await _equipmentRepo.UpdateAsync(equipment, cancellationToken);
         await _borrowingRepo.AddAsync(borrowing, cancellationToken);

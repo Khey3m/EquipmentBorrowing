@@ -14,6 +14,7 @@ public partial class EquipmentViewModel : ObservableObject
 	private readonly BorrowEquipmentService _borrowService;
 	private readonly IEquipmentRepository _equipmentRepo;
 	private readonly IStudentRepository _studentRepo;
+	private readonly ICampusClock _clock;
 
 	[ObservableProperty] private ObservableCollection<Equipment> _equipmentList = new();
 	[ObservableProperty] private ObservableCollection<Student> _studentList = new();
@@ -26,11 +27,12 @@ public partial class EquipmentViewModel : ObservableObject
 	public EquipmentViewModel(
 		BorrowEquipmentService borrowService,
 		IEquipmentRepository equipmentRepo,
-		IStudentRepository studentRepo)
+		IStudentRepository studentRepo, ICampusClock? clock = null)
 	{
 		_borrowService = borrowService;
 		_equipmentRepo = equipmentRepo;
 		_studentRepo = studentRepo;
+		_clock = clock ?? new CampusClock();
 	}
 
 	public async Task InitializeAsync()
@@ -68,7 +70,7 @@ public partial class EquipmentViewModel : ObservableObject
 		}
 
 		// 2. Application Service Invocation
-		var request = new BorrowRequest(SelectedStudent.Id, SelectedEquipment.Id, TimeSpan.FromDays(BorrowDays));
+		var request = new BorrowRequest(SelectedStudent.Id, SelectedEquipment.Id, _clock.Today.AddDays(BorrowDays));
 		var result = await _borrowService.ExecuteAsync(request);
 
 		StatusMessage = result.Message;

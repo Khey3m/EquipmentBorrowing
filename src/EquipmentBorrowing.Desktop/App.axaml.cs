@@ -25,15 +25,14 @@ public partial class App : Avalonia.Application
     {
         var serviceCollection = new ServiceCollection();
 
-        // 1. Configure SQLite DbContext
-        string dbPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "equipment_borrowing.db");
-        serviceCollection.AddDbContext<EquipmentBorrowingDbContext>(options =>
-            options.UseSqlite($"Data Source={dbPath}"));
-
-        // 2. Register EF Repositories
-        serviceCollection.AddScoped<IStudentRepository, EfStudentRepository>();
-        serviceCollection.AddScoped<IEquipmentRepository, EfEquipmentRepository>();
-        serviceCollection.AddScoped<IBorrowingRepository, EfBorrowingRepository>();
+        // Infrastructure owns connection configuration, contexts and migrations.
+        serviceCollection.AddDbContextFactory<EquipmentBorrowingDbContext>(PostgresConfiguration.Configure);
+        serviceCollection.AddTransient<PostgresBootstrapper>();
+        serviceCollection.AddSingleton<ICampusClock, CampusClock>();
+        serviceCollection.AddSingleton<IBorrowingSessionFactory, PostgresBorrowingSessionFactory>();
+        serviceCollection.AddTransient<IStudentRepository, EfStudentRepository>();
+        serviceCollection.AddTransient<IEquipmentRepository, EfEquipmentRepository>();
+        serviceCollection.AddTransient<IBorrowingRepository, EfBorrowingRepository>();
 
         // 3. Register Application Services
         serviceCollection.AddTransient<BorrowEquipmentService>();
@@ -46,12 +45,8 @@ public partial class App : Avalonia.Application
 
         Services = serviceCollection.BuildServiceProvider();
 
-        // 5. Initialize and seed database asynchronously
-        using (var scope = Services.CreateScope())
-        {
-            var dbContext = scope.ServiceProvider.GetRequiredService<EquipmentBorrowingDbContext>();
-            await DbInitializer.SeedAsync(dbContext);
-        }
+        // Startup delegates migration/seeding to Infrastructure; no UI database logic.
+        await Services.GetRequiredService<PostgresBootstrapper>().InitializeAsync();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

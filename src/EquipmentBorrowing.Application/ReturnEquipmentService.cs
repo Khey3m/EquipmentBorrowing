@@ -7,13 +7,15 @@ public record ReturnResult(bool Success, string Message);
 
 public class ReturnEquipmentService
 {
+    private readonly ICampusClock _clock;
     private readonly IBorrowingRepository _borrowingRepo;
     private readonly IEquipmentRepository _equipmentRepo;
 
     public ReturnEquipmentService(
         IBorrowingRepository borrowingRepo,
-        IEquipmentRepository equipmentRepo)
+        IEquipmentRepository equipmentRepo, ICampusClock? clock = null)
     {
+        _clock = clock ?? new CampusClock();
         _borrowingRepo = borrowingRepo;
         _equipmentRepo = equipmentRepo;
     }
@@ -27,14 +29,17 @@ public class ReturnEquipmentService
         if (borrowing.Status == BorrowingStatus.Returned)
             return new ReturnResult(false, "This borrowing record has already been returned.");
 
-        var equipment = await _equipmentRepo.GetByIdAsync(borrowing.EquipmentId, cancellationToken);
-        if (equipment != null)
-        {
-            equipment.MarkAsReturned();
-            await _equipmentRepo.UpdateAsync(equipment, cancellationToken);
-        }
+        var returnDate = _clock.Today;
+        if (returnDate < borrowing.BorrowedAt)
+            return new ReturnResult(false, "Return cannot precede checkout.");
 
-        borrowing.MarkAsReturned();
+        var equipment = await _equipmentRepo.GetByIdAsync(borrowing.EquipmentId, cancellationToken);
+        if (equipment == null)
+            return new ReturnResult(false, "Equipment was not found; refresh before retrying.");
+        equipment.MarkAsReturned();
+        await _equipmentRepo.UpdateAsync(equipment, cancellationToken);
+
+        borrowing.MarkAsReturned(returnDate);
         await _borrowingRepo.UpdateAsync(borrowing, cancellationToken);
 
         return new ReturnResult(true, "Equipment successfully returned!");
