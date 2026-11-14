@@ -50,25 +50,12 @@ public class BorrowEquipmentService
     private async Task<BorrowResult> ExecuteCoreAsync(BorrowRequest request, CancellationToken cancellationToken)
     {
         var checkoutDate = _clock.Today;
-        if (request.ExpectedReturnDate <= checkoutDate)
-            return new BorrowResult(false, "Expected return must be later than checkout.");
-
-        var student = await _studentRepo.GetByIdAsync(request.StudentId, cancellationToken);
-        if (student == null)
-            return new BorrowResult(false, $"Student with ID {request.StudentId} was not found. Refresh the selection.", Outcome: OperationOutcome.Conflict);
-
-        var equipment = await _equipmentRepo.GetByIdAsync(request.EquipmentId, cancellationToken);
-        if (equipment == null)
-            return new BorrowResult(false, $"Equipment with ID {request.EquipmentId} was not found. Refresh the selection.", Outcome: OperationOutcome.Conflict);
-
-        if (!equipment.IsAvailable || await _borrowingRepo.HasActiveForEquipmentAsync(equipment.Id, cancellationToken))
-            return new BorrowResult(false, $"Equipment '{equipment.Name}' is currently unavailable. Refresh the selection.", Outcome: OperationOutcome.Conflict);
-
-        int activeCount = await _borrowingRepo.GetActiveCountByStudentIdAsync(student.Id, cancellationToken);
-        if (!student.IsEligibleToBorrow)
-            return new BorrowResult(false, "This student is restricted from new borrowing.");
-        if (!student.CanBorrow(activeCount))
-            return new BorrowResult(false, "This student already has the maximum of three active items.");
+        var validation = await CheckoutValidation.ValidateAsync(_studentRepo, _equipmentRepo, _borrowingRepo,
+            request.StudentId, new[] { request.EquipmentId }, request.ExpectedReturnDate, checkoutDate, 1, cancellationToken);
+        if (validation.Value is null)
+            return new BorrowResult(false, validation.Message, Outcome: validation.Outcome);
+        var student = validation.Value.Student;
+        var equipment = validation.Value.Items[0];
 
         var borrowing = new Borrowing(student.Id, equipment.Id, checkoutDate, request.ExpectedReturnDate);
         equipment.MarkAsBorrowed();
