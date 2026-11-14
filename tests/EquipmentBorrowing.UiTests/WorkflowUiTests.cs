@@ -33,7 +33,7 @@ public class WorkflowUiTests
         try
         {
             Dispatcher.UIThread.RunJobs();
-            var input=window.GetVisualDescendants().OfType<TextBox>().Single();
+            var input=((BorrowingSearchView)window.Content!).FindControl<TextBox>("SearchTextInput")!;
             input.Text="Alice";Dispatcher.UIThread.RunJobs();Assert.Equal("Alice",vm.SearchText);
             var old=vm.ApplyCommand.ExecuteAsync(null);Assert.True(vm.IsBusy);
             input.Text="Bob";Dispatcher.UIThread.RunJobs();
@@ -49,7 +49,7 @@ public class WorkflowUiTests
     private sealed class Histories : IHistoryQueries
     {
         public Task<IReadOnlyList<HistorySubject>> GetSubjectsAsync(HistoryKind kind,CancellationToken cancellationToken=default) =>
-            Task.FromResult<IReadOnlyList<HistorySubject>>([new(1,"First"),new(2,"Second"),new(3,"Empty")]);
+            Task.FromResult<IReadOnlyList<HistorySubject>>([new(1,"First"),new(2,"Second"),new(3,"Empty"),new(99,"Stale")]);
         public Task<HistorySnapshot?> GetHistoryAsync(HistoryKind kind,int id,CancellationToken cancellationToken=default) =>
             Task.FromResult<HistorySnapshot?>(id==99 ? null : new(new(id,kind+" "+id),id==3 ? [] : [Row(id,id==1?"Alice":"Bob")]));
     }
@@ -67,9 +67,9 @@ public class WorkflowUiTests
             vm.SelectedSubject=vm.Subjects[1];Dispatcher.UIThread.RunJobs();
             Assert.Single(vm.Rows);Assert.Equal("Bob",vm.Rows[0].StudentName);
             vm.SelectedSubject=vm.Subjects[2];Assert.Empty(vm.Rows);Assert.Contains("No borrowing history",vm.HistoryMessage);
-            vm.SelectedSubject=new(99,"Missing");Assert.Empty(vm.Rows);Assert.Contains("no longer exists",vm.HistoryMessage);
+            vm.SelectedSubject=vm.Subjects[3];Assert.Empty(vm.Rows);Assert.Contains("no longer exists",vm.HistoryMessage);
             vm.SelectedKind=HistoryKind.Equipment;Dispatcher.UIThread.RunJobs();
-            Assert.Empty(vm.Rows);Assert.Equal(3,vm.Subjects.Count);
+            Assert.Empty(vm.Rows);Assert.Equal(4,vm.Subjects.Count);
         }
         finally { vm.Deactivate();window.Close(); }
     }
