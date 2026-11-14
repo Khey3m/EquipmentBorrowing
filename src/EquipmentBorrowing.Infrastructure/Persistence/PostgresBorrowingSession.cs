@@ -42,15 +42,23 @@ internal sealed class PostgresBorrowingSession : IBorrowingSession
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         try { await _transaction.CommitAsync(cancellationToken); }
-        // Explicit server errors (e.g. serialization rejection) have a known unsuccessful outcome.
+        catch (PostgresException error) when (error.SqlState is "08007" or "40003")
+        { throw new CommitOutcomeUnknownException(); }
+        // Explicit server rejections (e.g. serialization failure) have a known unsuccessful outcome.
         catch (PostgresException) { throw; }
-        catch (Exception ex) when (ex is NpgsqlException or IOException or OperationCanceledException)
+        catch (Exception ex) when (ex is NpgsqlException or IOException or OperationCanceledException or TimeoutException)
         { throw new CommitOutcomeUnknownException(); }
     }
 
     public async ValueTask DisposeAsync()
     {
+        // Cleanup cannot replace an already determined commit outcome (especially Unknown).
         try { await _transaction.DisposeAsync(); }
-        finally { await _context.DisposeAsync(); }
+        catch (Exception error) when (error is NpgsqlException or IOException) { }
+        finally
+        {
+            try { await _context.DisposeAsync(); }
+            catch (Exception error) when (error is NpgsqlException or IOException) { }
+        }
     }
 }

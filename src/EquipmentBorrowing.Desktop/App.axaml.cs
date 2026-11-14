@@ -21,20 +21,24 @@ public partial class App : Avalonia.Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override async void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
     {
         var serviceCollection = new ServiceCollection();
 
         // Infrastructure owns connection configuration, contexts and migrations.
         serviceCollection.AddDbContextFactory<EquipmentBorrowingDbContext>(PostgresConfiguration.Configure);
-        serviceCollection.AddTransient<PostgresBootstrapper>();
+        serviceCollection.AddTransient<IApplicationInitializer, PostgresBootstrapper>();
+        serviceCollection.AddTransient<ApplicationStartupService>();
         serviceCollection.AddSingleton<ICampusClock, CampusClock>();
+        serviceCollection.AddSingleton<IWorkflowFailures, PostgresWorkflowFailures>();
         serviceCollection.AddSingleton<IBorrowingSessionFactory, PostgresBorrowingSessionFactory>();
         serviceCollection.AddTransient<IStudentRepository, EfStudentRepository>();
         serviceCollection.AddTransient<IEquipmentRepository, EfEquipmentRepository>();
         serviceCollection.AddTransient<IBorrowingRepository, EfBorrowingRepository>();
 
         // 3. Register Application Services
+        serviceCollection.AddTransient<IExistingWorkflowQueries, EfExistingWorkflowQueries>();
+        serviceCollection.AddTransient<ExistingWorkflowQueryService>();
         serviceCollection.AddTransient<BorrowEquipmentService>();
         serviceCollection.AddTransient<ReturnEquipmentService>();
 
@@ -45,9 +49,6 @@ public partial class App : Avalonia.Application
 
         Services = serviceCollection.BuildServiceProvider();
 
-        // Startup delegates migration/seeding to Infrastructure; no UI database logic.
-        await Services.GetRequiredService<PostgresBootstrapper>().InitializeAsync();
-
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var mainVm = Services.GetRequiredService<MainWindowViewModel>();
@@ -55,6 +56,7 @@ public partial class App : Avalonia.Application
             {
                 DataContext = mainVm
             };
+            desktop.MainWindow.Opened += async (_, _) => await mainVm.RetryStartupAsync();
         }
 
         base.OnFrameworkInitializationCompleted();
