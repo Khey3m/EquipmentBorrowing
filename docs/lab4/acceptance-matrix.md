@@ -8,6 +8,8 @@ Session 5 update: UC-12–14 services, PostgreSQL repository operations, Student
 
 Session 6 update: UC-15–16 equipment registration/edit services, repository operations, management screen and stale-availability checks are implemented. A15–A16 remain pending runtime verification; see [Session 6 evidence](session6-evidence.md).
 
+Session 7 update: UC-06 coordinated checkout, shared single/multi-item validation, selection UI, recording tests and opt-in EF/PostgreSQL success/rollback tests are implemented. A06 runtime, concurrency and restart evidence remain pending; see [Session 7 evidence](session7-evidence.md).
+
 Primary actor: Laboratory Staff / Equipment Custodian. All database access belongs behind Application abstractions in Infrastructure; Views/ViewModels contain no SQL, connection setup or migrations.
 
 | Case / evidence | Behavior and rules | Planned implementation | Session | Verification |

@@ -38,7 +38,7 @@ Historical report/review files under this directory describe the earlier impleme
 
 ### Next session
 
-Session 7: atomic multi-item checkout (UC-06). Before operational acceptance, complete pending EF model/migration/seed checks and implemented-workflow acceptance walkthroughs on an approved environment. Desktop and test execution remain blocked by Windows policy.
+Session 8: student/equipment borrowing histories (UC-07–08). Before operational acceptance, complete pending EF model/migration/seed checks and implemented-workflow acceptance walkthroughs on an approved environment. Desktop and test execution remain blocked by Windows policy.
 
 ## Session 2 — domain and contract foundations completed
 
@@ -84,6 +84,12 @@ Date: 2026-11-14. Backend `e6e9b20` implements UC-15 registration with available
 
 Non-Desktop projects and tests compile with zero warnings/errors on the targeted build. Test discovery remains blocked by Application Control loading Tests.dll (0x800711C7); Desktop still fails at Avalonia MSB4061. Edited AXAML parses as XML, but bindings/rendering and A15–A16 database/restart evidence remain pending. No schema/database change or security-policy modification was made. Details: [Session 6 evidence](session6-evidence.md).
 
+## Session 7 — multi-item checkout source implemented; A06 runtime evidence pending
+
+Date: 2026-11-14. Backend `43bb1a0` adds shared single/multi-item validation and coordinated writes in one serializable session; every selected item is validated before writing. UI `b1169c3` adds Checkout multiple, checkboxes/count, student/date selection and recovery states. Tests `62ece26` add 15 recording cases and two opt-in disposable PostgreSQL success/rollback tests with a failure observer after actual persisted writes. No production failure switch is registered.
+
+Non-Desktop code/tests compile. Targeted recording tests failed before assertions due to Domain.dll Application Control loading; integration tests initially skipped without opt-in configuration. An explicit locally configured integration run was attempted and both cases were also blocked loading Domain.dll. No database/rollback pass is claimed. Desktop still fails Avalonia MSB4061; AXAML is well-formed XML but binding/rendering remains unverified. Details and A06 walkthrough: [Session 7 evidence](session7-evidence.md).
+
 ## Session status
 
 1. Baseline/traceability: done with documented external execution blocker.
@@ -92,7 +98,7 @@ Non-Desktop projects and tests compile with zero warnings/errors on the targeted
 4. Existing workflows: source integrated and non-Desktop code compiled; runtime acceptance blocked/pending.
 5. Student management: source implemented and non-Desktop code compiled; A12–A14 runtime acceptance pending.
 6. Equipment management: source implemented and non-Desktop code compiled; A15–A16 runtime acceptance pending.
-7. Atomic multi-item checkout: pending.
+7. Atomic multi-item checkout: source implemented and non-Desktop code compiled; A06 runtime/concurrency/restart evidence pending.
 8. Histories: pending.
 9. Search/filter/sort: pending.
 10. Integrated verification: pending.
