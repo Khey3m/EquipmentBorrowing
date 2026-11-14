@@ -1,51 +1,19 @@
-# Lab 4 acceptance map
+# Lab 4 acceptance and evidence map
 
-Status at Session 1: planned unless stated otherwise. Existing source is not proof of PostgreSQL acceptance. Based on the supplied Lab 4 handout and Use Case Suite, BR-01–19.
+The consolidated, current matrix is [final-traceability.md](final-traceability.md). It maps all fourteen required use cases plus A17-A19 to source, exact automated evidence and remaining manual demonstrations.
 
-Current Session 10 update: Linux CI builds the entire Avalonia solution and passes all 76 backend tests, including search, clean migrations, integrated management/borrowing/return, repeat-safe seeding, concurrency, recovery and rollback. Headless UI/process checks and manual limits are recorded in [Session 10 evidence](session10-evidence.md). Earlier blocked notes below remain historical for their original revisions; do not apply them to the successful CI results or mark all manual acceptance complete from automation alone.
+Verified code baseline: `1e5328dd14e0774ea789c002b3c80cabc1d40f2e`; [successful CI run](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43558553901). Complete Release build: zero warnings/errors; 76 backend tests plus 3 headless UI tests passed, zero failed/skipped; all five separate-process persistence stages passed.
 
-Final Session 10 combined run [43558553901](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43558553901) additionally passes 3 headless UI tests and all five separate-process persistence stages, for 79 tests total with no failures/skips and a zero-warning build. Actual Desktop close/reopen, full visual/usability review and final A19 submission artifacts still require completion.
+Manual visual/usability and actual Avalonia Desktop close/reopen checks remain pending. The process probe uses real services/database calls across separate processes, but is not the Desktop executable. Do not mark every requirement complete from a passing CI badge.
 
-Current Session 8 verification: the complete backend suite passes 66/66 with PostgreSQL integration enabled. Clean EF migration/model comparison, multi-item success/rollback and related history queries now have automated evidence. Earlier execution-blocked notes below describe their original sessions. Desktop rendering, restart/concurrency and complete acceptance demonstrations remain pending. See [Session 8 evidence](session8-evidence.md).
+## Current requirement artifacts
 
-Latest Session 9 update: UC-09 search/filter/sort/reset source and tests are implemented, but rebuilt assemblies again hit Application Control. A09 runtime verification and a current full-suite pass remain pending; the Session 8 pass above applies to that revision. See [Session 9 evidence](session9-evidence.md).
+- [Fourteen-case suite](use-case-suite.md): all eighteen supplied fields, original branches/rules/outcomes and implementation notes.
+- [Catalog](use-case-catalog.md): all 33 supplied IDs classified as required, deferred or future scope.
+- [Diagram](use-case-diagram.md) and [PlantUML](use-case-diagram.puml): fourteen actor goals and system boundary.
+- [Business rules](business-rules.md): BR-01 through BR-19.
+- [Architecture and schema](architecture-and-schema.md).
+- [Final traceability](final-traceability.md), [Session 10 evidence](session10-evidence.md), [manual checklist](manual-verification-checklist.md) and [demonstration script](demonstration-script.md).
+- [Submission handoff](submission-handoff.md) and [final development report](development-report-lab4.md).
 
-Session 4 update: UC-01–05 are implemented in source, including transactional writes, related queries and UI states. Runtime acceptance remains pending under Windows Application Control; see [Session 4 evidence](session4-evidence.md). Do not interpret the implementation column as a verified pass.
-
-Session 5 update: UC-12–14 services, PostgreSQL repository operations, Students screen and stale-edit checks are implemented. A12–A14 remain pending runtime verification; see [Session 5 evidence](session5-evidence.md).
-
-Session 6 update: UC-15–16 equipment registration/edit services, repository operations, management screen and stale-availability checks are implemented. A15–A16 remain pending runtime verification; see [Session 6 evidence](session6-evidence.md).
-
-Session 7 update: UC-06 coordinated checkout, shared single/multi-item validation, selection UI, recording tests and opt-in EF/PostgreSQL success/rollback tests are implemented. A06 runtime, concurrency and restart evidence remain pending; see [Session 7 evidence](session7-evidence.md).
-
-Session 8 update: UC-07–08 queries/services, histories screen, cancellation/version protection and real PostgreSQL history tests are implemented. Backend membership/dates/empty/missing behavior is verified; A07–A08 rendered UI/responsiveness checks remain pending.
-
-Primary actor: Laboratory Staff / Equipment Custodian. All database access belongs behind Application abstractions in Infrastructure; Views/ViewModels contain no SQL, connection setup or migrations.
-
-| Case / evidence | Behavior and rules | Planned implementation | Session | Verification |
-|---|---|---|---|---|
-| UC-01 / A01 | Catalog identifiers, names, descriptions, availability; BR-05–07,10,18–19 | Catalog query service, EF projection, EquipmentViewModel/view | 4 | Compare fresh DB read; empty and connection-error states |
-| UC-02 / A02 | Available items only; BR-10,18–19 | Catalog availability query/filter | 4 | Available/unavailable membership, no matches, load failure |
-| UC-03 / A03 | Single checkout; BR-08–11,14–16,18–19 | BorrowEquipmentService, transactional repositories | 4 | Valid issue; missing/ineligible/limit/unavailable/date rejection; restart |
-| UC-04 / A04 | Active records with student/equipment and dates; BR-14,18–19 | Borrowing query service, BorrowingsViewModel/view | 4 | Related identities correct; exclude returned; empty/error |
-| UC-05 / A05 | Return same record with actual date; BR-10,13–16,18–19 | ReturnEquipmentService, atomic persistence | 4 | Repeat/missing/stale rejected; history retained; restart readback |
-| UC-06 / A06 | At least two distinct items, all-or-none; BR-08–12,14–16,18–19 | Coordinated checkout service, shared transaction/context, multi-select UI | 7 | Success, exact limit, each rejection, concurrent conflicts, failure after attempted write and fresh rollback reads |
-| UC-07 / A07 | Selected student's full history; BR-14,18–19 | Async student history query and master-detail ViewModel/view | 8 | Two distinguishable students plus no history; missing/error; rapid selection; responsive loading |
-| UC-08 / A08 | Selected equipment's full history; BR-14,18–19 | Async equipment history query and master-detail ViewModel/view | 8 | Two distinguishable items plus no history; missing/error; rapid selection; responsive loading |
-| UC-09 / A09 | Search, status, stable date sorting; BR-17–19 | Borrowing search request/query service and retrieval controls | 9 | Each search field/status/date/direction, ID tie-break, combined/reset/no matches/error |
-| UC-12 / A12 | Student registration/default eligibility; BR-01–02,16,18–19 | Registration service, student repository, management form | 5 | Valid/restart; blank name/number; case/whitespace duplicate; DB uniqueness |
-| UC-13 / A13 | Locate/edit student, preserve identity/history; BR-01–03,14,16,18–19 | Student update service and selection/edit UI | 5 | Edit/restart; clear contact; invalid/duplicate edit; linked rows unchanged |
-| UC-14 / A14 | Permit/restrict eligibility; BR-04,08,13–14,18–19 | Eligibility service and commands | 5 | Block new loan while restricted; allow return; repeat-state feedback; permit/reborrow |
-| UC-15 / A15 | Equipment registration/default availability; BR-05–06,10,16,18–19 | Equipment registration service/repository/form | 6 | Valid/restart; blanks/normalized duplicate; no active loan initially |
-| UC-16 / A16 | Locate/edit descriptive fields only; BR-05–07,10,14,16,18–19 | Equipment update service and edit UI | 6 | Clear description; invalid/duplicate edit; protected availability/status/dates; history/restart |
-| Cross-cutting / A17 | PostgreSQL constraints; BR-01,05,10,14,16 | Npgsql mappings, migrations, normalized unique keys, partial unique active-item index | 3,10 | Clean DB migration/history; reject invalid FK, duplicate identifiers, duplicate active item |
-| Cross-cutting / A18 | Failure/recovery, context lifetime, atomicity; BR-15,18–19 | Per-operation scope, transaction orchestration, typed outcomes | 3–4,7,10 | Known failure no partial change; unknown commit no auto-retry/false rollback; reconnect/refresh; source walkthrough |
-| Cross-cutting / A19 | Reproducible submission and traceability | README, diagram/catalog/14-case suite, matrix and evidence | 1,11 | Follow clean setup, compare docs/source/evidence, inspect Git history |
-
-## Evidence template
-
-For each scenario record: ID, setup, action, expected result, observed result, date/toolchain, and evidence path. Use fresh database contexts/connections for readback. Never mark a scenario passed from source inspection alone. Screenshots alone do not prove persistence/atomicity. Deliberate failures use disposable databases.
-
-## Scope exclusions
-
-UC-10–11 and UC-17–27: deferred to Lab 5. UC-28–33: future scope. No authentication, hard deletes, maintenance/retirement, exports, cloud deployment, parallel SQLite support or historical SQLite import required in Lab 4.
+The earlier incremental planning/status matrix is retained in [archive](archive/acceptance-matrix-through-session10.md), with session-specific blocked runs preserved as historical evidence.
