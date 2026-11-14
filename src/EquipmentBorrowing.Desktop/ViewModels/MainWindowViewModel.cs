@@ -36,13 +36,15 @@ public partial class MainWindowViewModel : ObservableObject
     public EquipmentViewModel EquipmentVm { get; }
     public BorrowingsViewModel BorrowingsVm { get; }
     public StudentsViewModel StudentsVm { get; }
+    public MultiItemCheckoutViewModel MultiCheckoutVm { get; }
     public EquipmentManagementViewModel EquipmentManagementVm { get; }
 
-    public MainWindowViewModel(EquipmentViewModel equipmentVm, BorrowingsViewModel borrowingsVm, ApplicationStartupService startup, StudentsViewModel studentsVm, EquipmentManagementViewModel equipmentManagementVm)
+    public MainWindowViewModel(EquipmentViewModel equipmentVm, BorrowingsViewModel borrowingsVm, ApplicationStartupService startup, StudentsViewModel studentsVm, EquipmentManagementViewModel equipmentManagementVm, MultiItemCheckoutViewModel multiCheckoutVm)
     {
         _startup = startup;
         StudentsVm = studentsVm;
         EquipmentManagementVm = equipmentManagementVm;
+        MultiCheckoutVm = multiCheckoutVm;
         EquipmentVm = equipmentVm;
         BorrowingsVm = borrowingsVm;
         _currentView = EquipmentVm;
@@ -72,5 +74,11 @@ public partial class MainWindowViewModel : ObservableObject
     {
         CurrentView = EquipmentManagementVm;
         await EquipmentManagementVm.InitializeAsync();
+    }
+    [RelayCommand]
+    private async Task NavigateToMultiCheckoutAsync()
+    {
+        CurrentView = MultiCheckoutVm;
+        await MultiCheckoutVm.InitializeAsync();
     }
 }

@@ -14,6 +14,7 @@
                 <Button Content="Retry startup" Command="{Binding RetryStartupCommand}"/>
                 <TextBlock Text="CAMPUSEQ" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
                 
+                <Button Content="Checkout multiple" Command="{Binding NavigateToMultiCheckoutCommand}" HorizontalAlignment="Stretch"/>
                 <Button Content="Manage Equipment" Command="{Binding NavigateToEquipmentManagementCommand}" HorizontalAlignment="Stretch"/>
                 <Button Content="Students" Command="{Binding NavigateToStudentsCommand}" HorizontalAlignment="Stretch"/>
                 <Button Content="Equipment" Command="{Binding NavigateToEquipmentCommand}" 
@@ -26,6 +27,9 @@
         <!-- Main Content Host -->
         <TransitioningContentControl Grid.Column="1" Content="{Binding CurrentView}" Margin="20">
             <TransitioningContentControl.DataTemplates>
+                <DataTemplate DataType="{x:Type vm:MultiItemCheckoutViewModel}">
+                    <views:MultiItemCheckoutView/>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:EquipmentManagementViewModel}">
                     <views:EquipmentManagementView/>
                 </DataTemplate>

@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:EquipmentBorrowing.Desktop.ViewModels"
+             xmlns:domain="clr-namespace:EquipmentBorrowing.Domain;assembly=EquipmentBorrowing.Domain"
+             x:Class="EquipmentBorrowing.Desktop.Views.MultiItemCheckoutView" x:DataType="vm:MultiItemCheckoutViewModel">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="10">
+        <TextBlock Text="Multi-item Checkout" FontSize="20" FontWeight="Bold"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10">
+            <CheckBox Content="Available items only" IsChecked="{Binding AvailableOnly}"/>
+            <Button Content="Apply filter / Refresh" Command="{Binding RefreshCommand}"/>
+        </StackPanel>
+        <Grid Grid.Row="2" ColumnDefinitions="2*,*" ColumnSpacing="15">
+            <ScrollViewer IsEnabled="{Binding CanSelect}">
+                <ItemsControl ItemsSource="{Binding EquipmentList}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CheckoutItem">
+                            <CheckBox IsChecked="{Binding IsSelected}" Margin="5">
+                                <StackPanel Spacing="3">
+                                    <TextBlock Text="{Binding Item.Name}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Item.EquipmentIdentifier}"/>
+                                    <TextBlock Text="{Binding Item.IsAvailable, StringFormat='Available: {0}'}"/>
+                                </StackPanel>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <StackPanel Grid.Column="1" Spacing="10" IsEnabled="{Binding CanSelect}">
+                <TextBlock Text="Select at least two items. Existing active loans plus this request must not exceed three." TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding SelectedCount, StringFormat='Selected items: {0}'}"/>
+                <TextBlock Text="Student"/>
+                <ComboBox ItemsSource="{Binding StudentList}" SelectedItem="{Binding SelectedStudent}" HorizontalAlignment="Stretch">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="domain:Student">
+                            <StackPanel>
+                                <TextBlock Text="{Binding FullName}"/>
+                                <TextBlock Text="{Binding StudentNumber}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <TextBlock Text="Expected return date for all selected items" TextWrapping="Wrap"/>
+                <DatePicker SelectedDate="{Binding ExpectedReturnDate}"/>
+                <Button Content="Check out selected items" Command="{Binding CheckoutCommand}"/>
+            </StackPanel>
+        </Grid>
+        <StackPanel Grid.Row="3" Spacing="5">
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}"/>
+            <TextBlock Text="{Binding LoadMessage}" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" FontWeight="Medium"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
