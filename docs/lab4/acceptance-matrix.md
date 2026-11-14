@@ -4,6 +4,8 @@ Status at Session 1: planned unless stated otherwise. Existing source is not pro
 
 Session 4 update: UC-01–05 are implemented in source, including transactional writes, related queries and UI states. Runtime acceptance remains pending under Windows Application Control; see [Session 4 evidence](session4-evidence.md). Do not interpret the implementation column as a verified pass.
 
+Session 5 update: UC-12–14 services, PostgreSQL repository operations, Students screen and stale-edit checks are implemented. A12–A14 remain pending runtime verification; see [Session 5 evidence](session5-evidence.md).
+
 Primary actor: Laboratory Staff / Equipment Custodian. All database access belongs behind Application abstractions in Infrastructure; Views/ViewModels contain no SQL, connection setup or migrations.
 
 | Case / evidence | Behavior and rules | Planned implementation | Session | Verification |

@@ -38,7 +38,7 @@ Historical report/review files under this directory describe the earlier impleme
 
 ### Next session
 
-Session 5: student registration, locate/edit and eligibility workflows (UC-12–14). Before operational acceptance, complete pending EF model/migration/seed verification and A01–A05/A18 walkthrough on an approved environment. Desktop and workflow test execution remain blocked by Windows policy.
+Session 6: equipment registration and descriptive editing (UC-15–16). Before operational acceptance, complete pending EF model/migration/seed checks and implemented-workflow acceptance walkthroughs on an approved environment. Desktop and test execution remain blocked by Windows policy.
 
 ## Session 2 — domain and contract foundations completed
 
@@ -70,13 +70,21 @@ Build of Tests/Domain/Application/Infrastructure passed with zero warnings/error
 
 GitHub main advanced to Session 3 merge `e7263f7` while work was underway and the remote feature branch was deleted after that merge. The implementation push recreated it; a normal merge then incorporated upstream main without conflicts or history rewriting. All implementation and documentation changes are committed/pushed.
 
+## Session 5 — student-management source implemented; runtime acceptance pending
+
+Date: 2026-11-14. Added UC-12 registration/default eligibility, UC-13 lookup/edit/contact clearing and UC-14 permit/restrict workflows. Backend `de8d5bd` adds serializable management sessions, PostgreSQL-canonical uniqueness prevalidation and stale-selection snapshots. UI `34009f8` adds Students navigation, search/form/actions and loading/error/unknown-outcome recovery. Added ten service test cases and [Session 5 evidence](session5-evidence.md).
+
+Test project and Domain/Application/Infrastructure compile with zero warnings/errors. Targeted test discovery is blocked by Application Control loading Tests.dll (0x800711C7). Desktop still fails at Avalonia MSB4061. New/edited AXAML is well-formed XML, but bindings/rendering and A12–A14 PostgreSQL/restart evidence remain unverified. No schema/database changes were made in this session.
+
+User's commit preference: action-oriented titles naming the progress added, with detailed bodies explaining the session, changed behavior and actual validation/limits. Commit/push backend, UI, tests and evidence as separate coherent parts. Do not rewrite earlier commits to change their wording.
+
 ## Session status
 
 1. Baseline/traceability: done with documented external execution blocker.
 2. Domain/contracts: implemented and compiled; partial runtime verification, external policy blocker remains.
 3. PostgreSQL/schema/lifetimes: implemented, SQL verified; EF/runtime acceptance pending external policy blocker.
 4. Existing workflows: source integrated and non-Desktop code compiled; runtime acceptance blocked/pending.
-5. Student management: pending.
+5. Student management: source implemented and non-Desktop code compiled; A12–A14 runtime acceptance pending.
 6. Equipment management: pending.
 7. Atomic multi-item checkout: pending.
 8. Histories: pending.
