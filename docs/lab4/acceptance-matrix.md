@@ -2,6 +2,8 @@
 
 Status at Session 1: planned unless stated otherwise. Existing source is not proof of PostgreSQL acceptance. Based on the supplied Lab 4 handout and Use Case Suite, BR-01–19.
 
+Current Session 8 verification: the complete backend suite passes 66/66 with PostgreSQL integration enabled. Clean EF migration/model comparison, multi-item success/rollback and related history queries now have automated evidence. Earlier execution-blocked notes below describe their original sessions. Desktop rendering, restart/concurrency and complete acceptance demonstrations remain pending. See [Session 8 evidence](session8-evidence.md).
+
 Session 4 update: UC-01–05 are implemented in source, including transactional writes, related queries and UI states. Runtime acceptance remains pending under Windows Application Control; see [Session 4 evidence](session4-evidence.md). Do not interpret the implementation column as a verified pass.
 
 Session 5 update: UC-12–14 services, PostgreSQL repository operations, Students screen and stale-edit checks are implemented. A12–A14 remain pending runtime verification; see [Session 5 evidence](session5-evidence.md).
@@ -9,6 +11,8 @@ Session 5 update: UC-12–14 services, PostgreSQL repository operations, Student
 Session 6 update: UC-15–16 equipment registration/edit services, repository operations, management screen and stale-availability checks are implemented. A15–A16 remain pending runtime verification; see [Session 6 evidence](session6-evidence.md).
 
 Session 7 update: UC-06 coordinated checkout, shared single/multi-item validation, selection UI, recording tests and opt-in EF/PostgreSQL success/rollback tests are implemented. A06 runtime, concurrency and restart evidence remain pending; see [Session 7 evidence](session7-evidence.md).
+
+Session 8 update: UC-07–08 queries/services, histories screen, cancellation/version protection and real PostgreSQL history tests are implemented. Backend membership/dates/empty/missing behavior is verified; A07–A08 rendered UI/responsiveness checks remain pending.
 
 Primary actor: Laboratory Staff / Equipment Custodian. All database access belongs behind Application abstractions in Infrastructure; Views/ViewModels contain no SQL, connection setup or migrations.
 

@@ -38,7 +38,7 @@ Historical report/review files under this directory describe the earlier impleme
 
 ### Next session
 
-Session 8: student/equipment borrowing histories (UC-07–08). Before operational acceptance, complete pending EF model/migration/seed checks and implemented-workflow acceptance walkthroughs on an approved environment. Desktop and test execution remain blocked by Windows policy.
+Session 9: borrowing search/filter/sort (UC-09). Current backend suite passes 66/66 with PostgreSQL integration. Desktop still fails at Avalonia task loading; rendered workflow, startup seed, restart and concurrency acceptance work remains pending.
 
 ## Session 2 — domain and contract foundations completed
 
@@ -90,6 +90,12 @@ Date: 2026-11-14. Backend `43bb1a0` adds shared single/multi-item validation and
 
 Non-Desktop code/tests compile. Targeted recording tests failed before assertions due to Domain.dll Application Control loading; integration tests initially skipped without opt-in configuration. An explicit locally configured integration run was attempted and both cases were also blocked loading Domain.dll. No database/rollback pass is claimed. Desktop still fails Avalonia MSB4061; AXAML is well-formed XML but binding/rendering remains unverified. Details and A06 walkthrough: [Session 7 evidence](session7-evidence.md).
 
+## Session 8 — histories implemented; backend suite and PostgreSQL tests pass
+
+Date: 2026-11-14. Queries/services `5f84474` add subject lists and student/equipment-specific histories with both statuses, joined identities/dates and distinct empty/missing/error outcomes. UI `add03d6` adds the Histories screen with mode/subject selection, loading/retry, cancellation/version protection and navigation invalidation. Tests `c1d0c2e` add service/coordinator and real PostgreSQL membership/date/no-history checks.
+
+Observed results: targeted history run passed 7/7; complete suite with local PostgreSQL integration enabled passed 66/66, zero failures/skips. Earlier model comparison, EF disposable clean migrations and actual checkout success/rollback tests now pass too. Fresh psql reads confirm migration history and borrowing counts in retained disposable databases. This supersedes earlier backend test-loading blocks for current binaries; no security policy was changed. Desktop still fails Avalonia MSB4061. AXAML is well-formed XML but rendering/bindings/UI responsiveness remain unverified. Development DB startup/seeding and broader restart/concurrency checks remain pending. Details: [Session 8 evidence](session8-evidence.md).
+
 ## Session status
 
 1. Baseline/traceability: done with documented external execution blocker.
@@ -99,7 +105,7 @@ Non-Desktop code/tests compile. Targeted recording tests failed before assertion
 5. Student management: source implemented and non-Desktop code compiled; A12–A14 runtime acceptance pending.
 6. Equipment management: source implemented and non-Desktop code compiled; A15–A16 runtime acceptance pending.
 7. Atomic multi-item checkout: source implemented and non-Desktop code compiled; A06 runtime/concurrency/restart evidence pending.
-8. Histories: pending.
+8. Histories: source implemented; backend service/coordination and PostgreSQL integration verified; A07–A08 rendered UI/responsiveness acceptance pending.
 9. Search/filter/sort: pending.
 10. Integrated verification: pending.
 11. Submission documentation: pending.
