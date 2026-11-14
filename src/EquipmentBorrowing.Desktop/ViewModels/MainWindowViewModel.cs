@@ -36,12 +36,14 @@ public partial class MainWindowViewModel : ObservableObject
     public EquipmentViewModel EquipmentVm { get; }
     public BorrowingsViewModel BorrowingsVm { get; }
     public StudentsViewModel StudentsVm { get; }
+    public BorrowingHistoryViewModel HistoryVm { get; }
     public MultiItemCheckoutViewModel MultiCheckoutVm { get; }
     public EquipmentManagementViewModel EquipmentManagementVm { get; }
 
-    public MainWindowViewModel(EquipmentViewModel equipmentVm, BorrowingsViewModel borrowingsVm, ApplicationStartupService startup, StudentsViewModel studentsVm, EquipmentManagementViewModel equipmentManagementVm, MultiItemCheckoutViewModel multiCheckoutVm)
+    public MainWindowViewModel(EquipmentViewModel equipmentVm, BorrowingsViewModel borrowingsVm, ApplicationStartupService startup, StudentsViewModel studentsVm, EquipmentManagementViewModel equipmentManagementVm, MultiItemCheckoutViewModel multiCheckoutVm, BorrowingHistoryViewModel historyVm)
     {
         _startup = startup;
+        HistoryVm = historyVm;
         StudentsVm = studentsVm;
         EquipmentManagementVm = equipmentManagementVm;
         MultiCheckoutVm = multiCheckoutVm;
@@ -80,5 +82,16 @@ public partial class MainWindowViewModel : ObservableObject
     {
         CurrentView = MultiCheckoutVm;
         await MultiCheckoutVm.InitializeAsync();
+    }
+    partial void OnCurrentViewChanged(ObservableObject oldValue, ObservableObject newValue)
+    {
+        if (ReferenceEquals(oldValue, HistoryVm) && !ReferenceEquals(newValue, HistoryVm)) HistoryVm.Deactivate();
+    }
+
+    [RelayCommand]
+    private async Task NavigateToHistoryAsync()
+    {
+        CurrentView = HistoryVm;
+        await HistoryVm.InitializeAsync();
     }
 }
