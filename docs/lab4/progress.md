@@ -36,12 +36,22 @@ Historical report/review files under this directory describe the earlier impleme
 
 ### Next session
 
-Session 2: model identifiers/contact/description, date policy and actual return date, fixed three-active-item rule, reliable identity strategy and application contracts. Explain the part before editing; fetch/pull, implement, check, commit and push. Full execution validation remains pending until the policy blocker is resolved.
+Session 3: PostgreSQL schema/migrations, Npgsql configuration, database constraints and per-operation context/transaction lifetimes. Read domain-decisions.md before changing mappings. Desktop execution remains blocked by Windows policy.
+
+## Session 2 — domain and contract foundations completed
+
+Date: 2026-11-14. Session 1 was merged upstream as `914674c`; the working branch fast-forwarded to that merge. The remote feature branch had been deleted after merge, so it was recreated by the Session 2 push. Earlier history is preserved.
+
+Implementation commit: `1101f1d` (pushed). Added staff-facing identifiers and canonical keys, optional contact/description and protected descriptive edits, three-item eligibility rule, DateOnly checkout/expected/actual dates, injectable Manila calendar clock, database-generated borrowing ID strategy and sequential in-memory identities. Added management/query/request/outcome contracts and updated seed/caller code.
+
+Validation: test project and ConsoleDemo compile. An initial execution passed 10 domain cases while the three existing service tests were blocked loading Infrastructure.dll. After adding the clock test/contracts, recompilation succeeded but the rebuilt test DLL was blocked during discovery; no final all-tests-pass claim. Desktop still fails MSB4061 under the previously identified Application Control policy.
+
+Important: the model intentionally advances beyond the historical SQLite schema. Do not treat this intermediate commit as database-runnable; clean PostgreSQL migrations are Session 3. Atomic repository writes and concurrency guarantees remain later-session work. Details and exact evidence limits: [domain-decisions.md](domain-decisions.md).
 
 ## Session status
 
 1. Baseline/traceability: done with documented external execution blocker.
-2. Domain/contracts: pending.
+2. Domain/contracts: implemented and compiled; partial runtime verification, external policy blocker remains.
 3. PostgreSQL/schema/lifetimes: pending.
 4. Existing workflows: pending.
 5. Student management: pending.
