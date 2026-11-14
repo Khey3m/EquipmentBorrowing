@@ -8,8 +8,11 @@ using Npgsql;
 namespace EquipmentBorrowing.Infrastructure.Persistence;
 
 public sealed class PostgresBorrowingSessionFactory(IDbContextFactory<EquipmentBorrowingDbContext> factory)
-    : IBorrowingSessionFactory
+    : IBorrowingSessionFactory, IStudentManagementSessionFactory
 {
+    async Task<IStudentManagementSession> IStudentManagementSessionFactory.OpenAsync(CancellationToken cancellationToken) =>
+        (IStudentManagementSession)await OpenAsync(cancellationToken);
+
     public async Task<IBorrowingSession> OpenAsync(CancellationToken cancellationToken = default)
     {
         var context = await factory.CreateDbContextAsync(cancellationToken);
@@ -22,11 +25,12 @@ public sealed class PostgresBorrowingSessionFactory(IDbContextFactory<EquipmentB
     }
 }
 
-internal sealed class PostgresBorrowingSession : IBorrowingSession
+internal sealed class PostgresBorrowingSession : IBorrowingSession, IStudentManagementSession
 {
     private readonly EquipmentBorrowingDbContext _context;
     private readonly IDbContextTransaction _transaction;
     public IStudentRepository Students { get; }
+    IStudentManagementRepository IStudentManagementSession.Students => (IStudentManagementRepository)Students;
     public IEquipmentRepository Equipment { get; }
     public IBorrowingRepository Borrowings { get; }
 

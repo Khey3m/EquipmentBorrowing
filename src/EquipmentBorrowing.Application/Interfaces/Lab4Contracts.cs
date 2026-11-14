@@ -4,8 +4,12 @@ namespace EquipmentBorrowing.Application.Interfaces;
 
 // Explicit requests exclude protected identity, availability and transaction state.
 public record RegisterStudentRequest(string StudentNumber, string FullName, string? ContactInformation);
-public record UpdateStudentRequest(int StudentId, string StudentNumber, string FullName, string? ContactInformation);
-public record SetStudentEligibilityRequest(int StudentId, bool IsEligible);
+public record StudentSnapshot(string StudentNumber, string FullName, string? ContactInformation, bool IsEligibleToBorrow)
+{
+    public static StudentSnapshot From(Student student) => new(student.StudentNumber, student.FullName, student.ContactInformation, student.IsEligibleToBorrow);
+}
+public record UpdateStudentRequest(int StudentId, string StudentNumber, string FullName, string? ContactInformation, StudentSnapshot Expected);
+public record SetStudentEligibilityRequest(int StudentId, bool IsEligible, StudentSnapshot Expected);
 public record RegisterEquipmentRequest(string EquipmentIdentifier, string Name, string? Description);
 public record UpdateEquipmentRequest(int EquipmentId, string EquipmentIdentifier, string Name, string? Description);
 public record MultiItemCheckoutRequest(int StudentId, IReadOnlyList<int> EquipmentIds, DateOnly ExpectedReturnDate);
@@ -20,7 +24,7 @@ public record OperationResult<T>(OperationOutcome Outcome, string Message, T? Va
 
 public interface IStudentManagementRepository : IStudentRepository
 {
-    Task<bool> NumberExistsAsync(string normalizedNumber, int? excludingId = null, CancellationToken cancellationToken = default);
+    Task<bool> NumberExistsAsync(string studentNumber, int? excludingId = null, CancellationToken cancellationToken = default);
     Task AddAsync(Student student, CancellationToken cancellationToken = default);
     Task UpdateAsync(Student student, CancellationToken cancellationToken = default);
 }
