@@ -14,7 +14,7 @@ Console.WriteLine();
 
 // TEST CASE 1: Successful Borrowing (Eligible student, Available equipment)
 Console.WriteLine("[TEST 1] Attempting valid borrowing (Student ID: 1, Equipment ID: 101)...");
-var request1 = new BorrowRequest(StudentId: 1, EquipmentId: 101, Duration: TimeSpan.FromDays(3));
+var request1 = new BorrowRequest(StudentId: 1, EquipmentId: 101, ExpectedReturnDate: new EquipmentBorrowing.Application.Interfaces.CampusClock().Today.AddDays(3));
 var result1 = await borrowingService.ExecuteAsync(request1);
 Console.WriteLine($"Result: {(result1.Success ? "SUCCESS" : "FAILED")} - {result1.Message}");
 if (result1.Success)
@@ -25,14 +25,14 @@ Console.WriteLine();
 
 // TEST CASE 2: Equipment Unavailable Failure (Digital Multimeter is already borrowed)
 Console.WriteLine("[TEST 2] Attempting to borrow unavailable equipment (Student ID: 1, Equipment ID: 102)...");
-var request2 = new BorrowRequest(StudentId: 1, EquipmentId: 102, Duration: TimeSpan.FromDays(1));
+var request2 = new BorrowRequest(StudentId: 1, EquipmentId: 102, ExpectedReturnDate: new EquipmentBorrowing.Application.Interfaces.CampusClock().Today.AddDays(1));
 var result2 = await borrowingService.ExecuteAsync(request2);
 Console.WriteLine($"Result: {(result2.Success ? "SUCCESS" : "FAILED")} - {result2.Message}");
 Console.WriteLine();
 
 // TEST CASE 3: Student Ineligible Failure (Bob Smith is suspended)
 Console.WriteLine("[TEST 3] Attempting borrow with suspended student (Student ID: 2, Equipment ID: 101)...");
-var request3 = new BorrowRequest(StudentId: 2, EquipmentId: 101, Duration: TimeSpan.FromDays(2));
+var request3 = new BorrowRequest(StudentId: 2, EquipmentId: 101, ExpectedReturnDate: new EquipmentBorrowing.Application.Interfaces.CampusClock().Today.AddDays(2));
 var result3 = await borrowingService.ExecuteAsync(request3);
 Console.WriteLine($"Result: {(result3.Success ? "SUCCESS" : "FAILED")} - {result3.Message}");
 

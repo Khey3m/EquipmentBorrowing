@@ -17,7 +17,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
         builder.Property(s => s.IsEligibleToBorrow)
             .IsRequired();
 
-        builder.Property(s => s.MaxAllowedBorrowings)
-            .IsRequired();
+        builder.Ignore(s => s.MaxAllowedBorrowings);
     }
 }

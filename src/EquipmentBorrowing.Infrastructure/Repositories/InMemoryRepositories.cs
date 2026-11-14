@@ -7,9 +7,9 @@ public class InMemoryStudentRepository : IStudentRepository
 {
     private readonly List<Student> _students = new()
     {
-        new Student(1, "Alice Guo", isEligibleToBorrow: true, maxAllowedBorrowings: 2),
-        new Student(2, "Bob Smith", isEligibleToBorrow: false, maxAllowedBorrowings: 2),
-        new Student(3, "Charlie Brown", isEligibleToBorrow: true, maxAllowedBorrowings: 3)
+        new Student(1, "STU-001", "Alice Guo"),
+        new Student(2, "STU-002", "Bob Smith", isEligibleToBorrow: false),
+        new Student(3, "STU-003", "Charlie Brown")
     };
 
     public Task<Student?> GetByIdAsync(int id, CancellationToken cancellationToken = default) =>
@@ -23,9 +23,9 @@ public class InMemoryEquipmentRepository : IEquipmentRepository
 {
     private readonly List<Equipment> _equipments = new()
     {
-        new Equipment(101, "Oscilloscope Rigol DS1054Z", isAvailable: true),
-        new Equipment(102, "Digital Multimeter Fluke 117", isAvailable: true),
-        new Equipment(103, "Soldering Station Weller WE1010", isAvailable: true)
+        new Equipment(101, "EQ-101", "Oscilloscope Rigol DS1054Z"),
+        new Equipment(102, "EQ-102", "Digital Multimeter Fluke 117"),
+        new Equipment(103, "EQ-103", "Soldering Station Weller WE1010")
     };
 
     public Task<Equipment?> GetByIdAsync(int id, CancellationToken cancellationToken = default) =>
@@ -61,6 +61,7 @@ public class InMemoryBorrowingRepository : IBorrowingRepository
 
     public Task AddAsync(Borrowing borrowing, CancellationToken cancellationToken = default)
     {
+        borrowing.AssignIdentity(_borrowings.Count == 0 ? 1 : checked(_borrowings.Max(b => b.Id) + 1));
         _borrowings.Add(borrowing);
         return Task.CompletedTask;
     }
@@ -71,7 +72,8 @@ public class InMemoryBorrowingRepository : IBorrowingRepository
         if (existing != null)
         {
             _borrowings.Remove(existing);
-            _borrowings.Add(borrowing);
+            borrowing.AssignIdentity(_borrowings.Count == 0 ? 1 : checked(_borrowings.Max(b => b.Id) + 1));
+        _borrowings.Add(borrowing);
         }
         return Task.CompletedTask;
     }
