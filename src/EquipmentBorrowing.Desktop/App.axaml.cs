@@ -42,6 +42,8 @@ public partial class App : Avalonia.Application
         // 3. Register Application Services
         serviceCollection.AddTransient<IExistingWorkflowQueries, EfExistingWorkflowQueries>();
         serviceCollection.AddTransient<ExistingWorkflowQueryService>();
+        serviceCollection.AddTransient<IHistoryQueries, EfHistoryQueries>();
+        serviceCollection.AddTransient<BorrowingHistoryService>();
         serviceCollection.AddTransient<BorrowEquipmentService>();
         serviceCollection.AddTransient<MultiItemCheckoutService>();
         serviceCollection.AddTransient<ReturnEquipmentService>();
