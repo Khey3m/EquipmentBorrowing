@@ -1,5 +1,7 @@
 # Lab 4 progress ledger
 
+Consolidated report: [Sessions 1–4 development report](development-report-sessions-1-4.md). This report documents implemented source, observed verification and remaining acceptance work; it does not mark Lab 4 complete.
+
 ## Session 1 — baseline established with an external execution blocker
 
 Date: 2026-11-14. Branch: `lab4/postgresql-workflows`. Prior history retained; origin/main was already current at `2970cdb`. Fetch and fast-forward pull succeeded. Feature branch pushes succeeded.

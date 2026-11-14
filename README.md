@@ -1,5 +1,7 @@
 # Campus Equipment Borrowing System - Architectural Blueprint
 
+Detailed current report: [Lab 4 development progress — Sessions 1–4](docs/lab4/development-report-sessions-1-4.md).
+
 > **Lab 4 in progress:** PostgreSQL replaces operational SQLite. Follow [PostgreSQL setup](docs/lab4/postgres-setup.md), [progress](docs/lab4/progress.md), and the [acceptance matrix](docs/lab4/acceptance-matrix.md) for current instructions. Earlier sections below retain historical in-memory/SQLite documentation. Sessions 1–4 source work includes transactional borrowing/returns and updated catalog/active-loan screens. SQL constraints are verified; EF migration execution, Desktop and workflow runtime acceptance remain blocked locally by Windows Application Control.
 
 ## 1. Solution Structure
