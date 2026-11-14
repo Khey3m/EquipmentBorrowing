@@ -29,6 +29,11 @@ public class BorrowEquipmentServiceTests
     [Fact]
     public async Task ExecuteAsync_ShouldFail_WhenEquipmentIsUnavailable()
     {
+        // Issue the item first: the fresh repository starts with every item available.
+        var initialBorrow = await _service.ExecuteAsync(
+            new BorrowRequest(1, 102, TimeSpan.FromDays(1)));
+        Assert.True(initialBorrow.Success);
+
         var request = new BorrowRequest(1, 102, TimeSpan.FromDays(1));
         var result = await _service.ExecuteAsync(request);
 
