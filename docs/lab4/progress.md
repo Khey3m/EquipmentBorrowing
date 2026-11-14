@@ -1,6 +1,6 @@
 # Lab 4 progress ledger
 
-Consolidated report: [Sessions 1–4 development report](development-report-sessions-1-4.md). This report documents implemented source, observed verification and remaining acceptance work; it does not mark Lab 4 complete.
+Current consolidated report: [Lab 4 development report through Session 11](development-report-lab4.md). Earlier [Sessions 1–4 report](development-report-sessions-1-4.md) and session-specific evidence are retained as historical records. Full manual acceptance is not claimed.
 
 ## Session 1 — baseline established with an external execution blocker
 
@@ -38,7 +38,7 @@ Historical report/review files under this directory describe the earlier impleme
 
 ### Next session
 
-Session 11: final documentation, diagram/catalog/fourteen-case suite, traceability and demonstration handoff. Session 10 establishes Linux CI full-build/backend evidence and adds headless/process verification. Local Windows policy remains restricted; actual Desktop close/reopen and manual visual acceptance remain separate checks.
+Planned Sessions 1–11 source/documentation work is delivered. Complete the unchecked [submission handoff](submission-handoff.md) and [manual walkthrough](manual-verification-checklist.md): real Desktop visual/usability/close-reopen evidence, instructor-specific demonstration and private submitter/partner details. Local Windows policy is unchanged; no course-platform submission or grading claim was made.
 
 ## Session 2 — domain and contract foundations completed
 
@@ -112,6 +112,16 @@ Final combined CI run [43558553901](https://github.com/Khey3m/EquipmentBorrowing
 
 No Windows security policy was changed and the local development database was not overwritten. Automated headless/control/process checks do not replace manual pixel/usability review or restarting the real Desktop executable. Use [continuous verification instructions](continuous-verification.md) and the [remaining manual checklist](manual-verification-checklist.md). Preserve earlier failed/blocked runs as historical evidence rather than presenting them as current code defects or passes.
 
+## Session 11 — final requirements, report and submission documentation delivered
+
+Date: 2026-11-14. Requirements commit `1496ee8` adds the adapted fourteen-case suite, all 33 catalog classifications, matching Mermaid/PlantUML diagrams, BR-01–19, architecture/ERD and final acceptance traceability. Handoff commit `c181edc` adds the clean reproducible README, consolidated report, demonstration script, submission inventory and concise Git history, preserving previous README/matrix versions in archive.
+
+Validation compared all 14 cases times 18 fields (252 original values) against the supplied suite PDF; all names/classifications in the 33-case catalog and all 19 rule IDs were checked; both diagrams contain the same fourteen required goals; current links/code fences were checked; no supplied password was found in repository files. The first catalog-validation attempt matched an earlier narrative reference rather than the Appendix heading; the checker was corrected and the complete catalog comparison passed. Application behavior was not changed, so the Session 10 zero-warning/79-test/five-process-stage code baseline remains applicable; no redundant runtime run was required for documentation-only edits.
+
+Upstream main advanced to `bb2d22b` (Session 10 PR merge) during documentation pushes and the remote feature branch was deleted. The first push encountered a ref-lock error, the next recreated the branch with both documentation commits, and upstream main was incorporated through a normal merge without history rewriting. Final commits and remote synchronization are verified at handoff.
+
+Current entry points: [README](../../README.md), [final development report](development-report-lab4.md), [suite](use-case-suite.md), [traceability](final-traceability.md), [demonstration](demonstration-script.md), [submission handoff](submission-handoff.md). Manual visual/real-Desktop restart and personal submission actions remain unchecked rather than falsely marked complete.
+
 ## Session status
 
 1. Baseline/traceability: done with documented external execution blocker.
@@ -124,4 +134,4 @@ No Windows security policy was changed and the local development database was no
 8. Histories: backend service/coordination and PostgreSQL integration verified; headless/manual UI evidence in Session 10.
 9. Search/filter/sort: actual PostgreSQL matching/filtering/all sort directions/ties/reset pass in CI; headless/manual UI evidence in Session 10.
 10. Integrated verification: successful full zero-warning build, 79 tests and five persistence process stages in CI; remaining manual visual/real-Desktop restart checks documented.
-11. Submission documentation: pending.
+11. Submission documentation: delivered and validated; manual demonstrations/private submitter actions remain in the handoff checklist.
