@@ -5,25 +5,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EquipmentBorrowing.Infrastructure.Repositories;
 
-public class EfStudentRepository : IStudentRepository
+public class EfStudentRepository : EfRepository, IStudentRepository
 {
-    private readonly EquipmentBorrowingDbContext _context;
-
-    public EfStudentRepository(EquipmentBorrowingDbContext context)
-    {
-        _context = context;
-    }
+    public EfStudentRepository(IDbContextFactory<EquipmentBorrowingDbContext> factory) : base(factory) { }
+    internal EfStudentRepository(EquipmentBorrowingDbContext context) : base(context) { }
 
     public async Task<Student?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await _context.Students
+        await using var lease = await OpenAsync(cancellationToken);
+        return await lease.Context.Students
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<Student>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Students
+        await using var lease = await OpenAsync(cancellationToken);
+        return await lease.Context.Students
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }

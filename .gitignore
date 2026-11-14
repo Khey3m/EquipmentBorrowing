@@ -361,3 +361,13 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Local runtime databases, credentials and PostgreSQL exports
+*.db
+*.db-shm
+*.db-wal
+.env
+.env.*
+*.pgpass
+*.backup
+*.dump
