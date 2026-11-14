@@ -1,0 +1,49 @@
+@startuml
+left to right direction
+actor "Laboratory Staff / Equipment Custodian" as Staff
+actor "PostgreSQL" as PG <<supporting system>>
+rectangle "Campus Equipment Borrowing System - Lab 4" {
+  usecase "UC-01\nView Equipment Catalog" as U01
+  usecase "UC-02\nFind Available Equipment" as U02
+  usecase "UC-03\nBorrow Equipment" as U03
+  usecase "UC-04\nView Active Borrowings" as U04
+  usecase "UC-05\nReturn Equipment" as U05
+  usecase "UC-06\nCheck Out Multiple Equipment Items" as U06
+  usecase "UC-07\nView Student Borrowing History" as U07
+  usecase "UC-08\nView Equipment Borrowing History" as U08
+  usecase "UC-09\nSearch, Filter, and Sort Borrowings" as U09
+  usecase "UC-12\nRegister Student" as U12
+  usecase "UC-13\nUpdate Student Information" as U13
+  usecase "UC-14\nChange Student Borrowing Eligibility" as U14
+  usecase "UC-15\nRegister Equipment" as U15
+  usecase "UC-16\nUpdate Equipment Information" as U16
+}
+Staff -- U01
+U01 -- PG
+Staff -- U02
+U02 -- PG
+Staff -- U03
+U03 -- PG
+Staff -- U04
+U04 -- PG
+Staff -- U05
+U05 -- PG
+Staff -- U06
+U06 -- PG
+Staff -- U07
+U07 -- PG
+Staff -- U08
+U08 -- PG
+Staff -- U09
+U09 -- PG
+Staff -- U12
+U12 -- PG
+Staff -- U13
+U13 -- PG
+Staff -- U14
+U14 -- PG
+Staff -- U15
+U15 -- PG
+Staff -- U16
+U16 -- PG
+@enduml
