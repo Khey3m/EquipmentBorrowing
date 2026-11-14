@@ -1,6 +1,6 @@
 # Campus Equipment Borrowing System - Architectural Blueprint
 
-> **Lab 4 in progress:** PostgreSQL replaces operational SQLite. Follow [PostgreSQL setup](docs/lab4/postgres-setup.md), [progress](docs/lab4/progress.md), and the [acceptance matrix](docs/lab4/acceptance-matrix.md) for current instructions. Earlier sections below retain historical in-memory/SQLite documentation. Session 3 SQL constraints are verified; EF migration execution and Desktop remain blocked locally by Windows Application Control. Workflow transaction integration follows in Session 4.
+> **Lab 4 in progress:** PostgreSQL replaces operational SQLite. Follow [PostgreSQL setup](docs/lab4/postgres-setup.md), [progress](docs/lab4/progress.md), and the [acceptance matrix](docs/lab4/acceptance-matrix.md) for current instructions. Earlier sections below retain historical in-memory/SQLite documentation. Sessions 1–4 source work includes transactional borrowing/returns and updated catalog/active-loan screens. SQL constraints are verified; EF migration execution, Desktop and workflow runtime acceptance remain blocked locally by Windows Application Control.
 
 ## 1. Solution Structure
 * **EquipmentBorrowing.Domain**: Contains the core concepts and business rules (Ex: `Student`, `Equipment`, `Borrowing`, and `BorrowingStatus`). This layer is independent and has zero external dependencies.

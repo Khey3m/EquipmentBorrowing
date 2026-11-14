@@ -52,7 +52,7 @@ IDbContextFactory creates fresh contexts. Standalone repository calls own/dispos
 
 IBorrowingSessionFactory provides a shared context and serializable transaction for a complete write operation, exposing repository interfaces to Application. Repository SaveChanges flushes inside that transaction; CommitAsync is the single commit boundary. Disposal without commit releases/rolls back uncommitted work.
 
-**The session is implemented/registered but not yet consumed by BorrowEquipmentService or ReturnEquipmentService.** Session 4 must wrap validation and all writes in it, handle serialization/uniqueness conflicts with refresh, and add safe UI feedback. Existing service calls still save separately until then. SQL rollback evidence does not prove application atomicity.
+**Session 4 now consumes the session in BorrowEquipmentService and ReturnEquipmentService.** Production validation and writes share a transaction, with conflict refresh and explicit unknown-outcome feedback. Startup now opens the window before calling the Application startup service and provides Retry startup on failure. See [Session 4 evidence](session4-evidence.md). SQL rollback evidence alone does not prove application atomicity; actual EF/UI acceptance remains pending under the policy blocker.
 
 No automatic retry policy is enabled. Explicit PostgreSQL rejection remains a known unsuccessful outcome; transport/cancellation failures during commit become CommitOutcomeUnknownException. Consumers must refresh after reconnection and let staff decide before replaying. These runtime paths remain to be verified.
 

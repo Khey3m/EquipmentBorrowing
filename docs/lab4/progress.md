@@ -36,7 +36,7 @@ Historical report/review files under this directory describe the earlier impleme
 
 ### Next session
 
-Session 4: integrate IBorrowingSessionFactory around single borrowing/return validation and writes; add conflict/error/unknown-outcome feedback, related queries and complete the five existing workflows. Before operational acceptance, verify EF snapshot/model agreement, migration execution/history and seeding in an approved environment. Desktop execution remains blocked by Windows policy.
+Session 5: student registration, locate/edit and eligibility workflows (UC-12–14). Before operational acceptance, complete pending EF model/migration/seed verification and A01–A05/A18 walkthrough on an approved environment. Desktop and workflow test execution remain blocked by Windows policy.
 
 ## Session 2 — domain and contract foundations completed
 
@@ -60,12 +60,20 @@ Real PostgreSQL verification applied exact migration Up SQL in a separate dispos
 
 README was converted from UTF-16 to UTF-8 for editable current setup links; historical content remains. Every source/documentation change is committed; generated output and local secrets remain outside Git.
 
+## Session 4 — existing workflow source integration completed; runtime acceptance pending
+
+Date: 2026-11-14. Implementation `a710619` pushed. Borrowing/return validation and all writes now use the shared serializable transaction in production and report success only after commit. Added active-item revalidation, safe conflict/failure/unknown outcomes, read refresh without write replay, joined asynchronous queries, date selection, available filter, return confirmation, loading/empty/error states and startup retry. ViewModels now call Application services.
+
+Build of Tests/Domain/Application/Infrastructure passed with zero warnings/errors. Full solution still fails at Avalonia task loading. Seven workflow recording-session tests compiled but were blocked by Application Control loading Application.dll; no passing workflow test count. Edited AXAML is well-formed XML, but bindings/rendering remain unverified. No new database operations or schema changes were performed in this session. See [Session 4 evidence and pending walkthrough](session4-evidence.md).
+
+GitHub main advanced to Session 3 merge `e7263f7` while work was underway and the remote feature branch was deleted after that merge. The implementation push recreated it; a normal merge then incorporated upstream main without conflicts or history rewriting. All implementation and documentation changes are committed/pushed.
+
 ## Session status
 
 1. Baseline/traceability: done with documented external execution blocker.
 2. Domain/contracts: implemented and compiled; partial runtime verification, external policy blocker remains.
 3. PostgreSQL/schema/lifetimes: implemented, SQL verified; EF/runtime acceptance pending external policy blocker.
-4. Existing workflows: pending.
+4. Existing workflows: source integrated and non-Desktop code compiled; runtime acceptance blocked/pending.
 5. Student management: pending.
 6. Equipment management: pending.
 7. Atomic multi-item checkout: pending.
