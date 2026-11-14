@@ -47,3 +47,13 @@ The archive contains tracked files only; .git history is not embedded by git arc
 ## Handoff state
 
 Sessions 1–11 source/documentation work is delivered with explicit automated evidence and a manual checklist. Session 11 document validation checks links, required use-case fields, IDs/classifications and diagram consistency. Full acceptance remains conditional on the unchecked items above.
+
+## Repeatable local packaging
+
+With Python 3 installed and a clean committed checkout, run:
+
+```powershell
+python tools/package-lab4.py --output-dir "$env:USERPROFILE/Downloads/Lab4-submission"
+```
+
+The tool exports HEAD using git archive, checks ZIP integrity and required entry points, and writes a SHA-256/commit manifest plus a complete commit-title history beside the ZIP. Output must be outside the repository; existing files for the same revision are preserved. The ZIP contains tracked source/documentation, not installed dependencies, local configuration, the Git database or externally hosted CI artifacts. Keep the repository URL available for full commit diffs. Packaging does not mark manual acceptance or upload a submission.
