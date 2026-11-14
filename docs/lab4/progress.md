@@ -141,3 +141,7 @@ Continuation verification: checked 28 current Markdown documents and 152 local l
 ## Interface refresh after Session 11
 
 Modern CampusEQ theme and seven-screen presentation delivered. The complete Release build passes with zero warnings/errors; four headless UI tests now use the production theme and pass. The actual Desktop window was launched and the catalog appearance inspected. See [UI refresh evidence](ui-refresh.md). An updated committed-revision package supersedes the earlier UI package; full staff/manual acceptance remains pending.
+
+## Disposable demo environment
+
+Created and migrated a separate local demonstration database, launched Desktop with a process-specific connection, and verified three seeded students, three items and zero borrowings through a fresh connection. Saved development configuration remains unchanged. See [demo database and restart command](demo-database.md). Synthetic walkthrough records remain for manual registration.
