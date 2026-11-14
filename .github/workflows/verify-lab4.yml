@@ -42,6 +42,13 @@ jobs:
         run: dotnet test tests/EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj --no-build --configuration Release --logger "trx;LogFileName=lab4.trx" --results-directory TestResults
       - name: Verify headless workflow controls and asynchronous bindings
         run: dotnet test tests/EquipmentBorrowing.UiTests/EquipmentBorrowing.UiTests.csproj --no-build --configuration Release --logger "trx;LogFileName=ui.trx" --results-directory TestResults
+      - name: Verify persistence across separate application-service processes
+        env:
+          EQUIPMENT_BORROWING_CONNECTION_STRING: Host=localhost;Port=5432;Database=equipment_borrowing_verify_process_${{ github.run_id }}_${{ github.run_attempt }};Username=postgres;Password=ci-${{ github.run_id }}-${{ github.run_attempt }};Include Error Detail=false
+        run: |
+          for stage in init borrow verify-borrow return verify-return; do
+            dotnet run --project tools/EquipmentBorrowing.PersistenceProbe --configuration Release --no-build -- "$stage"
+          done
       - name: Keep test evidence
         if: always()
         uses: actions/upload-artifact@v4
