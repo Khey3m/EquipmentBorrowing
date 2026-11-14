@@ -1,0 +1,34 @@
+{
+  "verified_commit": "1e5328dd14e0774ea789c002b3c80cabc1d40f2e",
+  "run_id": 43558553901,
+  "run_url": "https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43558553901",
+  "conclusion": "success",
+  "environment": ".NET 10 Linux CI with isolated PostgreSQL 18",
+  "build": {
+    "configuration": "Release",
+    "includes_desktop": true,
+    "warnings": 0,
+    "errors": 0
+  },
+  "tests": {
+    "backend_passed": 76,
+    "headless_ui_passed": 3,
+    "failed": 0,
+    "skipped": 0
+  },
+  "separate_process_stages": {
+    "init": "passed",
+    "borrow": "passed",
+    "verify-borrow": "passed",
+    "return": "passed",
+    "verify-return": "passed"
+  },
+  "artifact_name": "lab4-test-results",
+  "remaining_manual": [
+    "Actual Avalonia Desktop close/reopen walkthrough",
+    "Pixel appearance, accessibility and usability review",
+    "Full instructor demonstration and Session 11 submission artifacts"
+  ],
+  "security_policy_changed": false,
+  "local_development_database_modified": false
+}

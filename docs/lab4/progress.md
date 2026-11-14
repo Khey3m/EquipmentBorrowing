@@ -1,5 +1,7 @@
 # Lab 4 progress ledger
 
+Consolidated report: [Sessions 1–4 development report](development-report-sessions-1-4.md). This report documents implemented source, observed verification and remaining acceptance work; it does not mark Lab 4 complete.
+
 ## Session 1 — baseline established with an external execution blocker
 
 Date: 2026-11-14. Branch: `lab4/postgresql-workflows`. Prior history retained; origin/main was already current at `2970cdb`. Fetch and fast-forward pull succeeded. Feature branch pushes succeeded.
@@ -36,7 +38,7 @@ Historical report/review files under this directory describe the earlier impleme
 
 ### Next session
 
-Session 4: integrate IBorrowingSessionFactory around single borrowing/return validation and writes; add conflict/error/unknown-outcome feedback, related queries and complete the five existing workflows. Before operational acceptance, verify EF snapshot/model agreement, migration execution/history and seeding in an approved environment. Desktop execution remains blocked by Windows policy.
+Session 11: final documentation, diagram/catalog/fourteen-case suite, traceability and demonstration handoff. Session 10 establishes Linux CI full-build/backend evidence and adds headless/process verification. Local Windows policy remains restricted; actual Desktop close/reopen and manual visual acceptance remain separate checks.
 
 ## Session 2 — domain and contract foundations completed
 
@@ -60,16 +62,66 @@ Real PostgreSQL verification applied exact migration Up SQL in a separate dispos
 
 README was converted from UTF-16 to UTF-8 for editable current setup links; historical content remains. Every source/documentation change is committed; generated output and local secrets remain outside Git.
 
+## Session 4 — existing workflow source integration completed; runtime acceptance pending
+
+Date: 2026-11-14. Implementation `a710619` pushed. Borrowing/return validation and all writes now use the shared serializable transaction in production and report success only after commit. Added active-item revalidation, safe conflict/failure/unknown outcomes, read refresh without write replay, joined asynchronous queries, date selection, available filter, return confirmation, loading/empty/error states and startup retry. ViewModels now call Application services.
+
+Build of Tests/Domain/Application/Infrastructure passed with zero warnings/errors. Full solution still fails at Avalonia task loading. Seven workflow recording-session tests compiled but were blocked by Application Control loading Application.dll; no passing workflow test count. Edited AXAML is well-formed XML, but bindings/rendering remain unverified. No new database operations or schema changes were performed in this session. See [Session 4 evidence and pending walkthrough](session4-evidence.md).
+
+GitHub main advanced to Session 3 merge `e7263f7` while work was underway and the remote feature branch was deleted after that merge. The implementation push recreated it; a normal merge then incorporated upstream main without conflicts or history rewriting. All implementation and documentation changes are committed/pushed.
+
+## Session 5 — student-management source implemented; runtime acceptance pending
+
+Date: 2026-11-14. Added UC-12 registration/default eligibility, UC-13 lookup/edit/contact clearing and UC-14 permit/restrict workflows. Backend `de8d5bd` adds serializable management sessions, PostgreSQL-canonical uniqueness prevalidation and stale-selection snapshots. UI `34009f8` adds Students navigation, search/form/actions and loading/error/unknown-outcome recovery. Added ten service test cases and [Session 5 evidence](session5-evidence.md).
+
+Test project and Domain/Application/Infrastructure compile with zero warnings/errors. Targeted test discovery is blocked by Application Control loading Tests.dll (0x800711C7). Desktop still fails at Avalonia MSB4061. New/edited AXAML is well-formed XML, but bindings/rendering and A12–A14 PostgreSQL/restart evidence remain unverified. No schema/database changes were made in this session.
+
+User's commit preference: action-oriented titles naming the progress added, with detailed bodies explaining the session, changed behavior and actual validation/limits. Commit/push backend, UI, tests and evidence as separate coherent parts. Do not rewrite earlier commits to change their wording.
+
+## Session 6 — equipment-management source implemented; runtime acceptance pending
+
+Date: 2026-11-14. Backend `e6e9b20` implements UC-15 registration with available defaults and UC-16 descriptive updates through serializable sessions, PostgreSQL uniqueness prevalidation and stale snapshots including availability. UI `f9c7ceb` adds Manage Equipment navigation, lookup, registration/edit forms, description clearing and read-only availability. Tests `e4760d7` add ten service cases. Each part was committed/pushed independently with descriptive titles and detailed progress/validation bodies.
+
+Non-Desktop projects and tests compile with zero warnings/errors on the targeted build. Test discovery remains blocked by Application Control loading Tests.dll (0x800711C7); Desktop still fails at Avalonia MSB4061. Edited AXAML parses as XML, but bindings/rendering and A15–A16 database/restart evidence remain pending. No schema/database change or security-policy modification was made. Details: [Session 6 evidence](session6-evidence.md).
+
+## Session 7 — multi-item checkout source implemented; A06 runtime evidence pending
+
+Date: 2026-11-14. Backend `43bb1a0` adds shared single/multi-item validation and coordinated writes in one serializable session; every selected item is validated before writing. UI `b1169c3` adds Checkout multiple, checkboxes/count, student/date selection and recovery states. Tests `62ece26` add 15 recording cases and two opt-in disposable PostgreSQL success/rollback tests with a failure observer after actual persisted writes. No production failure switch is registered.
+
+Non-Desktop code/tests compile. Targeted recording tests failed before assertions due to Domain.dll Application Control loading; integration tests initially skipped without opt-in configuration. An explicit locally configured integration run was attempted and both cases were also blocked loading Domain.dll. No database/rollback pass is claimed. Desktop still fails Avalonia MSB4061; AXAML is well-formed XML but binding/rendering remains unverified. Details and A06 walkthrough: [Session 7 evidence](session7-evidence.md).
+
+## Session 8 — histories implemented; backend suite and PostgreSQL tests pass
+
+Date: 2026-11-14. Queries/services `5f84474` add subject lists and student/equipment-specific histories with both statuses, joined identities/dates and distinct empty/missing/error outcomes. UI `add03d6` adds the Histories screen with mode/subject selection, loading/retry, cancellation/version protection and navigation invalidation. Tests `c1d0c2e` add service/coordinator and real PostgreSQL membership/date/no-history checks.
+
+Observed results: targeted history run passed 7/7; complete suite with local PostgreSQL integration enabled passed 66/66, zero failures/skips. Earlier model comparison, EF disposable clean migrations and actual checkout success/rollback tests now pass too. Fresh psql reads confirm migration history and borrowing counts in retained disposable databases. This supersedes earlier backend test-loading blocks for current binaries; no security policy was changed. Desktop still fails Avalonia MSB4061. AXAML is well-formed XML but rendering/bindings/UI responsiveness remain unverified. Development DB startup/seeding and broader restart/concurrency checks remain pending. Details: [Session 8 evidence](session8-evidence.md).
+
+## Session 9 — search/filter/sort source implemented; current runtime blocked
+
+Date: 2026-11-14. Backend `358b2bb` adds trimmed literal case-insensitive partial search over the three required fields, composable statuses and either-date/direction sorting with ID ascending tie-breaks, all executed in PostgreSQL. UI `dff3d7f` adds Search borrowings, Apply/Retry, clear/reset, cancellation/latest-result guards and distinct result/error states. Tests `a289aae` add six service cases and one opt-in PostgreSQL case covering controlled matching, literal wildcard inputs, all statuses/sorts/ties, combined criteria and reset.
+
+Non-Desktop code/Tests compile with zero warnings/errors. Initial targeted search execution had seven assembly-load failures. Final full-suite execution was unsuccessful under Application Control; an isolated PostgreSQL search test confirmed Domain.dll blocked before assertions (0x800711C7). No current search or full-suite pass is claimed. Session 8's 66/66 result remains historical for its revision. Desktop still fails Avalonia MSB4061; edited AXAML is well-formed XML but rendering is unverified. No schema/database/security-policy changes were performed. Details: [Session 9 evidence](session9-evidence.md).
+
+## Session 10 — integrated PostgreSQL and full-build verification
+
+Date: 2026-11-14. Added GitHub Actions Linux verification (`64d6f4a`) to build the complete solution and run PostgreSQL tests independently of local Windows policy. The first CI run passed all 73 existing tests and compiled Desktop. Integrated lifecycle/concurrency/recovery tests (`d8bb810`) then passed with the complete 76-test backend suite. Repeat-safe startup seeding, registration/edits, restriction/return/permit, quota and active-item competition, histories/search and connection recovery now have real PostgreSQL evidence.
+
+Added headless UI tests (`2da327d`) and a five-process persistence probe (`8ad740b`). CI exposed and prompted fixes for four Desktop warnings (`9109b66`), test-app namespace ambiguity (`9399d10`), xUnit v3 executable-host configuration (`3de02f3`) and two headless test assumptions (`1e5328d`). Zero-warning full builds and 76 backend passes are confirmed; the corrected combined UI/process run is recorded in [Session 10 evidence](session10-evidence.md).
+
+Final combined CI run [43558553901](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43558553901) at `1e5328d` passed the complete Release build with zero warnings/errors, all 76 backend tests, all 3 headless UI tests (79 total; zero failed/skipped), and all five separate-process init/borrow/readback/return/readback stages. TRX evidence is retained on the run. This closes automated current-search, headless selection/binding and service-process persistence gaps; full manual real-Desktop visual/restart acceptance remains separate.
+
+No Windows security policy was changed and the local development database was not overwritten. Automated headless/control/process checks do not replace manual pixel/usability review or restarting the real Desktop executable. Use [continuous verification instructions](continuous-verification.md) and the [remaining manual checklist](manual-verification-checklist.md). Preserve earlier failed/blocked runs as historical evidence rather than presenting them as current code defects or passes.
+
 ## Session status
 
 1. Baseline/traceability: done with documented external execution blocker.
 2. Domain/contracts: implemented and compiled; partial runtime verification, external policy blocker remains.
-3. PostgreSQL/schema/lifetimes: implemented, SQL verified; EF/runtime acceptance pending external policy blocker.
-4. Existing workflows: pending.
-5. Student management: pending.
-6. Equipment management: pending.
-7. Atomic multi-item checkout: pending.
-8. Histories: pending.
-9. Search/filter/sort: pending.
-10. Integrated verification: pending.
+3. PostgreSQL/schema/lifetimes: clean EF migrations/model/constraints and repeat-safe bootstrap verified in disposable CI databases; local execution policy remains restricted.
+4. Existing workflows: full source builds in CI; integrated PostgreSQL lifecycle passes; complete staff visual/restart walkthrough remains pending.
+5. Student management: service and real integrated lifecycle verification passes; full staff UI acceptance remains pending.
+6. Equipment management: service and real integrated lifecycle verification passes; full staff UI acceptance remains pending.
+7. Atomic multi-item checkout: real success/after-write rollback and competing-request integrity tests pass; manual UI/real Desktop restart acceptance remains pending.
+8. Histories: backend service/coordination and PostgreSQL integration verified; headless/manual UI evidence in Session 10.
+9. Search/filter/sort: actual PostgreSQL matching/filtering/all sort directions/ties/reset pass in CI; headless/manual UI evidence in Session 10.
+10. Integrated verification: successful full zero-warning build, 79 tests and five persistence process stages in CI; remaining manual visual/real-Desktop restart checks documented.
 11. Submission documentation: pending.

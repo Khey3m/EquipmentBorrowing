@@ -1,31 +1,36 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:EquipmentBorrowing.Desktop.ViewModels"
-             x:Class="EquipmentBorrowing.Desktop.Views.BorrowingsView"
-             x:DataType="vm:BorrowingsViewModel">
-    <Grid RowDefinitions="Auto, *, Auto, Auto">
-        <TextBlock Grid.Row="0" Text="Active Borrowings" FontSize="20" FontWeight="Bold" Margin="0,0,0,15"/>
-
-        <!-- Active Borrowings Table -->
+             xmlns:app="clr-namespace:EquipmentBorrowing.Application.Interfaces;assembly=EquipmentBorrowing.Application"
+             x:Class="EquipmentBorrowing.Desktop.Views.BorrowingsView" x:DataType="vm:BorrowingsViewModel">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="15">
+            <TextBlock Text="Active Borrowings" FontSize="20" FontWeight="Bold"/>
+            <Button Content="Refresh" Command="{Binding RefreshCommand}"/>
+        </StackPanel>
         <ListBox Grid.Row="1" ItemsSource="{Binding ActiveBorrowings}" SelectedItem="{Binding SelectedBorrowing}">
             <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border BorderThickness="1" BorderBrush="#E0E0E0" CornerRadius="4" Padding="10" Margin="0,2">
-                        <Grid ColumnDefinitions="*, *, *">
-                            <TextBlock Grid.Column="0" Text="{Binding Id, StringFormat='Record #{0}'}" FontWeight="Bold"/>
-                            <TextBlock Grid.Column="1" Text="{Binding StudentId, StringFormat='Student ID: {0}'}"/>
-                            <TextBlock Grid.Column="2" Text="{Binding ExpectedReturnAt, StringFormat='Due: {0:yyyy-MM-dd}'}"/>
-                        </Grid>
-                    </Border>
+                <DataTemplate x:DataType="app:BorrowingDetails">
+                    <StackPanel Margin="5" Spacing="3">
+                        <TextBlock Text="{Binding StudentName}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding StudentNumber}"/>
+                        <TextBlock Text="{Binding EquipmentName}"/>
+                        <TextBlock Text="{Binding EquipmentIdentifier}"/>
+                        <TextBlock Text="{Binding CheckoutDate, StringFormat='Checkout: {0:yyyy-MM-dd}'}"/>
+                        <TextBlock Text="{Binding ExpectedReturnDate, StringFormat='Expected return: {0:yyyy-MM-dd}'}"/>
+                        <TextBlock Text="{Binding Status}"/>
+                    </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-
-        <Button Grid.Row="2" Content="Return Selected Equipment" Command="{Binding ReturnCommand}" 
-                Margin="0,15,0,0" HorizontalAlignment="Right" Background="#27AE60" Foreground="White"/>
-
-        <Border Grid.Row="3" Margin="0,15,0,0" Padding="10" CornerRadius="4">
-            <TextBlock Text="{Binding StatusMessage}" FontWeight="Medium"/>
-        </Border>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="12">
+            <CheckBox Content="Confirm return of the selected item" IsChecked="{Binding ConfirmReturn}"/>
+            <Button Content="Return selected item" Command="{Binding ReturnCommand}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Spacing="5">
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}"/>
+            <TextBlock Text="{Binding LoadMessage}" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" FontWeight="Medium"/>
+        </StackPanel>
     </Grid>
 </UserControl>

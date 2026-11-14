@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using EquipmentBorrowing.Application.Interfaces;
 
 namespace EquipmentBorrowing.Infrastructure.Persistence;
 
-public sealed class PostgresBootstrapper(IDbContextFactory<EquipmentBorrowingDbContext> factory)
+public sealed class PostgresBootstrapper(IDbContextFactory<EquipmentBorrowingDbContext> factory) : IApplicationInitializer
 {
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {

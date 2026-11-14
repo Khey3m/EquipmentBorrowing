@@ -33,6 +33,12 @@ public class EfBorrowingRepository : EfRepository, IBorrowingRepository
             .CountAsync(b => b.StudentId == studentId && b.Status == BorrowingStatus.Active, cancellationToken);
     }
 
+    public async Task<bool> HasActiveForEquipmentAsync(int equipmentId, CancellationToken cancellationToken = default)
+    {
+        await using var lease = await OpenAsync(cancellationToken);
+        return await lease.Context.Borrowings.AnyAsync(b => b.EquipmentId == equipmentId && b.Status == BorrowingStatus.Active, cancellationToken);
+    }
+
     public async Task AddAsync(Borrowing borrowing, CancellationToken cancellationToken = default)
     {
         await using var lease = await OpenAsync(cancellationToken);

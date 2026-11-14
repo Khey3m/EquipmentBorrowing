@@ -8,8 +8,14 @@ using Npgsql;
 namespace EquipmentBorrowing.Infrastructure.Persistence;
 
 public sealed class PostgresBorrowingSessionFactory(IDbContextFactory<EquipmentBorrowingDbContext> factory)
-    : IBorrowingSessionFactory
+    : IBorrowingSessionFactory, IStudentManagementSessionFactory, IEquipmentManagementSessionFactory
 {
+    async Task<IStudentManagementSession> IStudentManagementSessionFactory.OpenAsync(CancellationToken cancellationToken) =>
+        (IStudentManagementSession)await OpenAsync(cancellationToken);
+
+    async Task<IEquipmentManagementSession> IEquipmentManagementSessionFactory.OpenAsync(CancellationToken cancellationToken) =>
+        (IEquipmentManagementSession)await OpenAsync(cancellationToken);
+
     public async Task<IBorrowingSession> OpenAsync(CancellationToken cancellationToken = default)
     {
         var context = await factory.CreateDbContextAsync(cancellationToken);
@@ -22,12 +28,14 @@ public sealed class PostgresBorrowingSessionFactory(IDbContextFactory<EquipmentB
     }
 }
 
-internal sealed class PostgresBorrowingSession : IBorrowingSession
+internal sealed class PostgresBorrowingSession : IBorrowingSession, IStudentManagementSession, IEquipmentManagementSession
 {
     private readonly EquipmentBorrowingDbContext _context;
     private readonly IDbContextTransaction _transaction;
     public IStudentRepository Students { get; }
+    IStudentManagementRepository IStudentManagementSession.Students => (IStudentManagementRepository)Students;
     public IEquipmentRepository Equipment { get; }
+    IEquipmentManagementRepository IEquipmentManagementSession.Equipment => (IEquipmentManagementRepository)Equipment;
     public IBorrowingRepository Borrowings { get; }
 
     public PostgresBorrowingSession(EquipmentBorrowingDbContext context, IDbContextTransaction transaction)
@@ -42,15 +50,23 @@ internal sealed class PostgresBorrowingSession : IBorrowingSession
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         try { await _transaction.CommitAsync(cancellationToken); }
-        // Explicit server errors (e.g. serialization rejection) have a known unsuccessful outcome.
+        catch (PostgresException error) when (error.SqlState is "08007" or "40003")
+        { throw new CommitOutcomeUnknownException(); }
+        // Explicit server rejections (e.g. serialization failure) have a known unsuccessful outcome.
         catch (PostgresException) { throw; }
-        catch (Exception ex) when (ex is NpgsqlException or IOException or OperationCanceledException)
+        catch (Exception ex) when (ex is NpgsqlException or IOException or OperationCanceledException or TimeoutException)
         { throw new CommitOutcomeUnknownException(); }
     }
 
     public async ValueTask DisposeAsync()
     {
+        // Cleanup cannot replace an already determined commit outcome (especially Unknown).
         try { await _transaction.DisposeAsync(); }
-        finally { await _context.DisposeAsync(); }
+        catch (Exception error) when (error is NpgsqlException or IOException) { }
+        finally
+        {
+            try { await _context.DisposeAsync(); }
+            catch (Exception error) when (error is NpgsqlException or IOException) { }
+        }
     }
 }

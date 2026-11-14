@@ -21,32 +21,48 @@ public partial class App : Avalonia.Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override async void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
     {
         var serviceCollection = new ServiceCollection();
 
         // Infrastructure owns connection configuration, contexts and migrations.
         serviceCollection.AddDbContextFactory<EquipmentBorrowingDbContext>(PostgresConfiguration.Configure);
-        serviceCollection.AddTransient<PostgresBootstrapper>();
+        serviceCollection.AddTransient<IApplicationInitializer, PostgresBootstrapper>();
+        serviceCollection.AddTransient<ApplicationStartupService>();
         serviceCollection.AddSingleton<ICampusClock, CampusClock>();
-        serviceCollection.AddSingleton<IBorrowingSessionFactory, PostgresBorrowingSessionFactory>();
+        serviceCollection.AddSingleton<IWorkflowFailures, PostgresWorkflowFailures>();
+        serviceCollection.AddSingleton<PostgresBorrowingSessionFactory>();
+        serviceCollection.AddSingleton<IBorrowingSessionFactory>(sp => sp.GetRequiredService<PostgresBorrowingSessionFactory>());
+        serviceCollection.AddSingleton<IStudentManagementSessionFactory>(sp => sp.GetRequiredService<PostgresBorrowingSessionFactory>());
+        serviceCollection.AddSingleton<IEquipmentManagementSessionFactory>(sp => sp.GetRequiredService<PostgresBorrowingSessionFactory>());
         serviceCollection.AddTransient<IStudentRepository, EfStudentRepository>();
         serviceCollection.AddTransient<IEquipmentRepository, EfEquipmentRepository>();
         serviceCollection.AddTransient<IBorrowingRepository, EfBorrowingRepository>();
 
         // 3. Register Application Services
+        serviceCollection.AddTransient<IExistingWorkflowQueries, EfExistingWorkflowQueries>();
+        serviceCollection.AddTransient<ExistingWorkflowQueryService>();
+        serviceCollection.AddTransient<IHistoryQueries, EfHistoryQueries>();
+        serviceCollection.AddTransient<BorrowingHistoryService>();
+        serviceCollection.AddTransient<IBorrowingSearchQueries, EfBorrowingSearchQueries>();
+        serviceCollection.AddTransient<BorrowingSearchService>();
         serviceCollection.AddTransient<BorrowEquipmentService>();
+        serviceCollection.AddTransient<MultiItemCheckoutService>();
         serviceCollection.AddTransient<ReturnEquipmentService>();
+        serviceCollection.AddTransient<StudentManagementService>();
+        serviceCollection.AddTransient<EquipmentManagementService>();
 
         // 4. Register ViewModels
         serviceCollection.AddTransient<EquipmentViewModel>();
+        serviceCollection.AddTransient<BorrowingSearchViewModel>();
+        serviceCollection.AddTransient<BorrowingHistoryViewModel>();
+        serviceCollection.AddTransient<MultiItemCheckoutViewModel>();
         serviceCollection.AddTransient<BorrowingsViewModel>();
+        serviceCollection.AddTransient<StudentsViewModel>();
+        serviceCollection.AddTransient<EquipmentManagementViewModel>();
         serviceCollection.AddTransient<MainWindowViewModel>();
 
         Services = serviceCollection.BuildServiceProvider();
-
-        // Startup delegates migration/seeding to Infrastructure; no UI database logic.
-        await Services.GetRequiredService<PostgresBootstrapper>().InitializeAsync();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -55,6 +71,7 @@ public partial class App : Avalonia.Application
             {
                 DataContext = mainVm
             };
+            desktop.MainWindow.Opened += async (_, _) => await mainVm.RetryStartupAsync();
         }
 
         base.OnFrameworkInitializationCompleted();

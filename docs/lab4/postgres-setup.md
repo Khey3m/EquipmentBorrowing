@@ -20,6 +20,8 @@ On another machine, create an empty development database and set the variable lo
 
 ## Migrate and run
 
+Latest execution note (Session 10): local Windows restrictions remain, but Linux CI now builds the complete solution and passes all 76 backend tests with PostgreSQL enabled, including current search, clean migrations/model comparison, repeat-safe seeding and lifecycle/concurrency/recovery checks. Use [continuous verification](continuous-verification.md) and [Session 10 results](session10-evidence.md). Earlier blocked local results remain historical, not a substitute for the successful CI evidence.
+
 From the repository root on an approved development environment:
 
 ```powershell
@@ -32,7 +34,7 @@ dotnet run --project src/EquipmentBorrowing.Desktop
 
 Infrastructure is the design-time startup project, avoiding Avalonia for migration commands. Runtime bootstrap delegates migration/seeding to Infrastructure. Seed data is inserted only when the corresponding table is empty; existing records are not overwritten. Generated IDs avoid sequence collisions; example staff identifiers remain STU-001..003 and EQ-101..103.
 
-**Current limitation:** Windows Application Control blocks project assembly loading and Avalonia build tasks. EF migration execution, snapshot comparison, seeding and desktop launch remain unverified. The development database is still empty pending EF execution; no fake migration-history entries were written. Run the commands above in an approved environment or after an administrator-managed development allowance. Security policy was not changed.
+**Session 8 verification update:** the current backend binaries execute successfully. The complete test suite passes 66/66 with PostgreSQL integration enabled, including frozen-model comparison, clean EF migrations in disposable databases, actual checkout success/rollback and joined history reads. See [Session 8 evidence](session8-evidence.md). Earlier sessions' assembly-loading failures are retained as historical results. Desktop still fails loading Avalonia build tasks. Session 10 subsequently verifies repeat-safe bootstrap/seeding, 79 automated tests and separate-process persistence in CI. The actual Desktop close/reopen walkthrough remains pending and the local development database is still empty; no fake migration-history entries were written and no security policy was changed.
 
 `20261114000100_InitialPostgres` is an authored EF migration because CLI scaffolding was blocked. Its target model is frozen in InitialPostgresModel, separately from live configurations. PostgresModelTests checks snapshot/runtime agreement and migration discovery without connecting to a database; it must pass before EF reproduction is considered verified.
 
@@ -52,7 +54,7 @@ IDbContextFactory creates fresh contexts. Standalone repository calls own/dispos
 
 IBorrowingSessionFactory provides a shared context and serializable transaction for a complete write operation, exposing repository interfaces to Application. Repository SaveChanges flushes inside that transaction; CommitAsync is the single commit boundary. Disposal without commit releases/rolls back uncommitted work.
 
-**The session is implemented/registered but not yet consumed by BorrowEquipmentService or ReturnEquipmentService.** Session 4 must wrap validation and all writes in it, handle serialization/uniqueness conflicts with refresh, and add safe UI feedback. Existing service calls still save separately until then. SQL rollback evidence does not prove application atomicity.
+**Session 4 now consumes the session in BorrowEquipmentService and ReturnEquipmentService.** Production validation and writes share a transaction, with conflict refresh and explicit unknown-outcome feedback. Startup now opens the window before calling the Application startup service and provides Retry startup on failure. See [Session 4 evidence](session4-evidence.md). SQL rollback evidence alone does not prove application atomicity; actual EF/UI acceptance remains pending under the policy blocker.
 
 No automatic retry policy is enabled. Explicit PostgreSQL rejection remains a known unsuccessful outcome; transport/cancellation failures during commit become CommitOutcomeUnknownException. Consumers must refresh after reconnection and let staff decide before replaying. These runtime paths remain to be verified.
 

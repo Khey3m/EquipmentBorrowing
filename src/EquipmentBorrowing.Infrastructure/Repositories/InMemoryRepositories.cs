@@ -59,6 +59,9 @@ public class InMemoryBorrowingRepository : IBorrowingRepository
     public Task<int> GetActiveCountByStudentIdAsync(int studentId, CancellationToken cancellationToken = default) =>
         Task.FromResult(_borrowings.Count(b => b.StudentId == studentId && b.Status == BorrowingStatus.Active));
 
+    public Task<bool> HasActiveForEquipmentAsync(int equipmentId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(_borrowings.Any(b => b.EquipmentId == equipmentId && b.Status == BorrowingStatus.Active));
+
     public Task AddAsync(Borrowing borrowing, CancellationToken cancellationToken = default)
     {
         borrowing.AssignIdentity(_borrowings.Count == 0 ? 1 : checked(_borrowings.Max(b => b.Id) + 1));
