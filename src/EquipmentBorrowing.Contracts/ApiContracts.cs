@@ -15,7 +15,11 @@ public sealed record CheckoutResponse(IReadOnlyList<BorrowingResponse> Borrowing
 // Nullable inputs preserve the distinction between missing fields and supplied values.
 // Endpoint/application validation assigns the appropriate 400/404/409 category.
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
-public sealed record StudentInput(string? StudentNumber, string? FullName, string? Contact);
+public sealed record StudentInput([property: JsonRequired] string? StudentNumber,
+    [property: JsonRequired] string? FullName, string? Contact);
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record StudentUpdateInput([property: JsonRequired] string? StudentNumber,
+    [property: JsonRequired] string? FullName, [property: JsonRequired] string? Contact);
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record EquipmentInput(string? EquipmentCode, string? Name, string? Description);
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]

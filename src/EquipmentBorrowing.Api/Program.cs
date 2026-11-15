@@ -49,7 +49,8 @@ app.UseStatusCodePages(async status =>
     }));
 });
 app.MapOpenApi();
-app.MapGet("/api/v1/status", () => new ApiStatus("CampusEQ API", "v1", "Session 1 foundation; business endpoints pending"))
+app.MapStudentEndpoints();
+app.MapGet("/api/v1/status", () => new ApiStatus("CampusEQ API", "v1", "Session 2 student endpoints; remaining business endpoints pending"))
     .WithName("ApiStatus").WithSummary("Host liveness only; does not establish database readiness.")
     .Produces<ApiStatus>(200).Produces<ApiError>(405).Produces<ApiError>(500);
 app.Run();
