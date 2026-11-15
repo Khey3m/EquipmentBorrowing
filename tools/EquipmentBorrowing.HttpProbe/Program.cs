@@ -19,6 +19,31 @@ try
     using var desktop = DesktopComposition.Build(client);
     var root = desktop.GetRequiredService<MainWindowViewModel>();
     var api = desktop.GetRequiredService<ApiTransport>();
+    if (args.Length == 2 && args[0] == "--diagnostic")
+    {
+        var mode = args[1];
+        await root.RetryStartupAsync();
+        await root.StudentsVm.InitializeAsync();
+        var read = await api.SendAsync<StudentResponse[]>(HttpMethod.Get, "api/v1/students");
+        string? mutationOutcome = null;
+        if (mode == "healthy")
+            Require(read.Success && read.Status == 200 && root.StudentsVm.IsReady && !root.HasStartupMessage);
+        else
+        {
+            Require(!read.Success && !root.StudentsVm.IsReady && root.HasStartupMessage);
+            if (mode == "offline") Require(read.Status is null && root.StartupMessage.Contains("No HTTP response"));
+            else Require(mode == "server-error" && read.Status == 500 && root.StartupMessage.Contains("HTTP 500"));
+            var mutation = await new HttpStudentManagement(api).RegisterAsync(new("ST-UNCOMMITTED", "Failure Probe", null));
+            Require(mutation.Outcome == (mode == "offline" ? OperationOutcome.Unknown : OperationOutcome.Failed));
+            mutationOutcome = mutation.Outcome.ToString();
+            Require(trace.Count(item => JsonSerializer.SerializeToElement(item).GetProperty("method").GetString() == "POST") == 1);
+        }
+        Console.WriteLine(JsonSerializer.Serialize(new { success = true, mode, status = read.Status,
+            uiMessage = root.StudentsVm.LoadMessage, startupMessage = root.StartupMessage, mutationOutcome,
+            databaseSettingPresent = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EQUIPMENT_BORROWING_CONNECTION_STRING")), trace },
+            new JsonSerializerOptions { WriteIndented = true }));
+        return 0;
+    }
     var students = root.StudentsVm;
     await students.InitializeAsync(); Require(students.IsReady && students.Students.Count == 4);
     students.StudentNumber = "ST-HTTP"; students.FullName = "HTTP Demo Student"; students.ContactInformation = "demo@example.edu";
@@ -178,11 +203,20 @@ sealed class TraceHandler(ConcurrentQueue<object> trace, string source) : Delega
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
     {
         var body = request.Content is null ? null : await request.Content.ReadAsStringAsync(ct);
-        var response = await base.SendAsync(request, ct);
-        var content = await response.Content.ReadAsStringAsync(ct);
-        trace.Enqueue(new { source, method = request.Method.Method, path = request.RequestUri!.PathAndQuery,
-            request = body, expectedRevision = request.Headers.TryGetValues(EntityRevision.Header, out var revisions) ? revisions.Single() : null,
-            status = (int)response.StatusCode, response = content });
-        return response;
+        try
+        {
+            var response = await base.SendAsync(request, ct);
+            var content = await response.Content.ReadAsStringAsync(ct);
+            trace.Enqueue(new { source, method = request.Method.Method, path = request.RequestUri!.PathAndQuery,
+                request = body, expectedRevision = request.Headers.TryGetValues(EntityRevision.Header, out var revisions) ? revisions.Single() : null,
+                status = (int)response.StatusCode, response = content });
+            return response;
+        }
+        catch (Exception error) when (error is HttpRequestException or OperationCanceledException)
+        {
+            trace.Enqueue(new { source, method = request.Method.Method, path = request.RequestUri!.PathAndQuery,
+                request = body, status = (int?)null, transportFailure = error.GetType().Name });
+            throw;
+        }
     }
 }
