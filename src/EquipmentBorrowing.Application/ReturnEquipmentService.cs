@@ -5,7 +5,7 @@ namespace EquipmentBorrowing.Application.Services;
 
 public record ReturnResult(bool Success, string Message, OperationOutcome Outcome = OperationOutcome.Rejected, WorkflowError Error = WorkflowError.None, Borrowing? Borrowing = null);
 
-public class ReturnEquipmentService
+public class ReturnEquipmentService : IReturnWorkflow
 {
     private readonly IBorrowingSessionFactory? _sessions;
     private readonly IWorkflowFailures? _failures;

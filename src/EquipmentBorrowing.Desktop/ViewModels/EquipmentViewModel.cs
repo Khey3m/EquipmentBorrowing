@@ -11,7 +11,7 @@ namespace EquipmentBorrowing.Desktop.ViewModels;
 
 public partial class EquipmentViewModel : ObservableObject
 {
-    private readonly BorrowEquipmentService _borrow;
+    private readonly ISingleCheckoutWorkflow _borrow;
     private readonly ICatalogReader _queries;
     [ObservableProperty] private ObservableCollection<Equipment> _equipmentList = new();
     [ObservableProperty] private ObservableCollection<Student> _studentList = new();
@@ -28,7 +28,7 @@ public partial class EquipmentViewModel : ObservableObject
     [ObservableProperty, NotifyCanExecuteChangedFor(nameof(BorrowCommand))] private bool _isReady;
     [ObservableProperty, NotifyCanExecuteChangedFor(nameof(BorrowCommand))] private bool _needsVerification;
 
-    public EquipmentViewModel(BorrowEquipmentService borrow, ICatalogReader queries, ICampusClock clock)
+    public EquipmentViewModel(ISingleCheckoutWorkflow borrow, ICatalogReader queries, ICampusClock clock)
     {
         _borrow = borrow;
         _queries = queries;

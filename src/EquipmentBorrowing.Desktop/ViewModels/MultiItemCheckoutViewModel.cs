@@ -12,8 +12,8 @@ namespace EquipmentBorrowing.Desktop.ViewModels;
 
 public partial class MultiItemCheckoutViewModel : ObservableObject
 {
-    private readonly MultiItemCheckoutService _checkout;
-    private readonly ExistingWorkflowQueryService _queries;
+    private readonly IMultiCheckoutWorkflow _checkout;
+    private readonly ICatalogReader _queries;
     [ObservableProperty] private ObservableCollection<CheckoutItem> _equipmentList = new();
     [ObservableProperty] private ObservableCollection<Student> _studentList = new();
     [ObservableProperty] private Student? _selectedStudent;
@@ -29,7 +29,7 @@ public partial class MultiItemCheckoutViewModel : ObservableObject
     [ObservableProperty, NotifyCanExecuteChangedFor(nameof(CheckoutCommand))] [NotifyPropertyChangedFor(nameof(CanSelect))] private bool _isReady;
     [ObservableProperty, NotifyCanExecuteChangedFor(nameof(CheckoutCommand))] [NotifyPropertyChangedFor(nameof(CanSelect))] private bool _needsVerification;
 
-    public MultiItemCheckoutViewModel(MultiItemCheckoutService checkout, ExistingWorkflowQueryService queries, ICampusClock clock)
+    public MultiItemCheckoutViewModel(IMultiCheckoutWorkflow checkout, ICatalogReader queries, ICampusClock clock)
     {
         _checkout = checkout;
         _queries = queries;

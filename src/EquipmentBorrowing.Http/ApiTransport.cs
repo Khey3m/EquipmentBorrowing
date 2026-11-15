@@ -71,6 +71,12 @@ public sealed class ApiTransport(HttpClient client)
         null => false,
         StudentResponse student => student.Id > 0 && !string.IsNullOrWhiteSpace(student.StudentNumber) && !string.IsNullOrWhiteSpace(student.FullName),
         EquipmentResponse equipment => equipment.Id > 0 && !string.IsNullOrWhiteSpace(equipment.EquipmentCode) && !string.IsNullOrWhiteSpace(equipment.Name),
+        BorrowingResponse loan => loan.Id > 0 && loan.StudentId > 0 && loan.EquipmentId > 0
+            && loan.ExpectedReturnDate > loan.BorrowedDate && Enum.IsDefined(loan.Status)
+            && (loan.Status == BorrowingState.Active ? loan.ReturnedDate is null : loan.ReturnedDate >= loan.BorrowedDate),
+        CheckoutResponse checkout => checkout.Borrowings is not null && checkout.Borrowings.Count >= 2
+            && checkout.Borrowings.All(Valid) && checkout.Borrowings.Select(row => row.Id).Distinct().Count() == checkout.Borrowings.Count
+            && checkout.Borrowings.Select(row => row.EquipmentId).Distinct().Count() == checkout.Borrowings.Count,
         Array array => array.Cast<object?>().All(Valid),
         _ => true
     };

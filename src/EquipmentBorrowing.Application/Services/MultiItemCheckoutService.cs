@@ -4,7 +4,7 @@ using EquipmentBorrowing.Domain;
 namespace EquipmentBorrowing.Application.Services;
 
 public sealed class MultiItemCheckoutService(IBorrowingSessionFactory sessions, ICampusClock clock,
-    IWorkflowFailures failures, ICheckoutWriteObserver? observer = null)
+    IWorkflowFailures failures, ICheckoutWriteObserver? observer = null) : IMultiCheckoutWorkflow
 {
     public async Task<OperationResult<IReadOnlyList<Borrowing>>> ExecuteAsync(MultiItemCheckoutRequest request,
         CancellationToken cancellationToken = default)

@@ -6,7 +6,7 @@ namespace EquipmentBorrowing.Application.Services;
 public record BorrowRequest(int StudentId, int EquipmentId, DateOnly ExpectedReturnDate);
 public record BorrowResult(bool Success, string Message, Borrowing? Borrowing = null, OperationOutcome Outcome = OperationOutcome.Rejected, WorkflowError Error = WorkflowError.None);
 
-public class BorrowEquipmentService
+public class BorrowEquipmentService : ISingleCheckoutWorkflow
 {
     private readonly IBorrowingSessionFactory? _sessions;
     private readonly IWorkflowFailures? _failures;

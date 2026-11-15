@@ -10,11 +10,13 @@ public sealed record EquipmentResponse([property: JsonRequired] int Id, [propert
     [property: JsonRequired] string Name, string? Description, [property: JsonRequired] bool IsAvailable);
 [JsonConverter(typeof(JsonStringEnumConverter<BorrowingState>))]
 public enum BorrowingState { Active, Returned }
-public sealed record BorrowingResponse(int Id, int StudentId, int EquipmentId, DateOnly BorrowedDate,
-    DateOnly ExpectedReturnDate, DateOnly? ReturnedDate, BorrowingState Status,
+public sealed record BorrowingResponse([property: JsonRequired] int Id, [property: JsonRequired] int StudentId,
+    [property: JsonRequired] int EquipmentId, [property: JsonRequired] DateOnly BorrowedDate,
+    [property: JsonRequired] DateOnly ExpectedReturnDate, [property: JsonRequired] DateOnly? ReturnedDate,
+    [property: JsonRequired] BorrowingState Status,
     string? StudentNumber = null, string? StudentName = null,
     string? EquipmentCode = null, string? EquipmentName = null);
-public sealed record CheckoutResponse(IReadOnlyList<BorrowingResponse> Borrowings);
+public sealed record CheckoutResponse([property: JsonRequired] IReadOnlyList<BorrowingResponse> Borrowings);
 
 // Nullable inputs preserve the distinction between missing fields and supplied values.
 // Endpoint/application validation assigns the appropriate 400/404/409 category.
