@@ -8,9 +8,9 @@ from docx.shared import Inches, Pt, RGBColor
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--copy-to", type=Path, required=True)
+parser.add_argument("--copy-to", type=Path, help="Optional extra copy; omit to update only the project master report.")
 args = parser.parse_args()
-if args.copy_to.exists():
+if args.copy_to and args.copy_to.exists():
     parser.error("Choose a new output filename to preserve the previous report.")
 folder = root / "docs/lab5/manual-evidence"
 data = json.loads((folder / "captions.json").read_text(encoding="utf-8"))
@@ -37,6 +37,7 @@ for index, entry in enumerate(data["entries"]):
     doc.add_paragraph("Evidence scope: " + entry["scope"])
 output = root / "docs/lab5/DEMO_LAB_5_SCREENSHOT_REPORT.docx"
 doc.save(output)
-args.copy_to.parent.mkdir(parents=True, exist_ok=True)
-shutil.copyfile(output, args.copy_to)
-print(f"Report built with {len(data['entries'])} supplied screenshot(s): {args.copy_to}")
+if args.copy_to:
+    args.copy_to.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(output, args.copy_to)
+print(f"Report built with {len(data['entries'])} supplied screenshot(s): {output}")

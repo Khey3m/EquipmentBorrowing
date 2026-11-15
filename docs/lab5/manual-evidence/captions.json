@@ -152,6 +152,72 @@
         "Together with the filtered screenshot, this demonstrates that the borrowed camera remains in the catalog and is excluded when only available items are requested. Leave this loan active until Step 5 demonstrates its return."
       ],
       "scope": "Manual single-issue and catalog-filter evidence. Cropped SQL values are not inferred; full acceptance remains subject to the remaining walkthrough evidence."
+    },
+    {
+      "id": "Figure 14",
+      "image": "14-step5-query-message.png",
+      "heading": "Step 5 - Borrowing query completed",
+      "source_filename": "Screenshot 2026-11-15 224934.png",
+      "explanation": [
+        "pgAdmin shows the borrowing SELECT filtered by ST-UI-600, with a successful execution message and Total rows: 1. The Messages tab is selected, so the returned column values are not visible.",
+        "This is supporting query-execution evidence only. It cannot establish the before-return Active status, NULL actual return date or unavailable flag. For this SELECT, the message does not indicate that a row was changed."
+      ],
+      "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
+    },
+    {
+      "id": "Figure 15",
+      "image": "15-step5-return-success.png",
+      "heading": "Step 5 - Successful return and empty active list",
+      "source_filename": "Screenshot 2026-11-15 225037.png",
+      "explanation": [
+        "The Active borrowings screen is empty and reports No active borrowings and Equipment successfully returned through the API. This records the visible result after the return.",
+        "The confirmation checkbox is unchecked in the completed state. The supplied pictures do not capture it checked before the return, so this image does not independently document that interaction."
+      ],
+      "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
+    },
+    {
+      "id": "Figure 16",
+      "image": "16-step5-camera-available.png",
+      "heading": "Step 5 - Camera available again in the catalog",
+      "source_filename": "Screenshot 2026-11-15 225137.png",
+      "explanation": [
+        "The catalog lists EQ-UI-600, Demo edited Camera, as Available again. The availability filter is unchecked, so this is the unfiltered catalog.",
+        "The bottom message still says Equipment successfully borrowed through the API, apparently retained from the earlier catalog operation. It is not a return confirmation; the active-list success message and database/history screenshots supply the return evidence."
+      ],
+      "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
+    },
+    {
+      "id": "Figure 17",
+      "image": "17-step5-returned-sql.png",
+      "heading": "Step 5 - Same loan retained with actual return date",
+      "source_filename": "Screenshot 2026-11-15 225234.png",
+      "explanation": [
+        "The database result retains LoanId 1 for ST-UI-600 and EQ-UI-600. BorrowedAt is 2026-11-15, ExpectedReturnAt is 2026-11-20, ActualReturnAt is 2026-11-15, and IsAvailable is true.",
+        "The Status cell is shortened to Return...; the following history pictures display the full Returned label. Together these captures support that the original loan was retained and the camera became available."
+      ],
+      "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
+    },
+    {
+      "id": "Figure 18",
+      "image": "18-step5-equipment-history.png",
+      "heading": "Step 5 - Returned loan retained in camera history",
+      "source_filename": "Screenshot 2026-11-15 225259.png",
+      "explanation": [
+        "History for is set to Equipment and EQ-UI-600 is selected. Its history retains LOAN #1 for ST-UI-600 with Returned status, issued 2026-11-15, due 2026-11-20 and returned 2026-11-15.",
+        "This demonstrates that returning an item removes it from the active list while preserving its equipment history."
+      ],
+      "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
+    },
+    {
+      "id": "Figure 19",
+      "image": "19-step5-student-history.png",
+      "heading": "Step 5 - Returned loan retained in student history",
+      "source_filename": "Screenshot 2026-11-15 225322.png",
+      "explanation": [
+        "History for is set to Student and ST-UI-600 is selected. The same LOAN #1 appears as Returned with matching camera identifier and dates.",
+        "The subject list also includes ST-UI-603 / Demo Empty Student, supplying visible evidence that the control student exists. Its empty history is not demonstrated because ST-UI-600 is selected."
+      ],
+      "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
     }
   ]
 }
