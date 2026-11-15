@@ -97,3 +97,7 @@ The Lab 4 submitted checkout retains its original direct-database Desktop and la
 Integrated CI and controlled no-response/500/recovery evidence: [Session 9](docs/lab5/session9-evidence.md). CI retains TRX, OpenAPI and HTTP/SQL captures under campuseq-test-results; Linux omits native Windows capture explicitly. Full rendered T07 staff walkthrough remains pending.
 
 Verified integrated checkpoint: [CI run 43710719990](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43710719990), dc1e541: zero-warning Release build, 99 passing tests, five persistence stages and seven controlled HTTP scenarios. [Durable summary](docs/lab5/session9-ci-summary.json). Native recovery screenshots and exact T07/manual limits are recorded in Session 9 evidence.
+
+## Lab 5 report and review handoff
+
+[Development report](docs/lab5/development-report.md), [architecture](docs/lab5/architecture.md), [submission inventory](docs/lab5/submission-handoff.md), [remaining rendered T07 script](docs/lab5/rendered-walkthrough.md), and [retained raw CI artifact](docs/lab5/evidence/ci-43710719990.zip). The source review package is generated from a clean commit with `python tools/package-lab4.py --lab 5 --output-dir "$env:USERPROFILE/Downloads/Lab5-submission"`. Its manifest states the pending rendered T07 and final-tag status; it is not yet a completed lab5-submitted handoff.

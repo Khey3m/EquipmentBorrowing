@@ -1,0 +1,19 @@
+{
+  "run_id": 43710719990,
+  "artifact_id": 14160616423,
+  "source_commit": "dc1e54186f35600bc8cad15ed8ec6897ccdbb167",
+  "sha256": "38dffd3a9560a2324408df69081496a38e51a402ac8d7139543dcf1b2b724ee0",
+  "bytes": 65983,
+  "entries": [
+    "lab4.trx",
+    "lab5/borrowings.json",
+    "lab5/checkout.json",
+    "lab5/client-all.json",
+    "lab5/equipment.json",
+    "lab5/openapi.json",
+    "lab5/reads.json",
+    "lab5/recovery.json",
+    "lab5/students.json",
+    "ui.trx"
+  ]
+}
