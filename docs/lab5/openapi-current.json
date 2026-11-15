@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://127.0.0.1:54765/"
+      "url": "http://127.0.0.1:50309/"
     }
   ],
   "paths": {
@@ -634,6 +634,14 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "X-Expected-Revision",
+            "in": "header",
+            "description": "Optional SHA-256 revision of the selected response fields; stale state returns 409. Used by Desktop; editable JSON is unchanged.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -719,6 +727,14 @@
                 "string"
               ],
               "format": "int32"
+            }
+          },
+          {
+            "name": "X-Expected-Revision",
+            "in": "header",
+            "description": "Optional SHA-256 revision of the selected response fields; stale state returns 409. Used by Desktop; editable JSON is unchanged.",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -992,6 +1008,14 @@
                 "string"
               ],
               "format": "int32"
+            }
+          },
+          {
+            "name": "X-Expected-Revision",
+            "in": "header",
+            "description": "Optional SHA-256 revision of the selected response fields; stale state returns 409. Used by Desktop; editable JSON is unchanged.",
+            "schema": {
+              "type": "string"
             }
           }
         ],

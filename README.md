@@ -140,7 +140,7 @@ Earlier laboratory reflections and incremental status notes remain in [the archi
 
 ## Lab 5 in progress
 
-Lab 4 reproduction above remains valid for its direct-database Desktop. On branch lab5/api-integration, Sessions 1-5 add an independent ASP.NET Core host and all sixteen API operations. Desktop HTTP migration and full T07/T08 acceptance remain pending.
+Lab 4 reproduction above remains valid for its direct-database Desktop. On branch lab5/api-integration, Sessions 1-5 add an independent ASP.NET Core host and all sixteen API operations. Session 6 migrates student/equipment management and catalog reads to HTTP. Other Desktop workflows/direct persistence and full T07/T08 acceptance remain pending.
 
 ```powershell
 dotnet run --project src/EquipmentBorrowing.Api --configuration Release
@@ -155,3 +155,5 @@ Equipment endpoint verification: [Session 3 evidence](docs/lab5/session3-evidenc
 Single borrowing/return and completed student acceptance: [Session 4 evidence](docs/lab5/session4-evidence.md). T02/T03/T04 have passing recorded executions; remaining cases retain their documented status.
 
 Complete API/query/atomicity evidence: [Session 5](docs/lab5/session5-evidence.md). API traceability: [matrix](docs/lab5/traceability.md). T01-T06 have passing executions; existing headless Desktop passes do not constitute T07 HTTP migration acceptance.
+
+Session 6 client setup and current mixed boundary: [HTTP management evidence and launch instructions](docs/lab5/session6-evidence.md). Configure EQUIPMENT_BORROWING_API_BASE_URL (default http://127.0.0.1:5085/). During Sessions 6-7, API and remaining direct Desktop workflows must use the same database; use the Lab 4 submitted checkout for the original Lab 4-only launch instructions/scripts.

@@ -27,3 +27,7 @@ API-10/12/13 implemented in 8ab98f1, preserving serializable service transaction
 ## Session 5 - delivered
 
 All sixteen endpoints implemented in 387276a. API-11/14/15/16 preserve atomic multi-checkout, combined SQL-backed queries and relational histories. Full Release build clean; 76 backend and four UI tests pass; 57 T01/T06 and 57 reset T05 HTTP requests pass with independent state and controlled after-insert rollback. T01-T06 now have passing executions; T07/full T08 pending. See [Session 5 evidence](session5-evidence.md), [traceability](traceability.md) and [OpenAPI](openapi-current.json). Next: Session 6 asynchronous HTTP client and first Desktop screens.
+
+## Session 6 - delivered
+
+HTTP client/workflow interfaces and first management/catalog migration in cfb379a, real probe/tests in c347792, concurrency guard in 96fed32. Build clean; 76 backend and eleven UI/client tests pass. Actual HTTP-backed management ViewModels refresh independent edits; no PostgreSQL settings in the probe process. T07 is partial: unmigrated Desktop workflows still directly use the same database until Sessions 7-8. See [Session 6 evidence](session6-evidence.md). Next: Session 7 single/multi checkout and active returns over HTTP.

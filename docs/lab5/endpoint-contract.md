@@ -30,3 +30,7 @@ Creates omit optional contact/description or send null; updates send complete ed
 Borrowing defaults: status All, sort borrowedDate, direction asc. Search is trimmed case-insensitive partial matching over student name/number and equipment name; filters combine, ascending borrowing ID breaks ties in either date direction. Multi-checkout duplicate/fewer-than-two IDs and invalid dates -> 400; missing references -> 404; business conflicts -> 409. Fresh database reads establish atomicity, not response status alone.
 
 Result mapping gate: Lab 4 OperationOutcome.Rejected and Conflict do not yet distinguish every HTTP category. Sessions 2-5 added structured application failure categories for management, borrowing, multi-checkout and missing history subjects; do not parse message text or incorrectly equate every conflict with 409. Preserve Unknown and never automatically replay uncertain writes.
+
+## Optional Desktop concurrency extension (Session 6)
+
+API-05/06/09 accept optional X-Expected-Revision. EntityRevision in Contracts hashes the selected StudentResponse/EquipmentResponse using UTF-8 Web JSON and SHA-256 uppercase hex. A mismatching revision returns 409 without writes; matching state is revalidated by the transactional service. Required JSON fields/statuses remain intact and clients omitting the optional header keep the base contract. Generated OpenAPI describes it.

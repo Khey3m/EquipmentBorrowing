@@ -416,7 +416,8 @@ try:
     args.output.write_text(json.dumps({'database':args.database,'campus_date':str(today),'date_policy':'reference offsets from actual Asia/Manila date',
        'dataset':('S1-S4/E1-E7; reset before every T05 subcase' if args.resource=='checkout' else 'S1-S4/E1-E7; reset before T01 and again before T06' if args.resource=='reads' else 'S1-S4/E1-E7; reset once for this test'),
        'scope':{'students':'T02 complete execution','equipment':'T03 equipment execution','borrowings':'T04 single borrowing/return execution','reads':'T01/T06 independent reads and query execution','checkout':'T05 atomic checkout and rollback execution','client':'Session 6 HTTP management ViewModels; T07 partial'}[args.resource],'fault_definition':fault_definition if args.resource=='checkout' else None,'checks':trace,'restart_preserved':True,'openapi_operations':sorted(operations)},indent=2)+'\n')
-    print(f'PASS: {len(trace)} HTTP requests; independent before/after reads; identity/history/protected-state/restart/server failure recovery verified.')
+    wire_count=sum('method' in entry for entry in trace)+sum(len(entry['viewmodel_probe']['trace']) for entry in trace if 'viewmodel_probe' in entry)
+    print(f'PASS: {wire_count} HTTP exchanges; independent state/restart/server failure recovery verified.')
     print('Evidence: '+str(args.output))
 finally:
     stop();log.close()
