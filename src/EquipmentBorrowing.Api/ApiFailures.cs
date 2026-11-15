@@ -11,6 +11,7 @@ internal static class ApiFailures
         {
             WorkflowError.InvalidInput => (400, "invalid_request"),
             WorkflowError.NotFound => (404, "not_found"),
+            WorkflowError.BusinessRuleConflict => (409, "business_conflict"),
             WorkflowError.DuplicateIdentifier => (409, "duplicate_identifier"),
             WorkflowError.StaleState or WorkflowError.ConcurrentConflict => (409, "conflict"),
             WorkflowError.UnknownOutcome => (500, "outcome_unknown"),

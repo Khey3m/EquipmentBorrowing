@@ -6,8 +6,10 @@ public sealed record ApiError(string Code, string Message);
 public sealed record ApiStatus(string Service, string Version, string Phase);
 public sealed record StudentResponse(int Id, string StudentNumber, string FullName, string? Contact, bool IsEligible);
 public sealed record EquipmentResponse(int Id, string EquipmentCode, string Name, string? Description, bool IsAvailable);
+[JsonConverter(typeof(JsonStringEnumConverter<BorrowingState>))]
+public enum BorrowingState { Active, Returned }
 public sealed record BorrowingResponse(int Id, int StudentId, int EquipmentId, DateOnly BorrowedDate,
-    DateOnly ExpectedReturnDate, DateOnly? ReturnedDate, string Status,
+    DateOnly ExpectedReturnDate, DateOnly? ReturnedDate, BorrowingState Status,
     string? StudentNumber = null, string? StudentName = null,
     string? EquipmentCode = null, string? EquipmentName = null);
 public sealed record CheckoutResponse(IReadOnlyList<BorrowingResponse> Borrowings);
@@ -29,7 +31,8 @@ public sealed record EquipmentUpdateInput([property: JsonRequired] string? Equip
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record EligibilityInput(bool? IsEligible);
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
-public sealed record BorrowInput(int? StudentId, int? EquipmentId, DateOnly? ExpectedReturnDate);
+public sealed record BorrowInput([property: JsonRequired] int? StudentId,
+    [property: JsonRequired] int? EquipmentId, [property: JsonRequired] DateOnly? ExpectedReturnDate);
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record CheckoutInput(int? StudentId, int[]? EquipmentIds, DateOnly? ExpectedReturnDate);
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]

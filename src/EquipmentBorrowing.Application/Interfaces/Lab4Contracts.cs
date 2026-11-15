@@ -24,7 +24,7 @@ public record BorrowingDetails(int Id, int StudentId, string StudentNumber, stri
     int EquipmentId, string EquipmentIdentifier, string EquipmentName, DateOnly CheckoutDate,
     DateOnly ExpectedReturnDate, DateOnly? ActualReturnDate, BorrowingStatus Status);
 public enum OperationOutcome { Succeeded, Rejected, Conflict, Failed, Unknown }
-public enum WorkflowError { None, InvalidInput, DuplicateIdentifier, NotFound, StaleState, NoChange, ConcurrentConflict, DatabaseFailure, UnknownOutcome }
+public enum WorkflowError { None, InvalidInput, BusinessRuleConflict, DuplicateIdentifier, NotFound, StaleState, NoChange, ConcurrentConflict, DatabaseFailure, UnknownOutcome }
 public record OperationResult<T>(OperationOutcome Outcome, string Message, T? Value = default,
     WorkflowError Error = WorkflowError.None);
 

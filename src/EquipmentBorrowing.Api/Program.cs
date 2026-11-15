@@ -51,7 +51,8 @@ app.UseStatusCodePages(async status =>
 app.MapOpenApi();
 app.MapStudentEndpoints();
 app.MapEquipmentEndpoints();
-app.MapGet("/api/v1/status", () => new ApiStatus("CampusEQ API", "v1", "Session 3 student/equipment endpoints; borrowing endpoints pending"))
+app.MapBorrowingEndpoints();
+app.MapGet("/api/v1/status", () => new ApiStatus("CampusEQ API", "v1", "Session 4 single issue/return; multi-checkout and queries pending"))
     .WithName("ApiStatus").WithSummary("Host liveness only; does not establish database readiness.")
     .Produces<ApiStatus>(200).Produces<ApiError>(405).Produces<ApiError>(500);
 app.Run();
