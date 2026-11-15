@@ -493,6 +493,76 @@
         "Fresh SQL returns student Id 1, ST-UI-600, NULL contact and three retained loans. Camera LoanId 1 has actual return date 2026-11-15 and available true; tripod LoanId 2 and microphone LoanId 3 remain Active with actual return NULL and available false. FullName and the camera Status cell are truncated, while earlier evidence supplies the complete name and Returned label."
       ],
       "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 47",
+      "image": "47-step11-api-restart.png",
+      "heading": "Step 11 - API stopped and started again",
+      "source_filename": "Screenshot 2026-11-16 000027.png",
+      "explanation": [
+        "The terminal shows Application is shutting down followed by a new dotnet run for EquipmentBorrowing.Api and Now listening on http://127.0.0.1:5085. The environment assignment references the saved working connection without displaying its value."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 48",
+      "image": "48-step11-student.png",
+      "heading": "Step 11 - Student details displayed after reopening",
+      "source_filename": "Screenshot 2026-11-16 000125.png",
+      "explanation": [
+        "The student screen displays ST-UI-600 / Demo External Edit, Eligible to borrow and a blank contact field. This matches the saved external update from Step 9."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 49",
+      "image": "49-step11-active.png",
+      "heading": "Step 11 - Active borrowing identities retained",
+      "source_filename": "Screenshot 2026-11-16 000151.png",
+      "explanation": [
+        "Active borrowings still shows tripod Loan #2 and microphone Loan #3 for ST-UI-600 / Demo External Edit. Both remain Active, issued 2026-11-15 and due 2026-11-20."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 50",
+      "image": "50-step11-history.png",
+      "heading": "Step 11 - Returned and active history retained",
+      "source_filename": "Screenshot 2026-11-16 000237.png",
+      "explanation": [
+        "Student history retains microphone Loan #3 and tripod Loan #2 as Active and camera Loan #1 as Returned on 2026-11-15. Related identifiers and due dates remain consistent with the earlier captures."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 51",
+      "image": "51-step11-student-sql.png",
+      "heading": "Step 11 - Fresh student database readback",
+      "source_filename": "Screenshot 2026-11-16 000256.png",
+      "explanation": [
+        "The query includes current_database() and returns Id 1, student number ST-UI-600, NULL contact and eligibility true. The database name and full name are truncated in the result cells; the selected database is identified in pgAdmin and the complete student name appears in the application capture."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 52",
+      "image": "52-step11-equipment-sql.png",
+      "heading": "Step 11 - Equipment identities and saved fields retained",
+      "source_filename": "Screenshot 2026-11-16 000334.png",
+      "explanation": [
+        "The four equipment records retain Id values 1 through 4. Camera EQ-UI-600 retains Demo edited Camera with NULL description and availability true. Tripod and microphone availability is false; tablet availability remains true."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 53",
+      "image": "53-step11-loans-sql.png",
+      "heading": "Step 11 - Fresh loan database readback after restart",
+      "source_filename": "Screenshot 2026-11-16 000403.png",
+      "explanation": [
+        "The query returns the same LoanId values 1, 2 and 3. Camera LoanId 1 retains actual return 2026-11-15 and availability true. Tripod and microphone remain Active with NULL actual return dates and availability false. All expected return dates are 2026-11-20. The camera status text is truncated in SQL; the application history shows the full Returned label."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
     }
   ]
 }
