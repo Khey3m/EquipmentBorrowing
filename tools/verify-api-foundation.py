@@ -1,4 +1,5 @@
 """Build the API first, then verify its real HTTP foundation without PostgreSQL or Desktop."""
+import argparse
 import datetime
 import json
 import os
@@ -10,6 +11,9 @@ import time
 import urllib.error
 import urllib.request
 
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--openapi-output", type=Path)
+args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 dll = root / "src/EquipmentBorrowing.Api/bin/Release/net10.0/EquipmentBorrowing.Api.dll"
 if not dll.exists():
@@ -50,7 +54,19 @@ with tempfile.TemporaryFile() as log:
         status, headers, document = request("/openapi/v1.json")
         assert status == 200 and document["openapi"].startswith("3.")
         assert "/api/v1/status" in document["paths"]
-        assert not any(path.startswith("/api/v1/students") for path in document["paths"])
+        if "/api/v1/students" in document["paths"]:
+            assert {"get", "post"} <= document["paths"]["/api/v1/students"].keys()
+            assert {"get", "put"} <= document["paths"]["/api/v1/students/{id}"].keys()
+            assert "patch" in document["paths"]["/api/v1/students/{id}/eligibility"]
+            schemas = document["components"]["schemas"]
+            update_schema = schemas["StudentUpdateInput"]
+            assert {"studentNumber", "fullName", "contact"} <= set(update_schema["required"])
+            assert update_schema.get("additionalProperties") is False
+            create = document["paths"]["/api/v1/students"]["post"]["responses"]
+            assert {"201", "400", "409", "500"} <= create.keys()
+        if args.openapi_output:
+            args.openapi_output.parent.mkdir(parents=True, exist_ok=True)
+            args.openapi_output.write_text(json.dumps(document, indent=2) + "\n")
         checks.append({"method":"GET", "path":"/openapi/v1.json", "status":status,
                        "openapi":document["openapi"], "paths":list(document["paths"])})
         for path, method, expected, code in [("/api/v1/does-not-exist","GET",404,"not_found"),

@@ -140,10 +140,12 @@ Earlier laboratory reflections and incremental status notes remain in [the archi
 
 ## Lab 5 in progress
 
-Lab 4 reproduction above remains valid for its direct-database Desktop. On branch lab5/api-integration, Session 1 adds an independent ASP.NET Core host and transport contracts; Desktop HTTP migration and business endpoints are pending.
+Lab 4 reproduction above remains valid for its direct-database Desktop. On branch lab5/api-integration, Sessions 1-2 add an independent ASP.NET Core host, transport contracts and student endpoints API-02-06; Desktop HTTP migration and other business endpoints are pending.
 
 ```powershell
 dotnet run --project src/EquipmentBorrowing.Api --configuration Release
 ```
 
-Host status: http://127.0.0.1:5085/api/v1/status. Generated OpenAPI: http://127.0.0.1:5085/openapi/v1.json (currently operational route only). Override the address with --urls. This foundation does not connect, migrate or seed on startup. See [Lab 5 plan](docs/lab5/session-plan.md), [endpoint target](docs/lab5/endpoint-contract.md), [session evidence](docs/lab5/session1-evidence.md), and [acceptance execution](docs/lab5/test-execution.md).
+Host status: http://127.0.0.1:5085/api/v1/status. Generated OpenAPI: http://127.0.0.1:5085/openapi/v1.json (currently student endpoints plus operational status). Override the address with --urls. This foundation does not connect, migrate or seed on startup. See [Lab 5 plan](docs/lab5/session-plan.md), [endpoint target](docs/lab5/endpoint-contract.md), [session evidence](docs/lab5/session1-evidence.md), and [acceptance execution](docs/lab5/test-execution.md).
+
+Student endpoint verification and limits: [Session 2 evidence](docs/lab5/session2-evidence.md). Current generated contract snapshot: [OpenAPI](docs/lab5/openapi-current.json). Full T02 includes future issue/return branches and remains partial.

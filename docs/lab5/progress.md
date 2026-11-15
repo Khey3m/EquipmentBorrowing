@@ -11,3 +11,7 @@ Next: Session 1 ? baseline, transport contracts and independent API host foundat
 API/Contracts foundation committed and pushed in 0e6dcd9. Independent Production HTTP checks observed 200 host status, 200 generated OpenAPI, safe 404 and 405 with Desktop closed and no DB setting in the API environment. Full solution Release build passes with zero warnings/errors. See [Session 1 evidence](session1-evidence.md), [target contracts](endpoint-contract.md), and [consolidated acceptance ledger](test-execution.md).
 
 Generated OpenAPI covers only the operational route so far; API-01-16 and T01-T08 remain pending. Structured business failure categorization will be added with student endpoints rather than changing unused result types. No Desktop/database behavior changed. Next: Session 2 student API.
+
+## Session 2 - delivered
+
+Student API-02-06 implemented in 1788c68. Structured student error categories preserve Desktop behavior while mapping 400/404/409/500 and repeated eligibility 200. Full Release build is clean; 76 backend tests pass without skips; 35 real HTTP calls with fresh PostgreSQL before/after state pass, including identity/history/contact/no-op/restart and safe database 500/recovery. See [Session 2 evidence](session2-evidence.md) and [current OpenAPI](openapi-current.json). T02 remains partial until issue/return endpoints exist. Next: Session 3 equipment endpoints API-01/07-09.
