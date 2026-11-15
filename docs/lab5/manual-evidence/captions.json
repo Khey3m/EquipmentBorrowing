@@ -1,0 +1,18 @@
+{
+  "title": "Lab 5 - Manual Screenshot Evidence",
+  "entries": [
+    {
+      "id": "Figure 1",
+      "image": "01-equipment-empty-array.png",
+      "heading": "Step 1 - Equipment endpoint: empty JSON result",
+      "source_filename": "Screenshot 2026-11-15 215359.png",
+      "explanation": [
+        "The browser opens http://127.0.0.1:5085/api/v1/equipment and displays the JSON response []. This records direct browser access to the equipment-list endpoint.",
+        "The empty array means that this API response contains no equipment items. It is the expected list representation for an empty result, rather than an equipment object or a connection-error message.",
+        "This screenshot does not display the HTTP status code, the PostgreSQL database name, or whether the Desktop process is closed. Those points need separate terminal/database/process evidence; they are not inferred from this image.",
+        "For the walkthrough after the seven-item controlled dataset has been prepared, capture an additional populated equipment response. Retain this image as supplemental empty-result evidence rather than labeling it as the seven-item seeded catalog."
+      ],
+      "scope": "Supporting API-01 / Step 1 evidence only. No complete T01 or T07 pass is established by this image."
+    }
+  ]
+}
