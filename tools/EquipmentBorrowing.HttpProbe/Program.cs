@@ -5,6 +5,7 @@ using EquipmentBorrowing.Application.Interfaces;
 using EquipmentBorrowing.Contracts;
 using EquipmentBorrowing.Desktop.ViewModels;
 using EquipmentBorrowing.Http;
+using EquipmentBorrowing.Domain;
 
 // This verification tool never reads PostgreSQL configuration or constructs persistence services.
 var trace = new ConcurrentQueue<object>();
@@ -69,7 +70,57 @@ try
     var catalog = await new HttpCatalogReader(api).GetCatalogAsync(true);
     Require(catalog.Success && catalog.Value!.Equipment.Any(item => item.Id == equipmentId)
         && catalog.Value.Equipment.All(item => item.IsAvailable) && catalog.Value.Students.Any(s => s.Id == studentId));
-    Console.WriteLine(JsonSerializer.Serialize(new { success = true, studentId, equipmentId,
+    object? borrowingVerification = null;
+    if (args.Contains("--borrowing"))
+    {
+        var catalogReader = new HttpCatalogReader(api);
+        var single = new EquipmentViewModel(new HttpSingleCheckout(api), catalogReader, new CampusClock());
+        await single.InitializeAsync(); Require(single.IsReady);
+        single.SelectedStudent = single.StudentList.Single(row => row.Id == studentId);
+        single.SelectedEquipment = single.EquipmentList.Single(row => row.Id == equipmentId);
+        await single.BorrowCommand.ExecuteAsync(null);
+        Require(single.IsSuccess && !single.EquipmentList.Single(row => row.Id == equipmentId).IsAvailable);
+        var active = new BorrowingsViewModel(new HttpReturnWorkflow(api), new HttpActiveBorrowingReader(api));
+        await active.InitializeAsync(); Require(active.IsReady);
+        active.SelectedBorrowing = active.ActiveBorrowings.Single(row => row.StudentId == studentId && row.EquipmentId == equipmentId);
+        var singleLoanId = active.SelectedBorrowing.Id;
+        var beforeConfirmation = trace.Count;
+        await active.ReturnCommand.ExecuteAsync(null); Require(trace.Count == beforeConfirmation);
+        active.ConfirmReturn = true; await active.ReturnCommand.ExecuteAsync(null);
+        Require(active.IsSuccess && !active.ConfirmReturn && active.ActiveBorrowings.All(row => row.Id != singleLoanId));
+        var repeated = await new HttpReturnWorkflow(api).ExecuteAsync(singleLoanId);
+        Require(!repeated.Success && repeated.Outcome == OperationOutcome.Conflict);
+        await single.RefreshCommand.ExecuteAsync(null);
+        Require(single.EquipmentList.Single(row => row.Id == equipmentId).IsAvailable);
+
+        var multi = new MultiItemCheckoutViewModel(new HttpMultiCheckout(api), catalogReader, new CampusClock());
+        await multi.InitializeAsync(); multi.SelectedStudent = multi.StudentList.Single(row => row.Id == studentId);
+        var chosen = multi.EquipmentList.Where(row => row.Item.EquipmentIdentifier is "EQ-002" or "EQ-006").ToArray();
+        Require(chosen.Length == 2); foreach (var row in chosen) row.IsSelected = true;
+        var selectedIds = chosen.Select(row => row.Item.Id).Order().ToArray();
+        await multi.CheckoutCommand.ExecuteAsync(null);
+        Require(multi.IsSuccess && multi.SelectedCount == 0
+            && multi.EquipmentList.Where(row => selectedIds.Contains(row.Item.Id)).All(row => !row.Item.IsAvailable));
+        await active.RefreshCommand.ExecuteAsync(null);
+        Require(active.ActiveBorrowings.Count(row => row.StudentId == studentId) == 2);
+        // The earlier catalog is stale: E2 appeared available before the multi-item issue.
+        single.SelectedStudent = single.StudentList.Single(row => row.Id == studentId);
+        single.SelectedEquipment = single.EquipmentList.Single(row => row.EquipmentIdentifier == "EQ-002");
+        Require(single.SelectedEquipment.IsAvailable);
+        await single.BorrowCommand.ExecuteAsync(null);
+        Require(!single.IsSuccess && single.IsReady && !single.EquipmentList.Single(row => row.EquipmentIdentifier == "EQ-002").IsAvailable);
+        // Two active items plus two more is rejected by the server and selections are refreshed.
+        multi.SelectedStudent = multi.StudentList.Single(row => row.Id == studentId);
+        foreach (var row in multi.EquipmentList.Where(row => row.Item.EquipmentIdentifier is "EQ-HTTP" or "EQ-007")) row.IsSelected = true;
+        Require(multi.SelectedCount == 2); await multi.CheckoutCommand.ExecuteAsync(null);
+        Require(!multi.IsSuccess && multi.IsReady && multi.SelectedCount == 0);
+        var history = await independent.GetFromJsonAsync<BorrowingResponse[]>($"api/v1/students/{studentId}/borrowings");
+        Require(history is not null && history.Length == 3 && history.Count(row => row.Status == BorrowingState.Active) == 2
+            && history.Single(row => row.Id == singleLoanId).Status == BorrowingState.Returned);
+        borrowingVerification = new { singleLoanId, activeMultiIds = active.ActiveBorrowings.Where(row => row.StudentId == studentId).Select(row => row.Id), selectedIds,
+            returnConfirmationRequired = true, staleSelectionRejected = true, overLimitRejected = true };
+    }
+    Console.WriteLine(JsonSerializer.Serialize(new { success = true, studentId, equipmentId, borrowingVerification,
         databaseSettingPresent = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EQUIPMENT_BORROWING_CONNECTION_STRING")), trace },
         new JsonSerializerOptions { WriteIndented = true }));
     return 0;

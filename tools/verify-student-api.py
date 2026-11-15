@@ -16,7 +16,7 @@ import urllib.error
 import urllib.request
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--resource", choices=["students", "equipment", "borrowings", "reads", "checkout", "client"], default="students")
+parser.add_argument("--resource", choices=["students", "equipment", "borrowings", "reads", "checkout", "client", "client-borrowing"], default="students")
 parser.add_argument("--database", required=True)
 parser.add_argument("--output", type=Path, required=True)
 args = parser.parse_args()
@@ -382,12 +382,21 @@ try:
             client_env.pop(key,None)
         client_env['EQUIPMENT_BORROWING_API_BASE_URL']=base+'/'
         probe=root/'tools/EquipmentBorrowing.HttpProbe/bin/Release/net10.0/EquipmentBorrowing.HttpProbe.dll'
-        run=subprocess.run(['dotnet',str(probe)],cwd=root,env=client_env,capture_output=True,text=True)
+        run=subprocess.run(['dotnet',str(probe)]+(['--borrowing'] if args.resource=='client-borrowing' else []),cwd=root,env=client_env,capture_output=True,text=True)
         if run.returncode:raise RuntimeError('HTTP ViewModel probe failed; private output omitted.')
         client_result=json.loads(run.stdout)
         assert client_result['success'] and not client_result['databaseSettingPresent']
         after=snapshot()
-        assert after['borrowings']==before['borrowings']
+        if args.resource=='client-borrowing':
+            assert len(after['borrowings'])==len(before['borrowings'])+3
+            assert [row for row in after['borrowings'] if row['Id'] in {old['Id'] for old in before['borrowings']}]==before['borrowings']
+            new_loans=[row for row in after['borrowings'] if row['StudentId']==client_result['studentId']]
+            assert len(new_loans)==3 and sum(row['Status']=='Active' for row in new_loans)==2
+            assert sum(row['Status']=='Returned' for row in new_loans)==1
+            selected=client_result['borrowingVerification']['selectedIds']
+            assert all(not item['IsAvailable'] for item in after['equipment'] if item['Id'] in selected)
+        else:
+            assert after['borrowings']==before['borrowings']
         assert len(after['students'])==len(before['students'])+1 and len(after['equipment'])==len(before['equipment'])+1
         student=next(row for row in after['students'] if row['Id']==client_result['studentId'])
         item=next(row for row in after['equipment'] if row['Id']==client_result['equipmentId'])
@@ -402,7 +411,7 @@ try:
     # Block only this newly created verification database. Admin remains connected to postgres.
     sql(f'ALTER DATABASE "{args.database}" WITH ALLOW_CONNECTIONS false;', 'postgres')
     sql(f"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='{args.database}';",'postgres')
-    probe_path=headers['Location'] if args.resource in ['borrowings','reads','checkout','client'] else '/api/v1/'+args.resource
+    probe_path=headers['Location'] if args.resource in ['borrowings','reads','checkout','client','client-borrowing'] else '/api/v1/'+args.resource
     try:call('GET',probe_path,500,check_state=False)
     finally:sql(f'ALTER DATABASE "{args.database}" WITH ALLOW_CONNECTIONS true;','postgres')
     call('GET',probe_path,200)
@@ -410,12 +419,12 @@ try:
     status,doc_headers,document=None,None,None
     with urllib.request.urlopen(base+'/openapi/v1.json') as response:document=json.load(response)
     operations={value.get('operationId') for path in document['paths'].values() for value in path.values() if isinstance(value,dict)}
-    required={'students':{'API-02','API-03','API-04','API-05','API-06'}, 'equipment':{'API-01','API-07','API-08','API-09'}, 'borrowings':{'API-10','API-12','API-13'}, 'reads':{f'API-{i:02}' for i in range(1,17)}, 'checkout':{'API-11','API-14','API-15','API-16'}, 'client':{'API-01','API-02','API-04','API-05','API-06','API-08','API-09'}}[args.resource]
+    required={'students':{'API-02','API-03','API-04','API-05','API-06'}, 'equipment':{'API-01','API-07','API-08','API-09'}, 'borrowings':{'API-10','API-12','API-13'}, 'reads':{f'API-{i:02}' for i in range(1,17)}, 'checkout':{'API-11','API-14','API-15','API-16'}, 'client':{'API-01','API-02','API-04','API-05','API-06','API-08','API-09'}, 'client-borrowing':{'API-10','API-11','API-12','API-14'}}[args.resource]
     assert required<=operations
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps({'database':args.database,'campus_date':str(today),'date_policy':'reference offsets from actual Asia/Manila date',
        'dataset':('S1-S4/E1-E7; reset before every T05 subcase' if args.resource=='checkout' else 'S1-S4/E1-E7; reset before T01 and again before T06' if args.resource=='reads' else 'S1-S4/E1-E7; reset once for this test'),
-       'scope':{'students':'T02 complete execution','equipment':'T03 equipment execution','borrowings':'T04 single borrowing/return execution','reads':'T01/T06 independent reads and query execution','checkout':'T05 atomic checkout and rollback execution','client':'Session 6 HTTP management ViewModels; T07 partial'}[args.resource],'fault_definition':fault_definition if args.resource=='checkout' else None,'checks':trace,'restart_preserved':True,'openapi_operations':sorted(operations)},indent=2)+'\n')
+       'scope':{'students':'T02 complete execution','equipment':'T03 equipment execution','borrowings':'T04 single borrowing/return execution','reads':'T01/T06 independent reads and query execution','checkout':'T05 atomic checkout and rollback execution','client':'Session 6 HTTP management ViewModels; T07 partial','client-borrowing':'Session 7 management/checkout/return HTTP ViewModels; T07 partial'}[args.resource],'fault_definition':fault_definition if args.resource=='checkout' else None,'checks':trace,'restart_preserved':True,'openapi_operations':sorted(operations)},indent=2)+'\n')
     wire_count=sum('method' in entry for entry in trace)+sum(len(entry['viewmodel_probe']['trace']) for entry in trace if 'viewmodel_probe' in entry)
     print(f'PASS: {wire_count} HTTP exchanges; independent state/restart/server failure recovery verified.')
     print('Evidence: '+str(args.output))

@@ -10,7 +10,7 @@ Session 1 operational smoke evidence is separate and does not satisfy any comple
 | T04 | Issue, return and persistence | Pass | Session 4: 37 HTTP requests, fresh saved-state checks and API restart; session4-evidence.md |
 | T05 | Multi-checkout, limit boundaries and after-write rollback | Pass | Session 5: reset subcases, exact-three boundaries, safe after-insert 500 and no partial state; session5-checkout-evidence.json |
 | T06 | Histories/search/filter/sort | Pass | Session 5: fresh dataset and independently derived membership/display/order; session5-query-evidence.json |
-| T07 | HTTP-only responsive Desktop, independent API and refresh | Partial | Session 6: real HTTP management ViewModels/refresh with no DB setting in probe; other Desktop workflows/dependencies and rendered walkthrough pending |
+| T07 | HTTP-only responsive Desktop, independent API and refresh | Partial | Sessions 6-7: real HTTP management/checkout/return ViewModels and refresh with no DB setting in probe; direct history/search dependencies and rendered walkthrough pending |
 | T08 | Transport versus server failure, recovery and restart | Partial supporting checks | Session 2: safe DB-failure 500/recovery and API restart; no-response/Desktop branches pending Session 9 |
 
 ## Execution template
@@ -36,3 +36,7 @@ T01/T06: 57 read/query requests with reset between the supplied cases, correct r
 ## Session 6 execution entry
 
 T07 supporting execution: actual management ViewModels use HTTP, independently changed records appear after refresh, selected stale revisions reject 409, and fresh grouped database snapshots confirm final state/history. Scope excludes full Desktop composition and remaining direct workflows. T08 supporting tests distinguish no response/500 and unknown mutation without replay; full real Desktop transport/recovery remains pending. Diagnosis: precheck-to-write gap identified in review; correction: optional revision header plus server/transaction checks; retest: fresh real probe with stale student/eligibility/equipment rejection passed. Final build clean; 76 backend and eleven UI/client tests pass. See session6-evidence.md and session6-client-evidence.json.
+
+## Session 7 execution entry
+
+T07 supporting execution: single issue, explicit confirmed return, multi checkout, Active/catalog refresh, stale-item and over-limit rejection pass through real HTTP-backed ViewModels. Actual capture: session7-client-evidence.json; fresh grouped SQL confirms old history unchanged and correct new returned/active loans. Unknown/malformed response and no-replay behavior covered by focused client checks, not a live lost-ack test. One nullable compiler warning was corrected; clean build, 76 backend and seventeen UI/client cases pass. Full T07/T08 pending remaining retrieval/dependency migration and manual UI evidence.

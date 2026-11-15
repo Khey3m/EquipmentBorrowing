@@ -1,6 +1,6 @@
 # Lab 5 API-to-use-case traceability
 
-The fourteen functional specifications remain the [Lab 4 suite](../lab4/use-case-suite.md). All implementation files below are under src/EquipmentBorrowing.Api; MapStudentEndpoints, MapEquipmentEndpoints, MapBorrowingEndpoints and MapQueryAndCheckoutEndpoints register the named API operations and call the existing Application services. Evidence below is actual API/PostgreSQL evidence, not a completed T07 Desktop walkthrough. T07 is partial: Session 6 adds actual HTTP management ViewModel/refresh evidence, while checkout/returns/retrieval and full Desktop dependency removal/walkthrough remain pending; full T08 is pending globally.
+The fourteen functional specifications remain the [Lab 4 suite](../lab4/use-case-suite.md). All implementation files below are under src/EquipmentBorrowing.Api; MapStudentEndpoints, MapEquipmentEndpoints, MapBorrowingEndpoints and MapQueryAndCheckoutEndpoints register the named API operations and call the existing Application services. Evidence below is actual API/PostgreSQL evidence, not a completed T07 Desktop walkthrough. T07 is partial: Sessions 6-7 add actual HTTP management/checkout/return ViewModel and refresh evidence, while retrieval and full Desktop dependency removal/walkthrough remain pending; full T08 is pending globally.
 
 | UC | BR | API | Supplied tests | Actual implementation | API evidence |
 |---|---|---|---|---|---|
@@ -22,3 +22,5 @@ The fourteen functional specifications remain the [Lab 4 suite](../lab4/use-case
 Machine-readable contract: [OpenAPI](openapi-current.json). Original/final continuity: [baseline](baseline.md). Consolidated expected/observed, diagnosis and retests: [execution record](test-execution.md). Final revision and lab5-submitted tag remain pending actual completion.
 
 Session 6 client implementation: EquipmentBorrowing.Http/ApiTransport.cs and HttpManagementWorkflows.cs, with IManagementWorkflows.cs and Desktop App/ViewModel DI. Actual HTTP management/refresh and stale-revision evidence: [Session 6](session6-evidence.md). These supplement the API evidence above without marking every T07 row complete.
+
+Session 7 client references: IBorrowingWorkflows.cs, EquipmentBorrowing.Http/HttpBorrowingWorkflows.cs, Desktop EquipmentViewModel/MultiItemCheckoutViewModel/BorrowingsViewModel and App DI. [Actual HTTP lifecycle evidence](session7-evidence.md) supplements UC-03/04/05/06 client coverage without completing T07 or rendered staff acceptance.

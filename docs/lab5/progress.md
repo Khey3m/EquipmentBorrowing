@@ -31,3 +31,7 @@ All sixteen endpoints implemented in 387276a. API-11/14/15/16 preserve atomic mu
 ## Session 6 - delivered
 
 HTTP client/workflow interfaces and first management/catalog migration in cfb379a, real probe/tests in c347792, concurrency guard in 96fed32. Build clean; 76 backend and eleven UI/client tests pass. Actual HTTP-backed management ViewModels refresh independent edits; no PostgreSQL settings in the probe process. T07 is partial: unmigrated Desktop workflows still directly use the same database until Sessions 7-8. See [Session 6 evidence](session6-evidence.md). Next: Session 7 single/multi checkout and active returns over HTTP.
+
+## Session 7 - delivered
+
+Single/multi checkout, Active loans and returns now use HTTP via workflow interfaces (fbeb2f0). All Desktop mutations cross the API; direct write/session registrations removed. Full Release build clean; 76 backend and seventeen UI/client tests pass. Real probe captures 51 ViewModel/independent exchanges plus four outer checks; grouped fresh state preserves original loans and retains one returned plus two active new loans. T07 remains partial because histories/search still directly query PostgreSQL until Session 8. See [Session 7 evidence](session7-evidence.md). Next: migrate retrieval and remove remaining direct Desktop persistence dependencies.
