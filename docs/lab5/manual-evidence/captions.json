@@ -13,6 +13,30 @@
         "For the walkthrough after the seven-item controlled dataset has been prepared, capture an additional populated equipment response. Retain this image as supplemental empty-result evidence rather than labeling it as the seven-item seeded catalog."
       ],
       "scope": "Supporting API-01 / Step 1 evidence only. No complete T01 or T07 pass is established by this image."
+    },
+    {
+      "id": "Figure 2",
+      "image": "02-student-registered.png",
+      "heading": "Step 2 - Register a student and verify the database row",
+      "source_filename": "Screenshot 2026-11-15 220316.png",
+      "explanation": [
+        "The Students screen displays Demo Student with institutional number ST-UI-600 and contact demo.student@example.edu. The message \"Student registered and eligible to borrow\" confirms the registration result shown by the application.",
+        "The pgAdmin query filters the Students table by ST-UI-600. Its result contains one matching row with Id 1 and IsEligibleToBorrow set to true. The application also labels this student \"Eligible to borrow\", matching the database value.",
+        "This captures a registered student and a database readback of the matching identity. The displayed eligibility is the state after registration; no eligibility-change action is shown in this picture."
+      ],
+      "scope": "Student registration and matching database readback; HTTP request/response details are not visible."
+    },
+    {
+      "id": "Figure 3",
+      "image": "03-student-details-saved.png",
+      "heading": "Step 2 - Update student details and verify the same identity",
+      "source_filename": "Screenshot 2026-11-15 220427.png",
+      "explanation": [
+        "The selected student now has the name Demo edited Student. The institutional number remains ST-UI-600, and the application displays \"Student details saved\".",
+        "The pgAdmin result shows one matching row with the same Id 1 and institutional number, with the updated name visible in the FullName column. Comparing this picture with Figure 2 supports that the existing student was updated while retaining the same database identity.",
+        "The contact field still contains demo.student@example.edu. These pictures demonstrate registration and a name edit; clearing the optional contact field is not demonstrated. If contact clearing is part of the walkthrough, add a separate screenshot showing a blank contact field and a database NULL result."
+      ],
+      "scope": "Student name update and retained identity. Contact clearing and persistence after a process restart are not shown."
     }
   ]
 }
