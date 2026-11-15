@@ -37,6 +37,51 @@
         "The contact field still contains demo.student@example.edu. These pictures demonstrate registration and a name edit; clearing the optional contact field is not demonstrated. If contact clearing is part of the walkthrough, add a separate screenshot showing a blank contact field and a database NULL result."
       ],
       "scope": "Student name update and retained identity. Contact clearing and persistence after a process restart are not shown."
+    },
+    {
+      "id": "Figure 4",
+      "image": "04-equipment-list.png",
+      "heading": "Step 3 - Equipment registered in the management screen",
+      "source_filename": "Screenshot 2026-11-15 221112.png",
+      "explanation": [
+        "The management list contains Demo Camera (EQ-UI-600), Demo Tripod (EQ-UI-601), Demo Microphone (EQ-UI-602) and Demo Tablet (EQ-UI-603). All four items are displayed as Available.",
+        "The screen explains that availability is read-only here and is controlled by borrowing and returns. The blank form is ready for a new item; the following database screenshot supplies the saved identifiers and descriptions."
+      ],
+      "scope": "Equipment management evidence; screenshots do not show HTTP exchanges or establish the full Lab 5 acceptance result."
+    },
+    {
+      "id": "Figure 5",
+      "image": "05-equipment-database-before.png",
+      "heading": "Step 3 - Database readback before editing the camera",
+      "source_filename": "Screenshot 2026-11-15 221129.png",
+      "explanation": [
+        "The SELECT query returns four equipment records with identifiers EQ-UI-600 through EQ-UI-603 and database Id values 1 through 4. All four IsAvailable values are true.",
+        "Before the edit, the camera has Id 1, name Demo Camera and description Demonstration camera. The tablet description is Zero-history control; that label alone does not prove an empty borrowing history."
+      ],
+      "scope": "Equipment management evidence; screenshots do not show HTTP exchanges or establish the full Lab 5 acceptance result."
+    },
+    {
+      "id": "Figure 6",
+      "image": "06-equipment-edited-ui.png",
+      "heading": "Step 3 - Camera name edited and optional description cleared",
+      "source_filename": "Screenshot 2026-11-15 221437.png",
+      "explanation": [
+        "The selected EQ-UI-600 item is now named Demo edited Camera. The description field is blank and the application reports Equipment details saved.",
+        "The camera remains Available, and the management page still states that availability is read-only. The next screenshot verifies the saved name and NULL description in PostgreSQL."
+      ],
+      "scope": "Equipment management evidence; screenshots do not show HTTP exchanges or establish the full Lab 5 acceptance result."
+    },
+    {
+      "id": "Figure 7",
+      "image": "07-equipment-database-after.png",
+      "heading": "Step 3 - Database readback after the camera edit",
+      "source_filename": "Screenshot 2026-11-15 221505.png",
+      "explanation": [
+        "The camera still has database Id 1 and identifier EQ-UI-600. Its name is now Demo edited Camera, its Description is NULL, and IsAvailable remains true.",
+        "Comparing the before and after results shows that the existing camera identity was retained while its name and optional description changed. The other three equipment records retain their displayed names, descriptions and available status.",
+        "These four pictures are consistent with the Step 3 equipment checks. The capitalization in Demo edited Camera differs slightly from the guide example but is consistent between the application and database. The separate ST-UI-603 / Demo Empty Student control registration is not visible in these images."
+      ],
+      "scope": "Equipment management evidence; screenshots do not show HTTP exchanges or establish the full Lab 5 acceptance result."
     }
   ]
 }
