@@ -19,29 +19,40 @@ try
     using var desktop = DesktopComposition.Build(client);
     var root = desktop.GetRequiredService<MainWindowViewModel>();
     var api = desktop.GetRequiredService<ApiTransport>();
+    async Task<object> Diagnose(string mode)
+    {
+        var priorCount = trace.Count;
+    await root.RetryStartupCommand.ExecuteAsync(null);
+    await root.StudentsVm.InitializeAsync();
+    var read = await api.SendAsync<StudentResponse[]>(HttpMethod.Get, "api/v1/students");
+    string? mutationOutcome = null;
+    if (mode == "healthy")
+        Require(read.Success && read.Status == 200 && root.StudentsVm.IsReady && !root.HasStartupMessage);
+    else
+    {
+        Require(!read.Success && !root.StudentsVm.IsReady && root.HasStartupMessage);
+        if (mode == "offline") Require(read.Status is null && root.StartupMessage.Contains("No HTTP response"));
+        else Require(mode == "server-error" && read.Status == 500 && root.StartupMessage.Contains("HTTP 500"));
+        var mutation = await new HttpStudentManagement(api).RegisterAsync(new("ST-UNCOMMITTED", "Failure Probe", null));
+        Require(mutation.Outcome == (mode == "offline" ? OperationOutcome.Unknown : OperationOutcome.Failed));
+        mutationOutcome = mutation.Outcome.ToString();
+        Require(trace.Skip(priorCount).Count(item => JsonSerializer.SerializeToElement(item).GetProperty("method").GetString() == "POST") == 1);
+    }
+        return new { success = true, mode, status = read.Status,
+            uiMessage = root.StudentsVm.LoadMessage, startupMessage = root.StartupMessage, mutationOutcome,
+            databaseSettingPresent = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EQUIPMENT_BORROWING_CONNECTION_STRING")),
+            sameClientProcess = true, trace = trace.Skip(priorCount).ToArray() };
+    }
+    if (args.Length == 1 && args[0] == "--diagnostic-session")
+    {
+        Console.WriteLine("{\"ready\":true}");
+        while (await Console.In.ReadLineAsync() is { } mode)
+            Console.WriteLine(JsonSerializer.Serialize(await Diagnose(mode)));
+        return 0;
+    }
     if (args.Length == 2 && args[0] == "--diagnostic")
     {
-        var mode = args[1];
-        await root.RetryStartupAsync();
-        await root.StudentsVm.InitializeAsync();
-        var read = await api.SendAsync<StudentResponse[]>(HttpMethod.Get, "api/v1/students");
-        string? mutationOutcome = null;
-        if (mode == "healthy")
-            Require(read.Success && read.Status == 200 && root.StudentsVm.IsReady && !root.HasStartupMessage);
-        else
-        {
-            Require(!read.Success && !root.StudentsVm.IsReady && root.HasStartupMessage);
-            if (mode == "offline") Require(read.Status is null && root.StartupMessage.Contains("No HTTP response"));
-            else Require(mode == "server-error" && read.Status == 500 && root.StartupMessage.Contains("HTTP 500"));
-            var mutation = await new HttpStudentManagement(api).RegisterAsync(new("ST-UNCOMMITTED", "Failure Probe", null));
-            Require(mutation.Outcome == (mode == "offline" ? OperationOutcome.Unknown : OperationOutcome.Failed));
-            mutationOutcome = mutation.Outcome.ToString();
-            Require(trace.Count(item => JsonSerializer.SerializeToElement(item).GetProperty("method").GetString() == "POST") == 1);
-        }
-        Console.WriteLine(JsonSerializer.Serialize(new { success = true, mode, status = read.Status,
-            uiMessage = root.StudentsVm.LoadMessage, startupMessage = root.StartupMessage, mutationOutcome,
-            databaseSettingPresent = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EQUIPMENT_BORROWING_CONNECTION_STRING")), trace },
-            new JsonSerializerOptions { WriteIndented = true }));
+        Console.WriteLine(JsonSerializer.Serialize(await Diagnose(args[1]), new JsonSerializerOptions { WriteIndented = true }));
         return 0;
     }
     var students = root.StudentsVm;

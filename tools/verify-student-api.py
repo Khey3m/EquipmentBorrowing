@@ -77,6 +77,7 @@ with socket.socket() as sock:
 base=f"http://127.0.0.1:{port}"
 log=tempfile.TemporaryFile()
 process=None
+diag_session=None
 
 def start():
     global process
@@ -156,9 +157,17 @@ try:
         client_env['EQUIPMENT_BORROWING_API_BASE_URL']=base+'/'
         probe=root/'tools/EquipmentBorrowing.HttpProbe/bin/Release/net10.0/EquipmentBorrowing.HttpProbe.dll'
         def diagnostic(mode):
-            result=subprocess.run(['dotnet',str(probe),'--diagnostic',mode],cwd=root,env=client_env,capture_output=True,text=True)
-            if result.returncode:raise RuntimeError('Client recovery diagnostic failed; private output omitted.')
-            observed=json.loads(result.stdout)
+            global diag_session
+            if diag_session is None:
+                diag_session=subprocess.Popen(['dotnet',str(probe),'--diagnostic-session'],cwd=root,env=client_env,
+                    stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=log,text=True)
+                ready=diag_session.stdout.readline()
+                if not ready or not json.loads(ready).get('ready'):raise RuntimeError('Client diagnostic startup failed.')
+            diag_session.stdin.write(mode+'\n');diag_session.stdin.flush()
+            line=diag_session.stdout.readline()
+            if not line:raise RuntimeError('Client recovery diagnostic failed; private output omitted.')
+            observed=json.loads(line)
+            assert observed['sameClientProcess']
             assert observed['success'] and not observed['databaseSettingPresent']
             trace.append({'diagnostic_probe':observed,'before':saved_state,'after':snapshot()})
             assert snapshot()==saved_state
@@ -498,4 +507,8 @@ try:
     print(f'PASS: {wire_count} HTTP exchanges; independent state/restart/server failure recovery verified.')
     print('Evidence: '+str(args.output))
 finally:
+    if diag_session is not None:
+        diag_session.stdin.close()
+        try:diag_session.wait(timeout=5)
+        except subprocess.TimeoutExpired:diag_session.terminate();diag_session.wait(timeout=5)
     stop();log.close()
