@@ -6,6 +6,8 @@ using EquipmentBorrowing.Contracts;
 using EquipmentBorrowing.Desktop.ViewModels;
 using EquipmentBorrowing.Http;
 using EquipmentBorrowing.Domain;
+using EquipmentBorrowing.Desktop;
+using Microsoft.Extensions.DependencyInjection;
 
 // This verification tool never reads PostgreSQL configuration or constructs persistence services.
 var trace = new ConcurrentQueue<object>();
@@ -14,8 +16,46 @@ try
     using var client = new HttpClient(new TraceHandler(trace, "desktop"))
     { BaseAddress = new Uri(Environment.GetEnvironmentVariable(ApiTransport.BaseUrlVariable)!), Timeout = TimeSpan.FromSeconds(15) };
     using var independent = new HttpClient(new TraceHandler(trace, "independent")) { BaseAddress = client.BaseAddress };
-    var api = new ApiTransport(client);
-    var students = new StudentsViewModel(new HttpStudentManagement(api));
+    using var desktop = DesktopComposition.Build(client);
+    var root = desktop.GetRequiredService<MainWindowViewModel>();
+    var api = desktop.GetRequiredService<ApiTransport>();
+    async Task<object> Diagnose(string mode)
+    {
+        var priorCount = trace.Count;
+    await root.RetryStartupCommand.ExecuteAsync(null);
+    await root.StudentsVm.InitializeAsync();
+    var read = await api.SendAsync<StudentResponse[]>(HttpMethod.Get, "api/v1/students");
+    string? mutationOutcome = null;
+    if (mode == "healthy")
+        Require(read.Success && read.Status == 200 && root.StudentsVm.IsReady && !root.HasStartupMessage);
+    else
+    {
+        Require(!read.Success && !root.StudentsVm.IsReady && root.HasStartupMessage);
+        if (mode == "offline") Require(read.Status is null && root.StartupMessage.Contains("No HTTP response"));
+        else Require(mode == "server-error" && read.Status == 500 && root.StartupMessage.Contains("HTTP 500"));
+        var mutation = await new HttpStudentManagement(api).RegisterAsync(new("ST-UNCOMMITTED", "Failure Probe", null));
+        Require(mutation.Outcome == (mode == "offline" ? OperationOutcome.Unknown : OperationOutcome.Failed));
+        mutationOutcome = mutation.Outcome.ToString();
+        Require(trace.Skip(priorCount).Count(item => JsonSerializer.SerializeToElement(item).GetProperty("method").GetString() == "POST") == 1);
+    }
+        return new { success = true, mode, status = read.Status,
+            uiMessage = root.StudentsVm.LoadMessage, startupMessage = root.StartupMessage, mutationOutcome,
+            databaseSettingPresent = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EQUIPMENT_BORROWING_CONNECTION_STRING")),
+            sameClientProcess = true, trace = trace.Skip(priorCount).ToArray() };
+    }
+    if (args.Length == 1 && args[0] == "--diagnostic-session")
+    {
+        Console.WriteLine("{\"ready\":true}");
+        while (await Console.In.ReadLineAsync() is { } mode)
+            Console.WriteLine(JsonSerializer.Serialize(await Diagnose(mode)));
+        return 0;
+    }
+    if (args.Length == 2 && args[0] == "--diagnostic")
+    {
+        Console.WriteLine(JsonSerializer.Serialize(await Diagnose(args[1]), new JsonSerializerOptions { WriteIndented = true }));
+        return 0;
+    }
+    var students = root.StudentsVm;
     await students.InitializeAsync(); Require(students.IsReady && students.Students.Count == 4);
     students.StudentNumber = "ST-HTTP"; students.FullName = "HTTP Demo Student"; students.ContactInformation = "demo@example.edu";
     await students.RegisterCommand.ExecuteAsync(null);
@@ -46,7 +86,7 @@ try
     students.SelectedStudent = students.Students.Single(s => s.Id == studentId);
     Require(students.FullName == "Changed outside Desktop");
 
-    var equipment = new EquipmentManagementViewModel(new HttpEquipmentManagement(api));
+    var equipment = root.EquipmentManagementVm;
     await equipment.InitializeAsync(); Require(equipment.IsReady && equipment.Items.Count == 7);
     equipment.EquipmentIdentifier = "EQ-HTTP"; equipment.Name = "HTTP Demo Display"; equipment.Description = "USB display";
     await equipment.RegisterCommand.ExecuteAsync(null);
@@ -71,16 +111,16 @@ try
     Require(catalog.Success && catalog.Value!.Equipment.Any(item => item.Id == equipmentId)
         && catalog.Value.Equipment.All(item => item.IsAvailable) && catalog.Value.Students.Any(s => s.Id == studentId));
     object? borrowingVerification = null;
-    if (args.Contains("--borrowing"))
+    if (args.Contains("--borrowing") || args.Contains("--retrieval"))
     {
         var catalogReader = new HttpCatalogReader(api);
-        var single = new EquipmentViewModel(new HttpSingleCheckout(api), catalogReader, new CampusClock());
+        var single = root.EquipmentVm;
         await single.InitializeAsync(); Require(single.IsReady);
         single.SelectedStudent = single.StudentList.Single(row => row.Id == studentId);
         single.SelectedEquipment = single.EquipmentList.Single(row => row.Id == equipmentId);
         await single.BorrowCommand.ExecuteAsync(null);
         Require(single.IsSuccess && !single.EquipmentList.Single(row => row.Id == equipmentId).IsAvailable);
-        var active = new BorrowingsViewModel(new HttpReturnWorkflow(api), new HttpActiveBorrowingReader(api));
+        var active = root.BorrowingsVm;
         await active.InitializeAsync(); Require(active.IsReady);
         active.SelectedBorrowing = active.ActiveBorrowings.Single(row => row.StudentId == studentId && row.EquipmentId == equipmentId);
         var singleLoanId = active.SelectedBorrowing.Id;
@@ -93,7 +133,7 @@ try
         await single.RefreshCommand.ExecuteAsync(null);
         Require(single.EquipmentList.Single(row => row.Id == equipmentId).IsAvailable);
 
-        var multi = new MultiItemCheckoutViewModel(new HttpMultiCheckout(api), catalogReader, new CampusClock());
+        var multi = root.MultiCheckoutVm;
         await multi.InitializeAsync(); multi.SelectedStudent = multi.StudentList.Single(row => row.Id == studentId);
         var chosen = multi.EquipmentList.Where(row => row.Item.EquipmentIdentifier is "EQ-002" or "EQ-006").ToArray();
         Require(chosen.Length == 2); foreach (var row in chosen) row.IsSelected = true;
@@ -120,7 +160,44 @@ try
         borrowingVerification = new { singleLoanId, activeMultiIds = active.ActiveBorrowings.Where(row => row.StudentId == studentId).Select(row => row.Id), selectedIds,
             returnConfirmationRequired = true, staleSelectionRejected = true, overLimitRejected = true };
     }
-    Console.WriteLine(JsonSerializer.Serialize(new { success = true, studentId, equipmentId, borrowingVerification,
+    object? retrievalVerification = null;
+    if (args.Contains("--retrieval"))
+    {
+        var history = root.HistoryVm;
+        await history.InitializeAsync();
+        history.SelectedSubject = history.Subjects.Single(row => row.Id == studentId);
+        await history.RetryHistoryCommand.ExecuteAsync(null);
+        Require(history.Rows.Count == 3 && history.Rows.Count(row => row.Status == BorrowingStatus.Active) == 2
+            && history.CurrentSubjectLabel.Contains("Changed outside Desktop"));
+        history.SelectedSubject = history.Subjects.Single(row => row.Label.StartsWith("ST-400 - "));
+        await history.RetryHistoryCommand.ExecuteAsync(null);
+        Require(history.Rows.Count == 0 && history.HistoryMessage.Contains("No borrowing history"));
+        history.SelectedSubject = new HistorySubject(2147483647, "Stale selection");
+        await history.RetryHistoryCommand.ExecuteAsync(null);
+        Require(history.Rows.Count == 0 && history.HistoryMessage.Contains("not found"));
+        history.SelectedKind = HistoryKind.Equipment; await history.RefreshCommand.ExecuteAsync(null);
+        history.SelectedSubject = history.Subjects.Single(row => row.Id == equipmentId);
+        await history.RetryHistoryCommand.ExecuteAsync(null);
+        Require(history.Rows.Count == 1 && history.Rows[0].Status == BorrowingStatus.Returned);
+        history.SelectedSubject = history.Subjects.Single(row => row.Label.StartsWith("EQ-007 - "));
+        await history.RetryHistoryCommand.ExecuteAsync(null); Require(history.Rows.Count == 0);
+
+        var search = root.SearchVm;
+        search.SearchText = "Changed outside Desktop"; search.StatusFilter = BorrowingStatusFilter.Active;
+        search.SortBy = BorrowingSortField.ExpectedReturnDate; search.Descending = true;
+        await search.ApplyCommand.ExecuteAsync(null);
+        Require(search.Rows.Count == 2 && search.Rows.All(row => row.StudentId == studentId)
+            && search.Rows.Select(row => row.Id).SequenceEqual(search.Rows.Select(row => row.Id).Order()));
+        search.SearchText = "NON-EXISTENT-999"; await search.ApplyCommand.ExecuteAsync(null);
+        Require(search.Rows.Count == 0 && search.Message.Contains("No borrowings match"));
+        await search.ClearCommand.ExecuteAsync(null);
+        Require(search.Rows.Count == 7 && search.SearchText == "" && search.StatusFilter == BorrowingStatusFilter.All
+            && search.SortBy == BorrowingSortField.CheckoutDate && !search.Descending);
+        retrievalVerification = new { studentHistory = true, equipmentHistory = true, emptyDistinctFromMissing = true,
+            combinedSearch = true, tiedIdsAscending = true, clearRestoresSevenRows = true, fullDesktopComposition = true };
+        history.Deactivate(); search.Deactivate();
+    }
+    Console.WriteLine(JsonSerializer.Serialize(new { success = true, studentId, equipmentId, borrowingVerification, retrievalVerification,
         databaseSettingPresent = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EQUIPMENT_BORROWING_CONNECTION_STRING")), trace },
         new JsonSerializerOptions { WriteIndented = true }));
     return 0;
@@ -137,11 +214,20 @@ sealed class TraceHandler(ConcurrentQueue<object> trace, string source) : Delega
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
     {
         var body = request.Content is null ? null : await request.Content.ReadAsStringAsync(ct);
-        var response = await base.SendAsync(request, ct);
-        var content = await response.Content.ReadAsStringAsync(ct);
-        trace.Enqueue(new { source, method = request.Method.Method, path = request.RequestUri!.PathAndQuery,
-            request = body, expectedRevision = request.Headers.TryGetValues(EntityRevision.Header, out var revisions) ? revisions.Single() : null,
-            status = (int)response.StatusCode, response = content });
-        return response;
+        try
+        {
+            var response = await base.SendAsync(request, ct);
+            var content = await response.Content.ReadAsStringAsync(ct);
+            trace.Enqueue(new { source, method = request.Method.Method, path = request.RequestUri!.PathAndQuery,
+                request = body, expectedRevision = request.Headers.TryGetValues(EntityRevision.Header, out var revisions) ? revisions.Single() : null,
+                status = (int)response.StatusCode, response = content });
+            return response;
+        }
+        catch (Exception error) when (error is HttpRequestException or OperationCanceledException)
+        {
+            trace.Enqueue(new { source, method = request.Method.Method, path = request.RequestUri!.PathAndQuery,
+                request = body, status = (int?)null, transportFailure = error.GetType().Name });
+            throw;
+        }
     }
 }

@@ -9,7 +9,7 @@ using EquipmentBorrowing.Application.Services;
 
 namespace EquipmentBorrowing.Desktop.ViewModels;
 
-public partial class BorrowingHistoryViewModel(BorrowingHistoryService service) : ObservableObject
+public partial class BorrowingHistoryViewModel(IHistoryWorkflow service) : ObservableObject
 {
     private readonly LatestRequestGate _subjectsGate = new();
     private readonly LatestRequestGate _historyGate = new();

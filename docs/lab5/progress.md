@@ -35,3 +35,17 @@ HTTP client/workflow interfaces and first management/catalog migration in cfb379
 ## Session 7 - delivered
 
 Single/multi checkout, Active loans and returns now use HTTP via workflow interfaces (fbeb2f0). All Desktop mutations cross the API; direct write/session registrations removed. Full Release build clean; 76 backend and seventeen UI/client tests pass. Real probe captures 51 ViewModel/independent exchanges plus four outer checks; grouped fresh state preserves original loans and retains one returned plus two active new loans. T07 remains partial because histories/search still directly query PostgreSQL until Session 8. See [Session 7 evidence](session7-evidence.md). Next: migrate retrieval and remove remaining direct Desktop persistence dependencies.
+
+## Session 8 - delivered
+
+HTTP history/search adapters and shared full Desktop composition in 9779dab. Infrastructure/EF references removed; actual native Desktop opens and displays the API catalog without database settings. Runtime deps scan has no EF/Npgsql/Infrastructure. Full build clean; 76 backend and 23 UI/client tests pass. Actual full-composition probe plus outer checks captures 69 completed HTTP exchanges. [Session 8 evidence](session8-evidence.md). T07 automated boundary/workflow coverage complete; full rendered staff walkthrough and consolidated T08 remain pending Session 9. Upstream Session 7 merge fast-forwarded normally; deleted feature branch recreated on push.
+
+## Session 9 - integrated diagnostics delivered
+
+CI/diagnostics in 3a12519; same-client retry refinement dc1e541. Actual local T08 captures no response versus safe 500, failed-write state preservation, Retry recovery in one Desktop composition, native feedback screenshots and API restart durability. First complete CI run 43710314250 passed 99 tests, five persistence stages and seven controlled HTTP scenarios; final refinement CI recorded in Session 9 evidence. T08 passes its recorded execution; T07 full rendered staff walkthrough remains explicit pending. Next: Session 10 final documentation/handoff, with actual acceptance limitations preserved.
+
+Final Session 9 CI [43710719990](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43710719990) at dc1e541 passed: zero-warning build, 76 backend plus 23 UI/client tests, five process stages and seven controlled HTTP scenarios (327 exchanges/attempts). Durable result in [CI summary](session9-ci-summary.json). Subsequent evidence-only commit does not change verified runtime behavior.
+
+## Session 10 - documentation and review handoff delivered
+
+Consolidated development report, architecture, rendered T07 script, handoff inventory and Lab 5 packaging added. Verified CI artifact 14160616423 downloaded, ZIP integrity checked and checksum/inventory retained under evidence/. The review package records actual committed HEAD/history and the pending T07/tag status. No runtime/database changes or fabricated final tag. Full final submission remains conditional on the explicitly unchecked handoff actions.

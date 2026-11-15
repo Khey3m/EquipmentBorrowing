@@ -1,161 +1,103 @@
-# Campus Equipment Borrowing System - Lab 4
+# Campus Equipment Borrowing System - Lab 5
 
-Continues the Labs 1-3 application with PostgreSQL, student/equipment management, atomic multi-item checkout, related histories and borrowing search/filter/sort. Primary actor: Laboratory Staff / Equipment Custodian. All fourteen required Lab 4 use cases are implemented; deferred Lab 5/future cases are listed separately.
+Continues the Lab 4 Avalonia application with an independently runnable ASP.NET Core API and PostgreSQL. All sixteen API contracts are implemented. As of Session 8, all seven Desktop screens use asynchronous HTTP; Desktop has no Infrastructure, EF Core, Npgsql or direct database dependency.
 
-**Verified code:** `1e5328dd14e0774ea789c002b3c80cabc1d40f2e`. [Successful CI](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43558553901): full Release solution builds with zero warnings/errors, **76 backend + 3 headless UI tests pass**, and all five separate-process persistence stages pass. Session 11 changes are documentation-only. [Evidence details](docs/lab4/session10-evidence.md).
+```text
+Avalonia -> HTTP client/contracts -> ASP.NET Core API -> Application -> EF/Npgsql -> PostgreSQL
+```
 
-**Remaining acceptance:** manual visual/usability review, the actual Avalonia Desktop close/reopen walkthrough, and any instructor-specific recording/private submitter details. Headless windows and the service-process probe are useful evidence with different scopes; they do not establish every manual branch. Local Windows Application Control remains unchanged and may block local build/test assembly loading. [Handoff checklist](docs/lab4/submission-handoff.md).
+Current verification: full Release build with zero warnings/errors; 76 backend and 23 UI/client tests pass. Actual HTTP composition and native catalog startup work without database settings in Desktop. T01-T06 have passing API executions. T08 controlled recovery passed with native feedback and same-client Retry. Full rendered staff walkthrough remains pending; this is not the final submission tag.
 
 ## Prerequisites
 
-- .NET 10 SDK. The repository uses net10.0 and pins dotnet-ef 10.0.12 in dotnet-tools.json.
-- PostgreSQL server and client tools; PostgreSQL 18 is the verified CI baseline (18.6 was used locally). A local database is sufficient; cloud, Docker and paid services are not required for normal use.
-- Git and an execution-permitted environment for the Desktop application.
-- Optional Python 3 plus psql only for the standalone historical SQL verification script.
+- .NET 10 SDK; dotnet-ef 10.0.12 is pinned in dotnet-tools.json.
+- PostgreSQL server/client tools (18 is the verified baseline). API's local role needs permissions for migrations; isolated verification additionally needs CREATE DATABASE.
+- Git. Optional Python 3 and psql for the supplied repeatable real-HTTP verification harness.
+- No Docker, cloud deployment, authentication service or paid service is required.
 
-Package versions are committed in the project files: Avalonia 12.1.1, CommunityToolkit.Mvvm 8.4.2, EF Core 10.0.12 and Npgsql EF provider 10.0.3. The headless UI project uses xUnit v3; backend tests retain their existing xUnit runner.
+## Restore and build
 
-## Get the submitted source
-
-```powershell
-git clone https://github.com/Khey3m/EquipmentBorrowing.git
-cd EquipmentBorrowing
-git switch lab4/postgresql-workflows
-```
-
-Use the branch/commit supplied with the submission. If development is later merged and its branch deleted, check out the submitted commit or main containing it. Preserve prior history. To inspect the local version:
-
-```powershell
-git status --short
-git rev-parse HEAD
-```
-
-## Configure PostgreSQL locally
-
-Create a dedicated empty database on a fresh installation; do not overwrite existing data. Example with an authorized local role (psql/createdb may require adding PostgreSQL's bin directory to PATH):
-
-```powershell
-createdb -h localhost -U <local-role> equipment_borrowing_lab4
-```
-
-PostgreSQL tools prompt for the local password when needed. Current local setup already has this database and a stored Windows user setting; skip creation if reusing it. Operational connection-string shape:
-
-```text
-Host=localhost;Port=5432;Database=equipment_borrowing_lab4;Username=<local-role>;Password=<local-secret>;Include Error Detail=false
-```
-
-Set `EQUIPMENT_BORROWING_CONNECTION_STRING` privately in the launching process or OS user environment. Do not put real values in source, screenshots, submitted logs or committed files. In PowerShell, prompt without echoing the value:
-
-```powershell
-$connectionSecret = Read-Host 'Enter the local PostgreSQL connection string' -AsSecureString
-$env:EQUIPMENT_BORROWING_CONNECTION_STRING = [System.Net.NetworkCredential]::new('', $connectionSecret).Password
-```
-
-For the Windows user configured during development, load the already saved value instead:
-
-```powershell
-$env:EQUIPMENT_BORROWING_CONNECTION_STRING = [Environment]::GetEnvironmentVariable('EQUIPMENT_BORROWING_CONNECTION_STRING', 'User')
-```
-
-Restart Visual Studio after changing a user environment setting so its processes inherit it. Special connection-string characters must use valid Npgsql connection-string quoting. Database setup/migrations require schema permissions; integration tests additionally require CREATE DATABASE in a disposable verification environment.
-
-## Restore, migrate and launch
-
-Run from the repository root:
+From the repository root:
 
 ```powershell
 dotnet tool restore
 dotnet restore EquipmentBorrowing.slnx
-dotnet ef migrations has-pending-model-changes --project src/EquipmentBorrowing.Infrastructure --startup-project src/EquipmentBorrowing.Infrastructure
-dotnet ef database update --project src/EquipmentBorrowing.Infrastructure --startup-project src/EquipmentBorrowing.Infrastructure
 dotnet build EquipmentBorrowing.slnx --configuration Release --no-restore
+```
+
+## API - first terminal
+
+Create a dedicated disposable Lab 5 database using your local PostgreSQL tools if needed. Keep existing databases intact. Supply a private connection string in the API terminal; the following prompt does not echo it:
+
+```powershell
+$apiConnectionSecret = Read-Host 'Local PostgreSQL connection string for the API' -AsSecureString
+$env:EQUIPMENT_BORROWING_CONNECTION_STRING = [System.Net.NetworkCredential]::new('', $apiConnectionSecret).Password
+```
+
+Connection shape (replace placeholders privately):
+
+```text
+Host=localhost;Port=5432;Database=<lab5-database>;Username=<local-role>;Password=<local-password>
+```
+
+Apply the preserved migrations and start the server:
+
+```powershell
+dotnet ef database update --project src/EquipmentBorrowing.Infrastructure --startup-project src/EquipmentBorrowing.Infrastructure --configuration Release --no-build
+dotnet run --project src/EquipmentBorrowing.Api --configuration Release --no-build
+```
+
+Default API origin: http://127.0.0.1:5085/. Override with ASPNETCORE_URLS or --urls. Host liveness: /api/v1/status (not a database readiness claim). Machine-readable OpenAPI: /openapi/v1.json. Normal API startup does not migrate or seed; migrations and controlled dataset preparation are explicit. Empty lists in a fresh database are valid; register records through Desktop/API or use the controlled verification setup.
+
+## Desktop - second terminal
+
+From the same repository root:
+
+```powershell
+$env:EQUIPMENT_BORROWING_API_BASE_URL = 'http://127.0.0.1:5085/'
 dotnet run --project src/EquipmentBorrowing.Desktop --configuration Release --no-build
 ```
 
-Infrastructure is the EF startup project for migration commands, so migration tooling does not need to initialize Avalonia. InitialPostgres is the operational migration; historical SQLite files are archived outside compiled migration discovery. There is no operational SQLite fallback or historical SQLite row-import requirement.
+Desktop needs only the API origin. Database credentials belong to the server process. Its origin must be HTTP/HTTPS with no user credentials, query or fragment. Requests are asynchronous with finite timeout, cancellation where applicable and latest-result protection. Known validation/missing/conflict responses are distinct from no response and received safe server 500. Unknown mutation outcomes require fresh state verification and staff review; mutations are not automatically replayed.
 
-Desktop startup also delegates migrations/seeding to Infrastructure and provides safe Retry startup feedback on failure. Students/equipment are seeded only when each corresponding table is empty; existing rows are not overwritten. Example student identifiers: STU-001 (eligible), STU-002 (restricted), STU-003 (eligible). Example equipment identifiers: EQ-101..103 (initially available). Internal IDs are database-generated; staff should use visible identifiers rather than assume internal IDs.
+Navigation covers catalog/single issue, Active/return with confirmation, coordinated multi-checkout, student and equipment management, histories and search/filter/sort/reset. Server determines calendar dates in Asia/Manila, owns all validation and transactions, and preserves history and generated identities. Management clients use the documented optional revision header to reject stale writes.
 
-The local development database was not migrated/seeded during CI verification; CI creates separate disposable databases. Running the commands above locally is a real setup action, not a previously claimed local Desktop pass.
+## Controlled dataset and verification
 
-## Staff workflow
+The reference dataset is S1-S4 (ST-100/200/300/400) and E1-E7 with the prescribed active/returned links. Use a NEW verification database; do not reset the historical Lab 4 demo. The harness creates/migrates it and resets before each required subcase. It shifts reference dates by their offsets from recorded actual campus date and resolves IDs from API responses.
 
-| Navigation | Actions |
-|---|---|
-| Equipment | Catalog, available-only filter, single borrowing with expected return date |
-| Active Borrowings | Related active records and confirmed return |
-| Students | Register, find/edit descriptive details, permit/restrict new borrowing |
-| Manage Equipment | Register/find/edit identifier, name and optional description; availability read-only |
-| Checkout multiple | Select at least two distinct items, one student and one expected date |
-| Borrowing histories | Student or Equipment mode, active/returned records and all dates |
-| Search borrowings | Partial text, Active/Returned/All, either date/direction, Apply/Retry and Clear |
-
-The limit is three active items per student. Expected return is later than checkout; actual return uses the campus calendar and may be early/same-day. Default campus timezone is Asia/Manila. Restricting a student blocks new borrowing but permits existing returns. Descriptive edits preserve internal identities and history. Multi-item writes are coordinated in one transaction. Unknown commit outcomes are not automatically replayed; reconnect/refresh and review before another staff decision.
-
-## Automated verification
+The real-HTTP harness requires private PGHOST, PGPORT, PGUSER, PGPASSWORD and LAB5_STUDENT_VERIFY_CONNECTION targeting the matching NEW name. It uses PostgreSQL 18 psql at the standard Windows path or PSQL_PATH override. See [reproduction details](docs/lab5/session2-evidence.md). Available scenarios: students, equipment, borrowings, reads, checkout, client, client-borrowing, client-all, recovery. The final scenario also checks the native Windows Desktop and captures its window.
 
 ```powershell
+python tools/verify-api-foundation.py
+python tools/verify-student-api.py --resource client-all --database equipment_borrowing_verify_lab5_unique_name --output docs/lab5/new-client-evidence.json
+```
+
+Set the private verification connection to that exact new name before invoking the second command. The script refuses an existing database on creation and never silently replaces one. Injected after-insert failure exists only as a temporary verification-DB trigger; no production API fault switch exists.
+
+```powershell
+# Load a private admin connection for disposable PostgreSQL integration tests.
+$env:POSTGRES_INTEGRATION_ADMIN_CONNECTION = $env:EQUIPMENT_BORROWING_CONNECTION_STRING
 dotnet test tests/EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj --configuration Release --no-build
 dotnet test tests/EquipmentBorrowing.UiTests/EquipmentBorrowing.UiTests.csproj --configuration Release --no-build
 ```
 
-Without `POSTGRES_INTEGRATION_ADMIN_CONNECTION`, PostgreSQL tests explicitly skip. On an authorized local disposable setup, load a connection privately before running them:
+Without the integration setting, backend PostgreSQL cases explicitly skip. Report the actual result rather than claiming those cases passed. Server-error/transport simulations must be limited to disposable environments; keep credentials and private identities out of captures.
 
-```powershell
-$env:POSTGRES_INTEGRATION_ADMIN_CONNECTION = [Environment]::GetEnvironmentVariable('EQUIPMENT_BORROWING_CONNECTION_STRING', 'User')
-dotnet test tests/EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj --configuration Release --no-build
-```
+## Contract, evidence and continuity
 
-Integration tests create unique equipment_borrowing_verify_* databases and retain them locally for inspection; they do not delete/reuse the operational database. The service-process probe requires its own verification-only database naming scope. [Exact verification instructions](docs/lab4/continuous-verification.md).
+- [Required endpoint catalog](docs/lab5/endpoint-contract.md) and [captured generated OpenAPI](docs/lab5/openapi-current.json).
+- [Session plan](docs/lab5/session-plan.md), [progress](docs/lab5/progress.md), [API/use-case traceability](docs/lab5/traceability.md).
+- [Consolidated T01-T08 execution](docs/lab5/test-execution.md); [current HTTP-only boundary evidence](docs/lab5/session8-evidence.md).
+- [Lab 4 continuity baseline](docs/lab5/baseline.md): authentic prepared package at 51f47ea5c127a09de16dbd95bd21c63197080823; Classroom turn-in not independently inspected.
+- [Preserved Lab 4 use-case suite](docs/lab4/use-case-suite.md), [business rules](docs/lab4/business-rules.md), [Lab 4 architecture/schema](docs/lab4/architecture-and-schema.md) and [development report](docs/lab4/development-report-lab4.md).
 
-[GitHub Actions](https://github.com/Khey3m/EquipmentBorrowing/actions/workflows/verify-lab4.yml) builds/tests on a Linux runner with isolated PostgreSQL 18 and disposable CI credentials. It has no deployment step. Logs/TRX are available from each run. The successful baseline includes 79 tests with zero skips and five process stages; a skipped local integration run is not equivalent.
+The Lab 4 submitted checkout retains its original direct-database Desktop and launch scripts. Use that revision to reproduce Lab 4 alone; this branch runs API and Desktop separately. Existing migrations and development history are preserved. Final lab5-submitted tag, final handoff and private pair submission actions follow completed acceptance in Sessions 9-10.
 
-Windows Code Integrity may block unsigned assemblies or Avalonia tasks with 0x800711C7/MSB4061. This was observed locally and not addressed by disabling policy. Use an approved development allowance/environment or inspect CI evidence; a remote pass does not repair local policy.
+Integrated CI and controlled no-response/500/recovery evidence: [Session 9](docs/lab5/session9-evidence.md). CI retains TRX, OpenAPI and HTTP/SQL captures under campuseq-test-results; Linux omits native Windows capture explicitly. Full rendered T07 staff walkthrough remains pending.
 
-## Architecture and project layout
+Verified integrated checkpoint: [CI run 43710719990](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43710719990), dc1e541: zero-warning Release build, 99 passing tests, five persistence stages and seven controlled HTTP scenarios. [Durable summary](docs/lab5/session9-ci-summary.json). Native recovery screenshots and exact T07/manual limits are recorded in Session 9 evidence.
 
-- Domain: Student, Equipment, Borrowing and validation/state transitions; no Avalonia/EF dependency.
-- Application: actor-goal services and repository/query/session contracts.
-- Infrastructure: Npgsql/EF mappings, migrations, queries, repositories, bootstrap and serializable transactions.
-- Desktop: AXAML views, CommunityToolkit MVVM state/commands and DI composition root.
-- Tests: backend/domain/service/real PostgreSQL tests.
-- UiTests: Avalonia Headless controls, bindings and asynchronous selection checks.
-- tools/EquipmentBorrowing.PersistenceProbe: verification-only service-process persistence harness.
-- ConsoleDemo: retained in-memory learning/demo path; it does not establish PostgreSQL atomicity.
+## Lab 5 report and review handoff
 
-IDbContextFactory creates short-lived contexts. A write session shares one context/serializable transaction across validation and repository saves, then commits once. Queries are asynchronous/no-tracking. Database-generated normalized unique keys, foreign keys, date/state checks and a partial active-item index supplement Application rules. [Architecture, ERD and rationale](docs/lab4/architecture-and-schema.md).
-
-## Requirements, evidence and submission
-
-- [Use-case diagram](docs/lab4/use-case-diagram.md) / [PlantUML](docs/lab4/use-case-diagram.puml)
-- [33-case scope catalog](docs/lab4/use-case-catalog.md) / [adapted fourteen-case suite](docs/lab4/use-case-suite.md)
-- [Business rules BR-01-19](docs/lab4/business-rules.md) / [final traceability](docs/lab4/final-traceability.md)
-- [Final development report](docs/lab4/development-report-lab4.md) / [progress ledger](docs/lab4/progress.md) / [Git history export](docs/lab4/git-history.txt)
-- [Session 10 evidence](docs/lab4/session10-evidence.md) / [CI summary](docs/lab4/session10-ci-summary.json)
-- [Demonstration script](docs/lab4/demonstration-script.md) / [manual checklist](docs/lab4/manual-verification-checklist.md) / [submission handoff](docs/lab4/submission-handoff.md)
-
-UC-10-11 and UC-17-27 are deferred to Lab 5; UC-28-33 are future scope. No authentication, hard deletion, maintenance/retirement, reporting/export or deployment is required in this Lab 4 implementation.
-
-Earlier laboratory reflections and incremental status notes remain in [the archived README](docs/lab4/archive/readme-through-session10.md), [Labs 1-3 report/review](docs/lab4/labs1-3-review.md), and session evidence files. Historical blocked/pass results apply to their own revisions. Submitter/partner names and IDs were not supplied; add them privately in the required submission location rather than inventing or publishing them.
-
-## Lab 5 in progress
-
-Lab 4 reproduction above remains valid for its direct-database Desktop. On branch lab5/api-integration, Sessions 1-5 add an independent ASP.NET Core host and all sixteen API operations. Sessions 6-7 migrate management, catalog reads, single/multi checkout, Active loans and returns to HTTP. Histories/search retain direct query dependencies until Session 8; full T07/T08 acceptance remains pending.
-
-```powershell
-dotnet run --project src/EquipmentBorrowing.Api --configuration Release
-```
-
-Host status: http://127.0.0.1:5085/api/v1/status. Generated OpenAPI: http://127.0.0.1:5085/openapi/v1.json (all sixteen business operations plus operational status). Override the address with --urls. This foundation does not connect, migrate or seed on startup. See [Lab 5 plan](docs/lab5/session-plan.md), [endpoint target](docs/lab5/endpoint-contract.md), [session evidence](docs/lab5/session1-evidence.md), and [acceptance execution](docs/lab5/test-execution.md).
-
-Student endpoint verification and limits: [Session 2 evidence](docs/lab5/session2-evidence.md). Current generated contract snapshot: [OpenAPI](docs/lab5/openapi-current.json). Session 4 completes those T02 issue/return branches; historical Session 2 evidence remains partial.
-
-Equipment endpoint verification: [Session 3 evidence](docs/lab5/session3-evidence.md). T03 passed its real HTTP/fresh-state/restart execution; other acceptance cases retain their documented incomplete status.
-
-Single borrowing/return and completed student acceptance: [Session 4 evidence](docs/lab5/session4-evidence.md). T02/T03/T04 have passing recorded executions; remaining cases retain their documented status.
-
-Complete API/query/atomicity evidence: [Session 5](docs/lab5/session5-evidence.md). API traceability: [matrix](docs/lab5/traceability.md). T01-T06 have passing executions; existing headless Desktop passes do not constitute T07 HTTP migration acceptance.
-
-Session 6 client setup and current mixed boundary: [HTTP management evidence and launch instructions](docs/lab5/session6-evidence.md). Configure EQUIPMENT_BORROWING_API_BASE_URL (default http://127.0.0.1:5085/). During Sessions 6-7, API and remaining direct Desktop workflows must use the same database; use the Lab 4 submitted checkout for the original Lab 4-only launch instructions/scripts.
-
-HTTP checkout/return and synchronization evidence: [Session 7](docs/lab5/session7-evidence.md). All mutations now use the API; histories/search still require matching direct DB configuration at this intermediate checkpoint. Seventeen UI/client and 76 backend tests pass.
+[Development report](docs/lab5/development-report.md), [architecture](docs/lab5/architecture.md), [submission inventory](docs/lab5/submission-handoff.md), [remaining rendered T07 script](docs/lab5/rendered-walkthrough.md), and [retained raw CI artifact](docs/lab5/evidence/ci-43710719990.zip). The source review package is generated from a clean commit with `python tools/package-lab4.py --lab 5 --output-dir "$env:USERPROFILE/Downloads/Lab5-submission"`. Its manifest states the pending rendered T07 and final-tag status; it is not yet a completed lab5-submitted handoff.

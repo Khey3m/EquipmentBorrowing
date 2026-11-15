@@ -2,7 +2,7 @@ using EquipmentBorrowing.Application.Interfaces;
 
 namespace EquipmentBorrowing.Application.Services;
 
-public sealed class BorrowingHistoryService(IHistoryQueries queries)
+public sealed class BorrowingHistoryService(IHistoryQueries queries) : IHistoryWorkflow
 {
     public async Task<QueryResult<IReadOnlyList<HistorySubject>>> GetSubjectsAsync(HistoryKind kind, CancellationToken cancellationToken = default)
     {

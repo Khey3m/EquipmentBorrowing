@@ -1,7 +1,7 @@
-name: Verify Lab 4
+name: Verify CampusEQ API and Desktop
 on:
   push:
-    branches: [main, lab4/postgresql-workflows]
+    branches: [main, lab4/postgresql-workflows, lab5/api-integration]
   pull_request:
   workflow_dispatch:
 permissions:
@@ -49,10 +49,31 @@ jobs:
           for stage in init borrow verify-borrow return verify-return; do
             dotnet run --project tools/EquipmentBorrowing.PersistenceProbe --configuration Release --no-build -- "$stage"
           done
+      - name: Install PostgreSQL client for HTTP acceptance verification
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y postgresql-client
+      - name: Verify independent API contract and export OpenAPI
+        run: python3 tools/verify-api-foundation.py --openapi-output TestResults/lab5/openapi.json
+      - name: Run controlled Lab 5 HTTP acceptance scenarios
+        env:
+          PGHOST: localhost
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGPASSWORD: ci-${{ github.run_id }}-${{ github.run_attempt }}
+          PSQL_PATH: psql
+        run: |
+          case_index=0
+          for scenario in reads students equipment borrowings checkout client-all recovery; do
+            case_index=$((case_index + 1))
+            database="equipment_borrowing_verify_lab5_${{ github.run_id }}_${{ github.run_attempt }}_${case_index}"
+            export LAB5_STUDENT_VERIFY_CONNECTION="Host=localhost;Port=5432;Database=$database;Username=postgres;Password=$PGPASSWORD;Include Error Detail=false"
+            python3 tools/verify-student-api.py --resource "$scenario" --database "$database" --no-native --output "TestResults/lab5/$scenario.json"
+          done
       - name: Keep test evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: lab4-test-results
+          name: campuseq-test-results
           path: TestResults
           if-no-files-found: ignore

@@ -16,7 +16,8 @@ import urllib.error
 import urllib.request
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--resource", choices=["students", "equipment", "borrowings", "reads", "checkout", "client", "client-borrowing"], default="students")
+parser.add_argument("--resource", choices=["students", "equipment", "borrowings", "reads", "checkout", "client", "client-borrowing", "client-all", "recovery"], default="students")
+parser.add_argument("--no-native", action="store_true", help="Skip Windows native capture, retaining dependency validation.")
 parser.add_argument("--database", required=True)
 parser.add_argument("--output", type=Path, required=True)
 args = parser.parse_args()
@@ -76,6 +77,7 @@ with socket.socket() as sock:
 base=f"http://127.0.0.1:{port}"
 log=tempfile.TemporaryFile()
 process=None
+diag_session=None
 
 def start():
     global process
@@ -112,9 +114,83 @@ def call(method,path,expected,body=None,raw=None,check_state=True):
     elif method=='GET' and check_state:assert before==after
     return value,headers
 
+def observe_native(client_env, label):
+    deps=root/'src/EquipmentBorrowing.Desktop/bin/Release/net10.0/EquipmentBorrowing.Desktop.deps.json'
+    libraries=list(json.loads(deps.read_text())['libraries'])
+    forbidden=[name for name in libraries if any(part in name.lower() for part in ['entityframeworkcore','npgsql','equipmentborrowing.infrastructure'])]
+    assert not forbidden
+    if args.no_native:
+        trace.append({'native_desktop':'Not run: Windows capture disabled','forbidden_runtime_dependencies':forbidden,'runtime_libraries':libraries,'phase':label})
+        return
+    native=subprocess.Popen([str(deps.parent/'EquipmentBorrowing.Desktop.exe')],cwd=deps.parent,env=client_env,stdout=log,stderr=log)
+    try:
+        for _ in range(40):
+            if native.poll() is not None:raise RuntimeError('Desktop exited before opening its window; private output omitted.')
+            read=subprocess.run(['powershell.exe','-NoProfile','-Command',
+                f'Get-Process -Id {native.pid} -ErrorAction SilentlyContinue | Select-Object Id,MainWindowTitle,MainWindowHandle,Responding | ConvertTo-Json -Compress'],capture_output=True,text=True)
+            window=json.loads(read.stdout) if read.stdout.strip() else {}
+            if window.get('MainWindowTitle')=='Campus Equipment Borrowing System' and window.get('Responding'):break
+            time.sleep(.25)
+        else:raise RuntimeError('Desktop window did not open.')
+        time.sleep(2)
+        image=args.output.with_name(args.output.stem+('-'+label if label else '')+'.png').resolve()
+        capture=subprocess.run(['powershell.exe','-NoProfile','-ExecutionPolicy','Bypass','-File',
+            str(root/'tools/capture-desktop-window.ps1'),'-ProcessId',str(native.pid),'-ImagePath',str(image)],capture_output=True,text=True)
+        assert capture.returncode==0 and image.exists()
+        trace.append({'native_desktop':window,'database_setting_present':False,'forbidden_runtime_dependencies':forbidden,
+                      'runtime_libraries':libraries,'screenshot':str(image.relative_to(root)) if image.is_relative_to(root) else image.name,'phase':label})
+    finally:
+        subprocess.run(['powershell.exe','-NoProfile','-Command',f'[void](Get-Process -Id {native.pid} -ErrorAction SilentlyContinue).CloseMainWindow()'],capture_output=True)
+        try:native.wait(timeout=5)
+        except subprocess.TimeoutExpired:native.terminate();native.wait(timeout=5)
+
+
 try:
     start()
-    if args.resource == "students":
+    if args.resource == "recovery":
+        committed,headers=call('POST','/api/v1/students',201,{'studentNumber':'ST-RECOVERY','fullName':'Recovery Control','contact':None})
+        updated=committed
+        saved_state=snapshot()
+        client_env=dict(env)
+        for key in ['EQUIPMENT_BORROWING_CONNECTION_STRING','PGHOST','PGPORT','PGUSER','PGPASSWORD','LAB5_STUDENT_VERIFY_CONNECTION']:
+            client_env.pop(key,None)
+        client_env['EQUIPMENT_BORROWING_API_BASE_URL']=base+'/'
+        probe=root/'tools/EquipmentBorrowing.HttpProbe/bin/Release/net10.0/EquipmentBorrowing.HttpProbe.dll'
+        def diagnostic(mode):
+            global diag_session
+            if diag_session is None:
+                diag_session=subprocess.Popen(['dotnet',str(probe),'--diagnostic-session'],cwd=root,env=client_env,
+                    stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=log,text=True)
+                ready=diag_session.stdout.readline()
+                if not ready or not json.loads(ready).get('ready'):raise RuntimeError('Client diagnostic startup failed.')
+            diag_session.stdin.write(mode+'\n');diag_session.stdin.flush()
+            line=diag_session.stdout.readline()
+            if not line:raise RuntimeError('Client recovery diagnostic failed; private output omitted.')
+            observed=json.loads(line)
+            assert observed['sameClientProcess']
+            assert observed['success'] and not observed['databaseSettingPresent']
+            trace.append({'diagnostic_probe':observed,'before':saved_state,'after':snapshot()})
+            assert snapshot()==saved_state
+            observe_native(client_env,mode)
+        stop()
+        try:
+            urllib.request.urlopen(base+'/api/v1/students',timeout=3)
+            raise AssertionError('Stopped API unexpectedly responded')
+        except urllib.error.URLError:
+            trace.append({'method':'GET','path':'/api/v1/students','status':None,'transport':'No HTTP response'})
+        diagnostic('offline')
+        original=env['EQUIPMENT_BORROWING_CONNECTION_STRING']
+        env['EQUIPMENT_BORROWING_CONNECTION_STRING']=original+';Port=1;Timeout=2;Command Timeout=2'
+        start()
+        call('GET','/api/v1/students',500)
+        call('POST','/api/v1/students',500,{'studentNumber':'ST-FAIL','fullName':'Known Failed Write','contact':None})
+        diagnostic('server-error')
+        stop();env['EQUIPMENT_BORROWING_CONNECTION_STRING']=original;start()
+        call('GET','/api/v1/students',200)
+        diagnostic('healthy')
+        reopened,_=call('GET',headers['Location'],200)
+        assert reopened==committed and snapshot()==saved_state
+    elif args.resource == "students":
         students,_=call('GET','/api/v1/students',200)
         assert len(students)==4
         ids={s['studentNumber']:s['id'] for s in students};ada=ids['ST-100']
@@ -382,12 +458,12 @@ try:
             client_env.pop(key,None)
         client_env['EQUIPMENT_BORROWING_API_BASE_URL']=base+'/'
         probe=root/'tools/EquipmentBorrowing.HttpProbe/bin/Release/net10.0/EquipmentBorrowing.HttpProbe.dll'
-        run=subprocess.run(['dotnet',str(probe)]+(['--borrowing'] if args.resource=='client-borrowing' else []),cwd=root,env=client_env,capture_output=True,text=True)
+        run=subprocess.run(['dotnet',str(probe)]+(['--retrieval'] if args.resource=='client-all' else ['--borrowing'] if args.resource=='client-borrowing' else []),cwd=root,env=client_env,capture_output=True,text=True)
         if run.returncode:raise RuntimeError('HTTP ViewModel probe failed; private output omitted.')
         client_result=json.loads(run.stdout)
         assert client_result['success'] and not client_result['databaseSettingPresent']
         after=snapshot()
-        if args.resource=='client-borrowing':
+        if args.resource in ['client-borrowing','client-all']:
             assert len(after['borrowings'])==len(before['borrowings'])+3
             assert [row for row in after['borrowings'] if row['Id'] in {old['Id'] for old in before['borrowings']}]==before['borrowings']
             new_loans=[row for row in after['borrowings'] if row['StudentId']==client_result['studentId']]
@@ -405,13 +481,15 @@ try:
         trace.append({'viewmodel_probe':client_result,'before':before,'after':after})
         updated,headers=call('GET','/api/v1/students/'+str(student['Id']),200)
         headers={'Location':'/api/v1/students/'+str(student['Id'])}
+        if args.resource=='client-all':
+            observe_native(client_env, '')
     saved=snapshot();stop();start()
     reopened,_=call('GET',headers['Location'],200)
     assert reopened==updated and snapshot()==saved
     # Block only this newly created verification database. Admin remains connected to postgres.
     sql(f'ALTER DATABASE "{args.database}" WITH ALLOW_CONNECTIONS false;', 'postgres')
     sql(f"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='{args.database}';",'postgres')
-    probe_path=headers['Location'] if args.resource in ['borrowings','reads','checkout','client','client-borrowing'] else '/api/v1/'+args.resource
+    probe_path=headers['Location'] if args.resource in ['borrowings','reads','checkout','client','client-borrowing','client-all','recovery'] else '/api/v1/'+args.resource
     try:call('GET',probe_path,500,check_state=False)
     finally:sql(f'ALTER DATABASE "{args.database}" WITH ALLOW_CONNECTIONS true;','postgres')
     call('GET',probe_path,200)
@@ -419,14 +497,18 @@ try:
     status,doc_headers,document=None,None,None
     with urllib.request.urlopen(base+'/openapi/v1.json') as response:document=json.load(response)
     operations={value.get('operationId') for path in document['paths'].values() for value in path.values() if isinstance(value,dict)}
-    required={'students':{'API-02','API-03','API-04','API-05','API-06'}, 'equipment':{'API-01','API-07','API-08','API-09'}, 'borrowings':{'API-10','API-12','API-13'}, 'reads':{f'API-{i:02}' for i in range(1,17)}, 'checkout':{'API-11','API-14','API-15','API-16'}, 'client':{'API-01','API-02','API-04','API-05','API-06','API-08','API-09'}, 'client-borrowing':{'API-10','API-11','API-12','API-14'}}[args.resource]
+    required={'students':{'API-02','API-03','API-04','API-05','API-06'}, 'equipment':{'API-01','API-07','API-08','API-09'}, 'borrowings':{'API-10','API-12','API-13'}, 'reads':{f'API-{i:02}' for i in range(1,17)}, 'checkout':{'API-11','API-14','API-15','API-16'}, 'client':{'API-01','API-02','API-04','API-05','API-06','API-08','API-09'}, 'client-borrowing':{'API-10','API-11','API-12','API-14'}, 'client-all':{f'API-{i:02}' for i in range(1,17)}, 'recovery':{f'API-{i:02}' for i in range(1,17)}}[args.resource]
     assert required<=operations
     args.output.parent.mkdir(parents=True,exist_ok=True)
-    args.output.write_text(json.dumps({'database':args.database,'campus_date':str(today),'date_policy':'reference offsets from actual Asia/Manila date',
+    args.output.write_text(json.dumps({'observed_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'database':args.database,'campus_date':str(today),'date_policy':'reference offsets from actual Asia/Manila date',
        'dataset':('S1-S4/E1-E7; reset before every T05 subcase' if args.resource=='checkout' else 'S1-S4/E1-E7; reset before T01 and again before T06' if args.resource=='reads' else 'S1-S4/E1-E7; reset once for this test'),
-       'scope':{'students':'T02 complete execution','equipment':'T03 equipment execution','borrowings':'T04 single borrowing/return execution','reads':'T01/T06 independent reads and query execution','checkout':'T05 atomic checkout and rollback execution','client':'Session 6 HTTP management ViewModels; T07 partial','client-borrowing':'Session 7 management/checkout/return HTTP ViewModels; T07 partial'}[args.resource],'fault_definition':fault_definition if args.resource=='checkout' else None,'checks':trace,'restart_preserved':True,'openapi_operations':sorted(operations)},indent=2)+'\n')
-    wire_count=sum('method' in entry for entry in trace)+sum(len(entry['viewmodel_probe']['trace']) for entry in trace if 'viewmodel_probe' in entry)
+       'scope':{'students':'T02 complete execution','equipment':'T03 equipment execution','borrowings':'T04 single borrowing/return execution','reads':'T01/T06 independent reads and query execution','checkout':'T05 atomic checkout and rollback execution','client':'Session 6 HTTP management ViewModels; T07 partial','client-borrowing':'Session 7 management/checkout/return HTTP ViewModels; T07 partial','client-all':'Full HTTP composition and retrieval; rendered walkthrough partial','recovery':'T08 actual API/DB failures, client recovery and restart'}[args.resource],'fault_definition':fault_definition if args.resource=='checkout' else None,'checks':trace,'restart_preserved':True,'openapi_operations':sorted(operations)},indent=2)+'\n')
+    wire_count=sum('method' in entry for entry in trace)+sum(len(entry['viewmodel_probe']['trace']) for entry in trace if 'viewmodel_probe' in entry)+sum(len(entry['diagnostic_probe']['trace']) for entry in trace if 'diagnostic_probe' in entry)
     print(f'PASS: {wire_count} HTTP exchanges; independent state/restart/server failure recovery verified.')
     print('Evidence: '+str(args.output))
 finally:
+    if diag_session is not None:
+        diag_session.stdin.close()
+        try:diag_session.wait(timeout=5)
+        except subprocess.TimeoutExpired:diag_session.terminate();diag_session.wait(timeout=5)
     stop();log.close()

@@ -53,7 +53,7 @@ app.MapStudentEndpoints();
 app.MapEquipmentEndpoints();
 app.MapBorrowingEndpoints();
 app.MapQueryAndCheckoutEndpoints();
-app.MapGet("/api/v1/status", () => new ApiStatus("CampusEQ API", "v1", "Session 5 all sixteen business operations implemented; Desktop migration pending"))
+app.MapGet("/api/v1/status", () => new ApiStatus("CampusEQ API", "v1", "Session 8 HTTP-only Desktop boundary; integrated acceptance pending"))
     .WithName("ApiStatus").WithSummary("Host liveness only; does not establish database readiness.")
     .Produces<ApiStatus>(200).Produces<ApiError>(405).Produces<ApiError>(500);
 app.Run();

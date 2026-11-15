@@ -1,0 +1,80 @@
+{
+  "run_id": 43710719990,
+  "url": "https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43710719990",
+  "commit": "dc1e54186f35600bc8cad15ed8ec6897ccdbb167",
+  "job_id": 132801446783,
+  "conclusion": "success",
+  "build": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "tests": {
+    "backend_passed": 76,
+    "ui_client_passed": 23,
+    "failed": 0,
+    "skipped": 0
+  },
+  "persistence_stages_passed": [
+    "init",
+    "borrow",
+    "verify-borrow",
+    "return",
+    "verify-return"
+  ],
+  "http_scenarios": [
+    {
+      "name": "reads",
+      "exchanges": 57
+    },
+    {
+      "name": "students",
+      "exchanges": 43
+    },
+    {
+      "name": "equipment",
+      "exchanges": 35
+    },
+    {
+      "name": "borrowings",
+      "exchanges": 37
+    },
+    {
+      "name": "checkout",
+      "exchanges": 57
+    },
+    {
+      "name": "client-all",
+      "exchanges": 75
+    },
+    {
+      "name": "recovery",
+      "exchanges": 23
+    }
+  ],
+  "http_exchanges_and_attempts": 327,
+  "artifact": {
+    "id": 14160616423,
+    "name": "campuseq-test-results",
+    "bytes": 65983
+  },
+  "native_windows_evidence": "session9-recovery-evidence.json and corresponding offline/server-error/healthy PNG files; native capture explicitly not run in Linux CI",
+  "remaining": "Full rendered staff sequence for T07 remains pending; no actual lost-commit-acknowledgment experiment performed",
+  "observed_log_lines": [
+    "2026-11-15T11:50:00.4933756Z     0 Warning(s)",
+    "2026-11-15T11:50:00.4934041Z     0 Error(s)",
+    "2026-11-15T11:50:08.8428291Z Passed!  - Failed:     0, Passed:    76, Skipped:     0, Total:    76, Duration: 2 s - EquipmentBorrowing.Tests.dll (net10.0)",
+    "2026-11-15T11:50:12.5259918Z Passed!  - Failed:     0, Passed:    23, Skipped:     0, Total:    23, Duration: 1 s - EquipmentBorrowing.UiTests.dll (net10.0)",
+    "2026-11-15T11:50:15.3942255Z PASS: separate-process persistence stage init",
+    "2026-11-15T11:50:17.6955150Z PASS: separate-process persistence stage borrow",
+    "2026-11-15T11:50:19.7462403Z PASS: separate-process persistence stage verify-borrow",
+    "2026-11-15T11:50:22.0090012Z PASS: separate-process persistence stage return",
+    "2026-11-15T11:50:24.0437725Z PASS: separate-process persistence stage verify-return",
+    "2026-11-15T11:50:44.9272108Z PASS: 57 HTTP exchanges; independent state/restart/server failure recovery verified.",
+    "2026-11-15T11:50:54.2663002Z PASS: 43 HTTP exchanges; independent state/restart/server failure recovery verified.",
+    "2026-11-15T11:51:02.9404288Z PASS: 35 HTTP exchanges; independent state/restart/server failure recovery verified.",
+    "2026-11-15T11:51:11.4542920Z PASS: 37 HTTP exchanges; independent state/restart/server failure recovery verified.",
+    "2026-11-15T11:51:24.6751239Z PASS: 57 HTTP exchanges; independent state/restart/server failure recovery verified.",
+    "2026-11-15T11:51:31.8017749Z PASS: 75 HTTP exchanges; independent state/restart/server failure recovery verified.",
+    "2026-11-15T11:51:41.1105601Z PASS: 23 HTTP exchanges; independent state/restart/server failure recovery verified."
+  ]
+}
