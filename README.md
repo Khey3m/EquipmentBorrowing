@@ -137,3 +137,13 @@ IDbContextFactory creates short-lived contexts. A write session shares one conte
 UC-10-11 and UC-17-27 are deferred to Lab 5; UC-28-33 are future scope. No authentication, hard deletion, maintenance/retirement, reporting/export or deployment is required in this Lab 4 implementation.
 
 Earlier laboratory reflections and incremental status notes remain in [the archived README](docs/lab4/archive/readme-through-session10.md), [Labs 1-3 report/review](docs/lab4/labs1-3-review.md), and session evidence files. Historical blocked/pass results apply to their own revisions. Submitter/partner names and IDs were not supplied; add them privately in the required submission location rather than inventing or publishing them.
+
+## Lab 5 in progress
+
+Lab 4 reproduction above remains valid for its direct-database Desktop. On branch lab5/api-integration, Session 1 adds an independent ASP.NET Core host and transport contracts; Desktop HTTP migration and business endpoints are pending.
+
+```powershell
+dotnet run --project src/EquipmentBorrowing.Api --configuration Release
+```
+
+Host status: http://127.0.0.1:5085/api/v1/status. Generated OpenAPI: http://127.0.0.1:5085/openapi/v1.json (currently operational route only). Override the address with --urls. This foundation does not connect, migrate or seed on startup. See [Lab 5 plan](docs/lab5/session-plan.md), [endpoint target](docs/lab5/endpoint-contract.md), [session evidence](docs/lab5/session1-evidence.md), and [acceptance execution](docs/lab5/test-execution.md).

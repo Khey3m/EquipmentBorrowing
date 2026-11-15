@@ -5,3 +5,9 @@
 Both supplied PDFs read; two-week ten-session plan and Lab 4 package provenance recorded. Working branch: lab5/api-integration. No application code or database configuration changed. API-01?16 implementation and T01?T08 execution remain pending.
 
 Next: Session 1 ? baseline, transport contracts and independent API host foundation. See [session plan](session-plan.md) and [baseline](baseline.md).
+
+## Session 1 - delivered
+
+API/Contracts foundation committed and pushed in 0e6dcd9. Independent Production HTTP checks observed 200 host status, 200 generated OpenAPI, safe 404 and 405 with Desktop closed and no DB setting in the API environment. Full solution Release build passes with zero warnings/errors. See [Session 1 evidence](session1-evidence.md), [target contracts](endpoint-contract.md), and [consolidated acceptance ledger](test-execution.md).
+
+Generated OpenAPI covers only the operational route so far; API-01-16 and T01-T08 remain pending. Structured business failure categorization will be added with student endpoints rather than changing unused result types. No Desktop/database behavior changed. Next: Session 2 student API.
