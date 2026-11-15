@@ -10,7 +10,7 @@ Session 1 operational smoke evidence is separate and does not satisfy any comple
 | T04 | Issue, return and persistence | Pass | Session 4: 37 HTTP requests, fresh saved-state checks and API restart; session4-evidence.md |
 | T05 | Multi-checkout, limit boundaries and after-write rollback | Pass | Session 5: reset subcases, exact-three boundaries, safe after-insert 500 and no partial state; session5-checkout-evidence.json |
 | T06 | Histories/search/filter/sort | Pass | Session 5: fresh dataset and independently derived membership/display/order; session5-query-evidence.json |
-| T07 | HTTP-only responsive Desktop, independent API and refresh | Partial | Sessions 6-7: real HTTP management/checkout/return ViewModels and refresh with no DB setting in probe; direct history/search dependencies and rendered walkthrough pending |
+| T07 | HTTP-only responsive Desktop, independent API and refresh | Partial | Session 8: complete HTTP-only composition, all real ViewModels, independent refresh, native catalog and clean runtime dependencies; full rendered staff walkthrough pending |
 | T08 | Transport versus server failure, recovery and restart | Partial supporting checks | Session 2: safe DB-failure 500/recovery and API restart; no-response/Desktop branches pending Session 9 |
 
 ## Execution template
@@ -40,3 +40,7 @@ T07 supporting execution: actual management ViewModels use HTTP, independently c
 ## Session 7 execution entry
 
 T07 supporting execution: single issue, explicit confirmed return, multi checkout, Active/catalog refresh, stale-item and over-limit rejection pass through real HTTP-backed ViewModels. Actual capture: session7-client-evidence.json; fresh grouped SQL confirms old history unchanged and correct new returned/active loans. Unknown/malformed response and no-replay behavior covered by focused client checks, not a live lost-ack test. One nullable compiler warning was corrected; clean build, 76 backend and seventeen UI/client cases pass. Full T07/T08 pending remaining retrieval/dependency migration and manual UI evidence.
+
+## Session 8 execution entry
+
+T07 supporting execution: all seven screen ViewModels resolve through the actual App composition, with histories/search over HTTP; real lifecycle/retrieval/refresh checks pass without database settings in the probe. Actual native Desktop starts without DB settings, shows synthetic API catalog and responds; screenshot and forbidden-dependency scan captured. Diagnosis/correction: two nullable-flow warnings fixed; shell helper extraction resolves capture-command quoting before final execution. Retest: final clean build, 76 backend and 23 UI/client tests pass; 69 captured completed HTTP exchanges. Full rendered staff workflow and consolidated T08 stay pending. See session8-evidence.md and session8-client-evidence.json/png.

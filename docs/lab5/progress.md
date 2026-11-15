@@ -35,3 +35,7 @@ HTTP client/workflow interfaces and first management/catalog migration in cfb379
 ## Session 7 - delivered
 
 Single/multi checkout, Active loans and returns now use HTTP via workflow interfaces (fbeb2f0). All Desktop mutations cross the API; direct write/session registrations removed. Full Release build clean; 76 backend and seventeen UI/client tests pass. Real probe captures 51 ViewModel/independent exchanges plus four outer checks; grouped fresh state preserves original loans and retains one returned plus two active new loans. T07 remains partial because histories/search still directly query PostgreSQL until Session 8. See [Session 7 evidence](session7-evidence.md). Next: migrate retrieval and remove remaining direct Desktop persistence dependencies.
+
+## Session 8 - delivered
+
+HTTP history/search adapters and shared full Desktop composition in 9779dab. Infrastructure/EF references removed; actual native Desktop opens and displays the API catalog without database settings. Runtime deps scan has no EF/Npgsql/Infrastructure. Full build clean; 76 backend and 23 UI/client tests pass. Actual full-composition probe plus outer checks captures 69 completed HTTP exchanges. [Session 8 evidence](session8-evidence.md). T07 automated boundary/workflow coverage complete; full rendered staff walkthrough and consolidated T08 remain pending Session 9. Upstream Session 7 merge fast-forwarded normally; deleted feature branch recreated on push.
