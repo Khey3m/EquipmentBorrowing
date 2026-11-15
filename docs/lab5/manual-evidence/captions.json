@@ -15,7 +15,31 @@
       "scope": "Supporting API-01 / Step 1 evidence only. No complete T01 or T07 pass is established by this image."
     },
     {
-      "id": "Figure 2",
+      "image": "08-step1-http-response.png",
+      "heading": "Step 1 - Direct equipment request returns HTTP 200",
+      "source_filename": "Screenshot 2026-11-15 215132.png",
+      "explanation": [
+        "The Developer PowerShell terminal runs curl.exe -i http://127.0.0.1:5085/api/v1/equipment. Two displayed requests both receive HTTP/1.1 200 OK with Content-Type application/json; charset=utf-8 and an empty JSON array [].",
+        "This confirms that the equipment endpoint responded successfully over HTTP and returned a valid empty-list response at the time of capture. The status code is now visible in this additional evidence, unlike the browser-only image.",
+        "The response contains no equipment records. This capture predates the equipment registration pictures in Step 3; it does not demonstrate the seven-item seeded dataset or prove that the Desktop process was closed."
+      ],
+      "scope": "Actual GET command, HTTP status, response headers and body; database identity and Desktop process state are not shown.",
+      "id": "Figure 2"
+    },
+    {
+      "image": "09-step1-openapi.png",
+      "heading": "Step 1 - Retrieve the OpenAPI contract",
+      "source_filename": "Screenshot 2026-11-15 215233.png",
+      "explanation": [
+        "The browser retrieves http://127.0.0.1:5085/openapi/v1.json. The document identifies OpenAPI 3.1.1 and EquipmentBorrowing.Api | v1, with the local server URL http://127.0.0.1:5085/.",
+        "The visible section documents POST /api/v1/checkout-requests (operation API-11), its JSON request schema and response definitions including 201 Created and 400 Bad Request. This describes the API contract and shows it can be retrieved.",
+        "The documented response definitions are not evidence that checkout was executed. This image supports contract availability; transaction behavior needs the separate checkout and database evidence."
+      ],
+      "scope": "Retrieved OpenAPI document; the screenshot shows a portion of the contract and does not establish execution of the documented operations.",
+      "id": "Figure 3"
+    },
+    {
+      "id": "Figure 4",
       "image": "02-student-registered.png",
       "heading": "Step 2 - Register a student and verify the database row",
       "source_filename": "Screenshot 2026-11-15 220316.png",
@@ -27,19 +51,19 @@
       "scope": "Student registration and matching database readback; HTTP request/response details are not visible."
     },
     {
-      "id": "Figure 3",
+      "id": "Figure 5",
       "image": "03-student-details-saved.png",
       "heading": "Step 2 - Update student details and verify the same identity",
       "source_filename": "Screenshot 2026-11-15 220427.png",
       "explanation": [
         "The selected student now has the name Demo edited Student. The institutional number remains ST-UI-600, and the application displays \"Student details saved\".",
-        "The pgAdmin result shows one matching row with the same Id 1 and institutional number, with the updated name visible in the FullName column. Comparing this picture with Figure 2 supports that the existing student was updated while retaining the same database identity.",
+        "The pgAdmin result shows one matching row with the same Id 1 and institutional number, with the updated name visible in the FullName column. Comparing this picture with Figure 4 supports that the existing student was updated while retaining the same database identity.",
         "The contact field still contains demo.student@example.edu. These pictures demonstrate registration and a name edit; clearing the optional contact field is not demonstrated. If contact clearing is part of the walkthrough, add a separate screenshot showing a blank contact field and a database NULL result."
       ],
       "scope": "Student name update and retained identity. Contact clearing and persistence after a process restart are not shown."
     },
     {
-      "id": "Figure 4",
+      "id": "Figure 6",
       "image": "04-equipment-list.png",
       "heading": "Step 3 - Equipment registered in the management screen",
       "source_filename": "Screenshot 2026-11-15 221112.png",
@@ -50,7 +74,7 @@
       "scope": "Equipment management evidence; screenshots do not show HTTP exchanges or establish the full Lab 5 acceptance result."
     },
     {
-      "id": "Figure 5",
+      "id": "Figure 7",
       "image": "05-equipment-database-before.png",
       "heading": "Step 3 - Database readback before editing the camera",
       "source_filename": "Screenshot 2026-11-15 221129.png",
@@ -61,7 +85,7 @@
       "scope": "Equipment management evidence; screenshots do not show HTTP exchanges or establish the full Lab 5 acceptance result."
     },
     {
-      "id": "Figure 6",
+      "id": "Figure 8",
       "image": "06-equipment-edited-ui.png",
       "heading": "Step 3 - Camera name edited and optional description cleared",
       "source_filename": "Screenshot 2026-11-15 221437.png",
@@ -72,7 +96,7 @@
       "scope": "Equipment management evidence; screenshots do not show HTTP exchanges or establish the full Lab 5 acceptance result."
     },
     {
-      "id": "Figure 7",
+      "id": "Figure 9",
       "image": "07-equipment-database-after.png",
       "heading": "Step 3 - Database readback after the camera edit",
       "source_filename": "Screenshot 2026-11-15 221505.png",
