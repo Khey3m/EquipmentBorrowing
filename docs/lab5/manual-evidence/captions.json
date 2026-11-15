@@ -373,6 +373,56 @@
         "After clearing, the search field is blank, Status is All, Sort date is CheckoutDate and Descending is unchecked. All three borrowing records are restored. The actual UI labels are CheckoutDate and ExpectedReturnDate, rather than the database names BorrowedAt and ExpectedReturnAt used in the earlier instructions."
       ],
       "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
+    },
+    {
+      "id": "Figure 35",
+      "image": "35-step9-before.png",
+      "heading": "Step 9 - Student before the external API edit",
+      "source_filename": "Screenshot 2026-11-15 234341.png",
+      "explanation": [
+        "The selected ST-UI-600 student is named Demo edited Student, with contact demo.student@example.edu and Eligible to borrow. This is the displayed state before the separate API update."
+      ],
+      "scope": "Independent API update, displayed client state and database/history readback; unshown user actions are not inferred."
+    },
+    {
+      "id": "Figure 36",
+      "image": "36-step9-put.png",
+      "heading": "Step 9 - Independent PUT succeeds with HTTP 200",
+      "source_filename": "Screenshot 2026-11-15 234626.png",
+      "explanation": [
+        "PowerShell sends PUT http://127.0.0.1:5085/api/v1/students/1 with studentNumber ST-UI-600, fullName Demo External Edit and contact null. The actual response is HTTP 200 with JSON id 1, the updated name, contact null and isEligible true."
+      ],
+      "scope": "Independent API update, displayed client state and database/history readback; unshown user actions are not inferred."
+    },
+    {
+      "id": "Figure 37",
+      "image": "37-step9-refreshed.png",
+      "heading": "Step 9 - Updated student visible with stale-selection feedback",
+      "source_filename": "Screenshot 2026-11-15 234805.png",
+      "explanation": [
+        "The student list and form display Demo External Edit with institutional number ST-UI-600 and a blank contact field. The bottom message says The student changed since selection. Refresh and select again. This captures stale-selection feedback alongside the updated displayed data; the screenshot alone does not identify which action triggered the feedback. Refresh and reselect before any further edit."
+      ],
+      "scope": "Independent API update, displayed client state and database/history readback; unshown user actions are not inferred."
+    },
+    {
+      "id": "Figure 38",
+      "image": "38-step9-sql.png",
+      "heading": "Step 9 - Database retains the identity and clears contact",
+      "source_filename": "Screenshot 2026-11-15 234834.png",
+      "explanation": [
+        "The SELECT returns one student with Id 1, institutional number ST-UI-600, ContactInformation NULL and IsEligibleToBorrow true. FullName is visually truncated to Demo External E...; the complete updated name is visible in the HTTP response and application screenshots."
+      ],
+      "scope": "Independent API update, displayed client state and database/history readback; unshown user actions are not inferred."
+    },
+    {
+      "id": "Figure 39",
+      "image": "39-step9-history.png",
+      "heading": "Step 9 - History remains linked after the student update",
+      "source_filename": "Screenshot 2026-11-15 234906.png",
+      "explanation": [
+        "Student ST-UI-600 / Demo External Edit is selected in Borrowing histories. Microphone Loan #3 and tripod Loan #2 remain Active; camera Loan #1 remains Returned. All show the updated related student name and retain their equipment identifiers and dates."
+      ],
+      "scope": "Independent API update, displayed client state and database/history readback; unshown user actions are not inferred."
     }
   ]
 }
