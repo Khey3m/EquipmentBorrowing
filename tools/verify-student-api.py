@@ -16,7 +16,7 @@ import urllib.error
 import urllib.request
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--resource", choices=["students", "equipment", "borrowings", "reads", "checkout"], default="students")
+parser.add_argument("--resource", choices=["students", "equipment", "borrowings", "reads", "checkout", "client"], default="students")
 parser.add_argument("--database", required=True)
 parser.add_argument("--output", type=Path, required=True)
 args = parser.parse_args()
@@ -318,7 +318,7 @@ try:
             call('GET','/api/v1/borrowings?'+query,400)
         assert snapshot()==baseline
         headers={'Location':'/api/v1/borrowings'};updated=restored
-    else:
+    elif args.resource == "checkout":
         # T05: reset before each prescribed success/limit/rejection/fault subcase.
         def checkout_fixture():
             reset_dataset()
@@ -373,13 +373,36 @@ try:
             sql('DROP TRIGGER lab5_after_insert_fault ON "Borrowings"; DROP FUNCTION lab5_fail_after_insert();')
         rows,_=call('GET','/api/v1/borrowings',200);assert len(rows)==4
         headers={'Location':'/api/v1/borrowings'};updated=rows
+    else:
+        # Session 6 real HTTP-backed ViewModels; this is not a complete T07 Desktop walkthrough.
+        before=snapshot()
+        client_env=dict(env)
+        client_env.pop('EQUIPMENT_BORROWING_CONNECTION_STRING',None)
+        for key in ['PGHOST','PGPORT','PGUSER','PGPASSWORD','LAB5_STUDENT_VERIFY_CONNECTION']:
+            client_env.pop(key,None)
+        client_env['EQUIPMENT_BORROWING_API_BASE_URL']=base+'/'
+        probe=root/'tools/EquipmentBorrowing.HttpProbe/bin/Release/net10.0/EquipmentBorrowing.HttpProbe.dll'
+        run=subprocess.run(['dotnet',str(probe)],cwd=root,env=client_env,capture_output=True,text=True)
+        if run.returncode:raise RuntimeError('HTTP ViewModel probe failed; private output omitted.')
+        client_result=json.loads(run.stdout)
+        assert client_result['success'] and not client_result['databaseSettingPresent']
+        after=snapshot()
+        assert after['borrowings']==before['borrowings']
+        assert len(after['students'])==len(before['students'])+1 and len(after['equipment'])==len(before['equipment'])+1
+        student=next(row for row in after['students'] if row['Id']==client_result['studentId'])
+        item=next(row for row in after['equipment'] if row['Id']==client_result['equipmentId'])
+        assert student['FullName']=='Changed outside Desktop' and student['ContactInformation'] is None and student['IsEligibleToBorrow']
+        assert item['Name']=='External Display' and item['Description'] is None and item['IsAvailable']
+        trace.append({'viewmodel_probe':client_result,'before':before,'after':after})
+        updated,headers=call('GET','/api/v1/students/'+str(student['Id']),200)
+        headers={'Location':'/api/v1/students/'+str(student['Id'])}
     saved=snapshot();stop();start()
     reopened,_=call('GET',headers['Location'],200)
     assert reopened==updated and snapshot()==saved
     # Block only this newly created verification database. Admin remains connected to postgres.
     sql(f'ALTER DATABASE "{args.database}" WITH ALLOW_CONNECTIONS false;', 'postgres')
     sql(f"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='{args.database}';",'postgres')
-    probe_path=headers['Location'] if args.resource in ['borrowings','reads','checkout'] else '/api/v1/'+args.resource
+    probe_path=headers['Location'] if args.resource in ['borrowings','reads','checkout','client'] else '/api/v1/'+args.resource
     try:call('GET',probe_path,500,check_state=False)
     finally:sql(f'ALTER DATABASE "{args.database}" WITH ALLOW_CONNECTIONS true;','postgres')
     call('GET',probe_path,200)
@@ -387,12 +410,12 @@ try:
     status,doc_headers,document=None,None,None
     with urllib.request.urlopen(base+'/openapi/v1.json') as response:document=json.load(response)
     operations={value.get('operationId') for path in document['paths'].values() for value in path.values() if isinstance(value,dict)}
-    required={'students':{'API-02','API-03','API-04','API-05','API-06'}, 'equipment':{'API-01','API-07','API-08','API-09'}, 'borrowings':{'API-10','API-12','API-13'}, 'reads':{f'API-{i:02}' for i in range(1,17)}, 'checkout':{'API-11','API-14','API-15','API-16'}}[args.resource]
+    required={'students':{'API-02','API-03','API-04','API-05','API-06'}, 'equipment':{'API-01','API-07','API-08','API-09'}, 'borrowings':{'API-10','API-12','API-13'}, 'reads':{f'API-{i:02}' for i in range(1,17)}, 'checkout':{'API-11','API-14','API-15','API-16'}, 'client':{'API-01','API-02','API-04','API-05','API-06','API-08','API-09'}}[args.resource]
     assert required<=operations
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps({'database':args.database,'campus_date':str(today),'date_policy':'reference offsets from actual Asia/Manila date',
        'dataset':('S1-S4/E1-E7; reset before every T05 subcase' if args.resource=='checkout' else 'S1-S4/E1-E7; reset before T01 and again before T06' if args.resource=='reads' else 'S1-S4/E1-E7; reset once for this test'),
-       'scope':{'students':'T02 complete execution','equipment':'T03 equipment execution','borrowings':'T04 single borrowing/return execution','reads':'T01/T06 independent reads and query execution','checkout':'T05 atomic checkout and rollback execution'}[args.resource],'fault_definition':fault_definition if args.resource=='checkout' else None,'checks':trace,'restart_preserved':True,'openapi_operations':sorted(operations)},indent=2)+'\n')
+       'scope':{'students':'T02 complete execution','equipment':'T03 equipment execution','borrowings':'T04 single borrowing/return execution','reads':'T01/T06 independent reads and query execution','checkout':'T05 atomic checkout and rollback execution','client':'Session 6 HTTP management ViewModels; T07 partial'}[args.resource],'fault_definition':fault_definition if args.resource=='checkout' else None,'checks':trace,'restart_preserved':True,'openapi_operations':sorted(operations)},indent=2)+'\n')
     print(f'PASS: {len(trace)} HTTP requests; independent before/after reads; identity/history/protected-state/restart/server failure recovery verified.')
     print('Evidence: '+str(args.output))
 finally:
