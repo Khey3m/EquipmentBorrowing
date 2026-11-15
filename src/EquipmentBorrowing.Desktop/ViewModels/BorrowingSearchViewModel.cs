@@ -11,7 +11,7 @@ namespace EquipmentBorrowing.Desktop.ViewModels;
 
 public enum BorrowingStatusFilter { All, Active, Returned }
 
-public partial class BorrowingSearchViewModel(BorrowingSearchService service) : ObservableObject
+public partial class BorrowingSearchViewModel(IBorrowingSearchWorkflow service) : ObservableObject
 {
     private readonly LatestRequestGate _requests = new();
     public BorrowingStatusFilter[] StatusOptions { get; } = Enum.GetValues<BorrowingStatusFilter>();

@@ -2,7 +2,7 @@ using EquipmentBorrowing.Application.Interfaces;
 
 namespace EquipmentBorrowing.Application.Services;
 
-public sealed class BorrowingSearchService(IBorrowingSearchQueries queries)
+public sealed class BorrowingSearchService(IBorrowingSearchQueries queries) : IBorrowingSearchWorkflow
 {
     public async Task<QueryResult<IReadOnlyList<BorrowingDetails>>> SearchAsync(BorrowingSearchRequest request, CancellationToken cancellationToken = default)
     {
