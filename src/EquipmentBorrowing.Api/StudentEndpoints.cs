@@ -10,11 +10,11 @@ public static class StudentEndpoints
     public static void MapStudentEndpoints(this WebApplication app)
     {
         var students = app.MapGroup("/api/v1/students").WithTags("Students");
-        students.MapGet("", async (HttpRequest request, StudentManagementService service, CancellationToken ct) =>
+        students.MapGet("", async (string? search, HttpRequest request, StudentManagementService service, CancellationToken ct) =>
         {
             if (request.Query.Any(q => q.Key != "search" || q.Value.Count != 1))
                 return Error(400, "invalid_query", "Use one optional search value.");
-            var result = await service.FindAsync(request.Query["search"].FirstOrDefault(), ct);
+            var result = await service.FindAsync(search, ct);
             return result.Success ? Results.Ok(result.Value!.Select(Response).ToArray())
                 : Error(500, "server_error", result.Message);
         }).WithName("API-02").WithSummary("Find students by name or number")
@@ -70,16 +70,9 @@ public static class StudentEndpoints
     {
         if ((result.Outcome == OperationOutcome.Succeeded || result.Error == WorkflowError.NoChange) && result.Value is not null)
             return Results.Ok(Response(result.Value));
-        return result.Error switch
-        {
-            WorkflowError.InvalidInput => Error(400, "invalid_request", result.Message),
-            WorkflowError.NotFound => Error(404, "not_found", result.Message),
-            WorkflowError.DuplicateIdentifier => Error(409, "duplicate_identifier", result.Message),
-            WorkflowError.StaleState or WorkflowError.ConcurrentConflict => Error(409, "conflict", result.Message),
-            WorkflowError.UnknownOutcome => Error(500, "outcome_unknown", result.Message),
-            _ => Error(500, "server_error", result.Message)
-        };
+        return ApiFailures.From(result.Error, result.Message);
     }
+
     private static IResult Error(int status, string code, string message) =>
         Results.Json(new ApiError(code, message), statusCode: status);
 }

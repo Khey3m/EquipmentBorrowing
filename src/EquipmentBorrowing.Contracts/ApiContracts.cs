@@ -21,7 +21,11 @@ public sealed record StudentInput([property: JsonRequired] string? StudentNumber
 public sealed record StudentUpdateInput([property: JsonRequired] string? StudentNumber,
     [property: JsonRequired] string? FullName, [property: JsonRequired] string? Contact);
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
-public sealed record EquipmentInput(string? EquipmentCode, string? Name, string? Description);
+public sealed record EquipmentInput([property: JsonRequired] string? EquipmentCode,
+    [property: JsonRequired] string? Name, string? Description);
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record EquipmentUpdateInput([property: JsonRequired] string? EquipmentCode,
+    [property: JsonRequired] string? Name, [property: JsonRequired] string? Description);
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record EligibilityInput(bool? IsEligible);
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
