@@ -2,7 +2,7 @@ using EquipmentBorrowing.Application.Interfaces;
 
 namespace EquipmentBorrowing.Application.Services;
 
-public sealed class ExistingWorkflowQueryService(IExistingWorkflowQueries queries)
+public sealed class ExistingWorkflowQueryService(IExistingWorkflowQueries queries) : ICatalogReader
 {
     public async Task<QueryResult<CatalogSnapshot>> GetCatalogAsync(bool availableOnly, CancellationToken cancellationToken = default)
     {

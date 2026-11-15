@@ -7,7 +7,6 @@ namespace EquipmentBorrowing.Desktop.ViewModels;
 
 public partial class MainWindowViewModel : ObservableObject
 {
-    private readonly ApplicationStartupService _startup;
     [ObservableProperty] private string _startupMessage = "";
     [ObservableProperty, NotifyCanExecuteChangedFor(nameof(RetryStartupCommand))] private bool _isStarting;
     public bool HasStartupMessage => !string.IsNullOrWhiteSpace(StartupMessage);
@@ -36,16 +35,11 @@ public partial class MainWindowViewModel : ObservableObject
     {
         if (IsStarting) return;
         IsStarting = true;
-        StartupMessage = "Connecting and preparing the database...";
+        StartupMessage = "Connecting to the API...";
         try
         {
-            if (!await _startup.InitializeAsync())
-            {
-                StartupMessage = "Database initialization failed. Check local configuration and connection, then retry startup.";
-                return;
-            }
-            StartupMessage = "";
             await EquipmentVm.InitializeAsync();
+            StartupMessage = EquipmentVm.IsReady ? "" : EquipmentVm.LoadMessage;
         }
         finally { IsStarting = false; }
     }
@@ -60,9 +54,8 @@ public partial class MainWindowViewModel : ObservableObject
     public MultiItemCheckoutViewModel MultiCheckoutVm { get; }
     public EquipmentManagementViewModel EquipmentManagementVm { get; }
 
-    public MainWindowViewModel(EquipmentViewModel equipmentVm, BorrowingsViewModel borrowingsVm, ApplicationStartupService startup, StudentsViewModel studentsVm, EquipmentManagementViewModel equipmentManagementVm, MultiItemCheckoutViewModel multiCheckoutVm, BorrowingHistoryViewModel historyVm, BorrowingSearchViewModel searchVm)
+    public MainWindowViewModel(EquipmentViewModel equipmentVm, BorrowingsViewModel borrowingsVm, StudentsViewModel studentsVm, EquipmentManagementViewModel equipmentManagementVm, MultiItemCheckoutViewModel multiCheckoutVm, BorrowingHistoryViewModel historyVm, BorrowingSearchViewModel searchVm)
     {
-        _startup = startup;
         HistoryVm = historyVm;
         SearchVm = searchVm;
         StudentsVm = studentsVm;

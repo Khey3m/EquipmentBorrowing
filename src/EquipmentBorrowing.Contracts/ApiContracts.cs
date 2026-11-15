@@ -4,8 +4,10 @@ namespace EquipmentBorrowing.Contracts;
 
 public sealed record ApiError(string Code, string Message);
 public sealed record ApiStatus(string Service, string Version, string Phase);
-public sealed record StudentResponse(int Id, string StudentNumber, string FullName, string? Contact, bool IsEligible);
-public sealed record EquipmentResponse(int Id, string EquipmentCode, string Name, string? Description, bool IsAvailable);
+public sealed record StudentResponse([property: JsonRequired] int Id, [property: JsonRequired] string StudentNumber,
+    [property: JsonRequired] string FullName, string? Contact, [property: JsonRequired] bool IsEligible);
+public sealed record EquipmentResponse([property: JsonRequired] int Id, [property: JsonRequired] string EquipmentCode,
+    [property: JsonRequired] string Name, string? Description, [property: JsonRequired] bool IsAvailable);
 [JsonConverter(typeof(JsonStringEnumConverter<BorrowingState>))]
 public enum BorrowingState { Active, Returned }
 public sealed record BorrowingResponse(int Id, int StudentId, int EquipmentId, DateOnly BorrowedDate,

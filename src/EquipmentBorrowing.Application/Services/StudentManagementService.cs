@@ -4,7 +4,7 @@ using EquipmentBorrowing.Domain;
 namespace EquipmentBorrowing.Application.Services;
 
 public sealed class StudentManagementService(IStudentManagementSessionFactory sessions,
-    IStudentRepository reads, IWorkflowFailures failures)
+    IStudentRepository reads, IWorkflowFailures failures) : IStudentManagementWorkflow
 {
     public async Task<QueryResult<IReadOnlyList<Student>>> FindAsync(string? searchText, CancellationToken cancellationToken = default)
     {

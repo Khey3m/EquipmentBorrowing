@@ -4,7 +4,7 @@ using EquipmentBorrowing.Domain;
 namespace EquipmentBorrowing.Application.Services;
 
 public sealed class EquipmentManagementService(IEquipmentManagementSessionFactory sessions,
-    IEquipmentRepository reads, IWorkflowFailures failures)
+    IEquipmentRepository reads, IWorkflowFailures failures) : IEquipmentManagementWorkflow
 {
     public async Task<QueryResult<IReadOnlyList<Equipment>>> FindAsync(string? searchText, CancellationToken cancellationToken = default)
     {

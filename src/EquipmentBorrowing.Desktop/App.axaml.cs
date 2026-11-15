@@ -1,4 +1,5 @@
 using System;
+using EquipmentBorrowing.Http;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -27,8 +28,12 @@ public partial class App : Avalonia.Application
 
         // Infrastructure owns connection configuration, contexts and migrations.
         serviceCollection.AddDbContextFactory<EquipmentBorrowingDbContext>(PostgresConfiguration.Configure);
-        serviceCollection.AddTransient<IApplicationInitializer, PostgresBootstrapper>();
-        serviceCollection.AddTransient<ApplicationStartupService>();
+        // Transitional only: unmigrated workflows below still use PostgreSQL until Sessions 7-8.
+        serviceCollection.AddSingleton(_ => ApiTransport.CreateClient());
+        serviceCollection.AddSingleton<ApiTransport>();
+        serviceCollection.AddTransient<IStudentManagementWorkflow, HttpStudentManagement>();
+        serviceCollection.AddTransient<IEquipmentManagementWorkflow, HttpEquipmentManagement>();
+        serviceCollection.AddTransient<ICatalogReader, HttpCatalogReader>();
         serviceCollection.AddSingleton<ICampusClock, CampusClock>();
         serviceCollection.AddSingleton<IWorkflowFailures, PostgresWorkflowFailures>();
         serviceCollection.AddSingleton<PostgresBorrowingSessionFactory>();
@@ -49,8 +54,6 @@ public partial class App : Avalonia.Application
         serviceCollection.AddTransient<BorrowEquipmentService>();
         serviceCollection.AddTransient<MultiItemCheckoutService>();
         serviceCollection.AddTransient<ReturnEquipmentService>();
-        serviceCollection.AddTransient<StudentManagementService>();
-        serviceCollection.AddTransient<EquipmentManagementService>();
 
         // 4. Register ViewModels
         serviceCollection.AddTransient<EquipmentViewModel>();
