@@ -9,7 +9,7 @@ using EquipmentBorrowing.Domain;
 
 namespace EquipmentBorrowing.Desktop.ViewModels;
 
-public partial class EquipmentManagementViewModel(EquipmentManagementService service) : ObservableObject
+public partial class EquipmentManagementViewModel(IEquipmentManagementWorkflow service) : ObservableObject
 {
     private EquipmentSnapshot? _original;
     [ObservableProperty] private ObservableCollection<Equipment> _items = new();

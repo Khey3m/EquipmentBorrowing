@@ -1,4 +1,5 @@
 using System;
+using EquipmentBorrowing.Http;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -27,30 +28,21 @@ public partial class App : Avalonia.Application
 
         // Infrastructure owns connection configuration, contexts and migrations.
         serviceCollection.AddDbContextFactory<EquipmentBorrowingDbContext>(PostgresConfiguration.Configure);
-        serviceCollection.AddTransient<IApplicationInitializer, PostgresBootstrapper>();
-        serviceCollection.AddTransient<ApplicationStartupService>();
+        // Transitional only: unmigrated workflows below still use PostgreSQL until Sessions 7-8.
+        serviceCollection.AddSingleton(_ => ApiTransport.CreateClient());
+        serviceCollection.AddSingleton<ApiTransport>();
+        serviceCollection.AddTransient<IStudentManagementWorkflow, HttpStudentManagement>();
+        serviceCollection.AddTransient<IEquipmentManagementWorkflow, HttpEquipmentManagement>();
+        serviceCollection.AddTransient<ICatalogReader, HttpCatalogReader>();
+        serviceCollection.AddTransient<ISingleCheckoutWorkflow, HttpSingleCheckout>();
+        serviceCollection.AddTransient<IMultiCheckoutWorkflow, HttpMultiCheckout>();
+        serviceCollection.AddTransient<IReturnWorkflow, HttpReturnWorkflow>();
+        serviceCollection.AddTransient<IActiveBorrowingReader, HttpActiveBorrowingReader>();
         serviceCollection.AddSingleton<ICampusClock, CampusClock>();
-        serviceCollection.AddSingleton<IWorkflowFailures, PostgresWorkflowFailures>();
-        serviceCollection.AddSingleton<PostgresBorrowingSessionFactory>();
-        serviceCollection.AddSingleton<IBorrowingSessionFactory>(sp => sp.GetRequiredService<PostgresBorrowingSessionFactory>());
-        serviceCollection.AddSingleton<IStudentManagementSessionFactory>(sp => sp.GetRequiredService<PostgresBorrowingSessionFactory>());
-        serviceCollection.AddSingleton<IEquipmentManagementSessionFactory>(sp => sp.GetRequiredService<PostgresBorrowingSessionFactory>());
-        serviceCollection.AddTransient<IStudentRepository, EfStudentRepository>();
-        serviceCollection.AddTransient<IEquipmentRepository, EfEquipmentRepository>();
-        serviceCollection.AddTransient<IBorrowingRepository, EfBorrowingRepository>();
-
-        // 3. Register Application Services
-        serviceCollection.AddTransient<IExistingWorkflowQueries, EfExistingWorkflowQueries>();
-        serviceCollection.AddTransient<ExistingWorkflowQueryService>();
         serviceCollection.AddTransient<IHistoryQueries, EfHistoryQueries>();
         serviceCollection.AddTransient<BorrowingHistoryService>();
         serviceCollection.AddTransient<IBorrowingSearchQueries, EfBorrowingSearchQueries>();
         serviceCollection.AddTransient<BorrowingSearchService>();
-        serviceCollection.AddTransient<BorrowEquipmentService>();
-        serviceCollection.AddTransient<MultiItemCheckoutService>();
-        serviceCollection.AddTransient<ReturnEquipmentService>();
-        serviceCollection.AddTransient<StudentManagementService>();
-        serviceCollection.AddTransient<EquipmentManagementService>();
 
         // 4. Register ViewModels
         serviceCollection.AddTransient<EquipmentViewModel>();

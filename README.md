@@ -1,194 +1,161 @@
-# Campus Equipment Borrowing System - Architectural Blueprint
+# Campus Equipment Borrowing System - Lab 4
 
-Detailed current report: [Lab 4 development progress — Sessions 1–4](docs/lab4/development-report-sessions-1-4.md).
+Continues the Labs 1-3 application with PostgreSQL, student/equipment management, atomic multi-item checkout, related histories and borrowing search/filter/sort. Primary actor: Laboratory Staff / Equipment Custodian. All fourteen required Lab 4 use cases are implemented; deferred Lab 5/future cases are listed separately.
 
-Recent progress: [Session 5 — student management](docs/lab4/session5-evidence.md) and [Session 6 — equipment registration and editing](docs/lab4/session6-evidence.md).
+**Verified code:** `1e5328dd14e0774ea789c002b3c80cabc1d40f2e`. [Successful CI](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43558553901): full Release solution builds with zero warnings/errors, **76 backend + 3 headless UI tests pass**, and all five separate-process persistence stages pass. Session 11 changes are documentation-only. [Evidence details](docs/lab4/session10-evidence.md).
 
-Latest progress: [Session 7 — atomic multi-item checkout and verification plan](docs/lab4/session7-evidence.md).
+**Remaining acceptance:** manual visual/usability review, the actual Avalonia Desktop close/reopen walkthrough, and any instructor-specific recording/private submitter details. Headless windows and the service-process probe are useful evidence with different scopes; they do not establish every manual branch. Local Windows Application Control remains unchanged and may block local build/test assembly loading. [Handoff checklist](docs/lab4/submission-handoff.md).
 
-Earlier verification: [Session 8 — histories and 66 passing backend tests, including PostgreSQL integration](docs/lab4/session8-evidence.md).
+## Prerequisites
 
-Latest progress: [Session 9 — borrowing search/filter/sort; rebuilt binaries currently blocked during test execution](docs/lab4/session9-evidence.md).
+- .NET 10 SDK. The repository uses net10.0 and pins dotnet-ef 10.0.12 in dotnet-tools.json.
+- PostgreSQL server and client tools; PostgreSQL 18 is the verified CI baseline (18.6 was used locally). A local database is sufficient; cloud, Docker and paid services are not required for normal use.
+- Git and an execution-permitted environment for the Desktop application.
+- Optional Python 3 plus psql only for the standalone historical SQL verification script.
 
-Current verification: [Session 10 — full Linux build, integrated PostgreSQL, headless UI and process-persistence evidence](docs/lab4/session10-evidence.md). See [automated verification](docs/lab4/continuous-verification.md) and the [remaining manual walkthrough](docs/lab4/manual-verification-checklist.md).
+Package versions are committed in the project files: Avalonia 12.1.1, CommunityToolkit.Mvvm 8.4.2, EF Core 10.0.12 and Npgsql EF provider 10.0.3. The headless UI project uses xUnit v3; backend tests retain their existing xUnit runner.
 
-Verified CI: [79 tests and five persistence process stages passed; full build has zero warnings/errors](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43558553901).
+## Get the submitted source
 
-> **Lab 4 in progress:** Sessions 1–10 implement all fourteen required use cases and automated integration verification. Linux CI successfully builds the full Avalonia solution and passes 76 backend tests against PostgreSQL, including search, management/borrowing lifecycle, seeding, concurrency and rollback. Local Windows assembly restrictions remain; full manual visual/real Desktop restart acceptance and Session 11 submission documentation are still pending. Follow the current evidence links above; earlier sections below retain historical documentation.
-
-## 1. Solution Structure
-* **EquipmentBorrowing.Domain**: Contains the core concepts and business rules (Ex: `Student`, `Equipment`, `Borrowing`, and `BorrowingStatus`). This layer is independent and has zero external dependencies.
-* **EquipmentBorrowing.Application**: Contains the use cases and operations (`BorrowEquipmentService`) and defines how data should be retrieved/saved using interfaces (`IStudentRepository`, etc.).
-* **EquipmentBorrowing.Infrastructure**: Implements the technical details, uses C# collections (`InMemoryStudentRepository`, etc.) to store data in memory, fulfilling the application's interfaces.
-* **EquipmentBorrowing.Tests**: Contains automated xUnit tests to verify that the application services and domain rules behave correctly.
-
-## 2. Dependency Direction
-Dependencies always point inward toward the Domain layer.
-
-```text
- Executable / ConsoleDemo
-          │
-          ▼
-     Application
-       │      ▲
-       ▼      │ (Implements Interfaces)
-     Domain   │
-              │
-     Infrastructure
+```powershell
+git clone https://github.com/Khey3m/EquipmentBorrowing.git
+cd EquipmentBorrowing
+git switch lab4/postgresql-workflows
 ```
 
+Use the branch/commit supplied with the submission. If development is later merged and its branch deleted, check out the submitted commit or main containing it. Preserve prior history. To inspect the local version:
 
+```powershell
+git status --short
+git rev-parse HEAD
+```
 
+## Configure PostgreSQL locally
 
-## 3. Use Case Mapping
+Create a dedicated empty database on a fresh installation; do not overwrite existing data. Example with an authorized local role (psql/createdb may require adding PostgreSQL's bin directory to PATH):
 
-* **Actor**: Student
-* **Use Case**: Borrow Equipment
-* **Application Service**: `BorrowEquipmentService`
-* **Domain Objects Used**: `Student`, `Equipment`, `Borrowing`, `BorrowingStatus`
-* **Repository Interfaces Used**: `IStudentRepository`, `IEquipmentRepository`, `IBorrowingRepository`
-* **Infrastructure Implementations Used**: `InMemoryStudentRepository`, `InMemoryEquipmentRepository`, `InMemoryBorrowingRepository`
+```powershell
+createdb -h localhost -U <local-role> equipment_borrowing_lab4
+```
 
-
-
-## 4. Reflection Answers
-
-* **Why should the application service depend on a repository interface instead of directly depending on a database implementation?**
-    Relying on interfaces keeps the application disconnected from specific technologies (Dependency Inversion Principle). It allows the system to switch from an in-memory database to SQL Server or SQLite without modifying the core business logic.
-
-* **Which parts of your current solution could remain unchanged if SQLite were added later?**
-    The `Domain` and `Application` projects would remain 100% unchanged. Only the `Infrastructure` project would get new repository implementations for SQLite.
-
-* **Which project would eventually contain Avalonia Views?**
-    A completely new Presentation/UI project (Ex: `EquipmentBorrowing.DesktopUI`) that references the Application and Infrastructure layers.
-
-* **Should an Avalonia button directly execute database queries? Why or why not?**
-    No, Direct database queries in the UI violate the Separation of Concerns. It tightly separates the visual interface to the database schema, making the application extremely hard to maintain, test, and secure.
-
-* **What part of your implementation represents the actual business operation requested by the actor?**
-    The `ExecuteAsync` method inside the `BorrowEquipmentService` represents the actual business operation, organizing the domain rules and data persistence to fulfill the "Borrow Equipment" request.
-
-
-
-
-    ## 5. Desktop Project Architecture (Avalonia UI & MVVM)
-
-    ### Reflection Answers (Activity 2)
-    Avalonia View (XAML)
-│
-│ [Data Binding & Relay Commands]
-▼
-ViewModel (CommunityToolkit.Mvvm)
-│
-│ [Executes Operations]
-▼
-Application Services (Borrow & Return)
-│
-├──► Domain Models & Validation
-│
-▼
-Repository Interfaces (Abstractions)
-▲
-│ [Implements]
-Infrastructure (InMemory Repositories)
-
-
-1. **Why should the View not call a repository directly?**
-   Calling repositories directly from Views couples presentation logic to storage implementations, breaking separation of concerns and making automated UI testing impossible.
-2. **Why should business rules not be implemented in the ViewModel?**
-   ViewModels manage presentation state and user feedback. Placing domain rules in ViewModels duplicates logic across different UI targets and compromises system integrity.
-3. **What is the responsibility of the ViewModel?**
-   To adapt application data for UI consumption, handle selection/input presentation state, expose user commands, and trigger application services.
-4. **Why can the existing Application layer work without knowing that Avalonia is being used?**
-   Because the Application layer relies solely on standard C# abstractions and domain objects, rendering it completely agnostic to presentation frameworks.
-5. **What advantage is gained from registering dependencies in one composition point?**
-   Centralizing dependency registration in `App.axaml.cs` provides clear lifecycle control (e.g., Singleton vs. Transient) and allows swapping implementations without modifying consuming classes.
-6. **If the in-memory repository were replaced by SQLite later, which parts of the current interface should remain largely unchanged?**
-   All Views, ViewModels, Application Services, and Domain Models remain completely untouched; only the Infrastructure layer requires updates.
-
-### Updated Architecture Diagram
-
-
-## 6. Relational Database & Entity Framework Core (Laboratory Activity 3)
-
-### Relational Database Schema Design
-The application uses SQLite as its primary relational database. The schema maintains strict foreign key constraints to ensure referential integrity across borrowing workflows.
+PostgreSQL tools prompt for the local password when needed. Current local setup already has this database and a stored Windows user setting; skip creation if reusing it. Operational connection-string shape:
 
 ```text
-STUDENTS
---------------------------------------------------
-Id                   INTEGER    (Primary Key)
-FullName             TEXT       (Required, Max 100)
-IsEligibleToBorrow   BOOLEAN    (Required)
-MaxAllowedBorrowings INTEGER    (Required)
+Host=localhost;Port=5432;Database=equipment_borrowing_lab4;Username=<local-role>;Password=<local-secret>;Include Error Detail=false
+```
 
-EQUIPMENT
---------------------------------------------------
-Id                   INTEGER    (Primary Key)
-Name                 TEXT       (Required, Max 150)
-IsAvailable          BOOLEAN    (Required)
+Set `EQUIPMENT_BORROWING_CONNECTION_STRING` privately in the launching process or OS user environment. Do not put real values in source, screenshots, submitted logs or committed files. In PowerShell, prompt without echoing the value:
 
-BORROWINGS
---------------------------------------------------
-Id                   INTEGER    (Primary Key)
-StudentId            INTEGER    (Foreign Key -> STUDENTS.Id)
-EquipmentId          INTEGER    (Foreign Key -> EQUIPMENT.Id)
-BorrowedAt           DATETIME   (Required)
-ExpectedReturnAt     DATETIME   (Required)
-Status               TEXT       (Required, Enum: Active/Returned)
+```powershell
+$connectionSecret = Read-Host 'Enter the local PostgreSQL connection string' -AsSecureString
+$env:EQUIPMENT_BORROWING_CONNECTION_STRING = [System.Net.NetworkCredential]::new('', $connectionSecret).Password
+```
 
+For the Windows user configured during development, load the already saved value instead:
 
+```powershell
+$env:EQUIPMENT_BORROWING_CONNECTION_STRING = [Environment]::GetEnvironmentVariable('EQUIPMENT_BORROWING_CONNECTION_STRING', 'User')
+```
 
-### Database ERD Diagram
+Restart Visual Studio after changing a user environment setting so its processes inherit it. Special connection-string characters must use valid Npgsql connection-string quoting. Database setup/migrations require schema permissions; integration tests additionally require CREATE DATABASE in a disposable verification environment.
 
-```mermaid
-erDiagram
-    STUDENT ||--o{ BORROWING : places
-    EQUIPMENT ||--o{ BORROWING : subject_of
+## Restore, migrate and launch
 
-    STUDENT {
-        int Id PK
-        string FullName
-        bool IsEligibleToBorrow
-        int MaxAllowedBorrowings
-    }
+Run from the repository root:
 
-    EQUIPMENT {
-        int Id PK
-        string Name
-        bool IsAvailable
-    }
+```powershell
+dotnet tool restore
+dotnet restore EquipmentBorrowing.slnx
+dotnet ef migrations has-pending-model-changes --project src/EquipmentBorrowing.Infrastructure --startup-project src/EquipmentBorrowing.Infrastructure
+dotnet ef database update --project src/EquipmentBorrowing.Infrastructure --startup-project src/EquipmentBorrowing.Infrastructure
+dotnet build EquipmentBorrowing.slnx --configuration Release --no-restore
+dotnet run --project src/EquipmentBorrowing.Desktop --configuration Release --no-build
+```
 
-    BORROWING {
-        int Id PK
-        int StudentId FK
-        int EquipmentId FK
-        datetime BorrowedAt
-        datetime ExpectedReturnAt
-        string Status
-    }
+Infrastructure is the EF startup project for migration commands, so migration tooling does not need to initialize Avalonia. InitialPostgres is the operational migration; historical SQLite files are archived outside compiled migration discovery. There is no operational SQLite fallback or historical SQLite row-import requirement.
 
+Desktop startup also delegates migrations/seeding to Infrastructure and provides safe Retry startup feedback on failure. Students/equipment are seeded only when each corresponding table is empty; existing rows are not overwritten. Example student identifiers: STU-001 (eligible), STU-002 (restricted), STU-003 (eligible). Example equipment identifiers: EQ-101..103 (initially available). Internal IDs are database-generated; staff should use visible identifiers rather than assume internal IDs.
 
+The local development database was not migrated/seeded during CI verification; CI creates separate disposable databases. Running the commands above locally is a real setup action, not a previously claimed local Desktop pass.
 
-## Architectural Reflection (Laboratory Activity 3)
+## Staff workflow
 
-1. **Why did the application not need to be completely rewritten when SQLite was introduced?**
-   Because the Domain, Application, and Presentation layers depend on abstract repository interfaces (`IEquipmentRepository`, `IStudentRepository`, `IBorrowingRepository`) rather than concrete database classes[cite: 5]. Swapping the persistence layer only required creating EF Core implementations of those interfaces[cite: 5].
+| Navigation | Actions |
+|---|---|
+| Equipment | Catalog, available-only filter, single borrowing with expected return date |
+| Active Borrowings | Related active records and confirmed return |
+| Students | Register, find/edit descriptive details, permit/restrict new borrowing |
+| Manage Equipment | Register/find/edit identifier, name and optional description; availability read-only |
+| Checkout multiple | Select at least two distinct items, one student and one expected date |
+| Borrowing histories | Student or Equipment mode, active/returned records and all dates |
+| Search borrowings | Partial text, Active/Returned/All, either date/direction, Apply/Retry and Clear |
 
-2. **Why should the ViewModel not use `DbContext` directly?**
-   Directly using `DbContext` inside ViewModels leaks database details into the UI layer, violating Separation of Concerns and making the application harder to unit test without an actual database[cite: 5].
+The limit is three active items per student. Expected return is later than checkout; actual return uses the campus calendar and may be early/same-day. Default campus timezone is Asia/Manila. Restricting a student blocks new borrowing but permits existing returns. Descriptive edits preserve internal identities and history. Multi-item writes are coordinated in one transaction. Unknown commit outcomes are not automatically replayed; reconnect/refresh and review before another staff decision.
 
-3. **What responsibility does the repository implementation now perform?**
-   It translates domain-level repository requests into EF Core LINQ queries, handles entity state mapping, and executes `DbContext` persistence operations (`SaveChangesAsync`)[cite: 5].
+## Automated verification
 
-4. **What is the purpose of an EF Core migration?**
-   To generate version-controlled, reproducible database schema scripts that align the relational database tables with changes in C# model configurations over time[cite: 5].
+```powershell
+dotnet test tests/EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj --configuration Release --no-build
+dotnet test tests/EquipmentBorrowing.UiTests/EquipmentBorrowing.UiTests.csproj --configuration Release --no-build
+```
 
-5. **Why are foreign keys important in the borrowing database?**
-   They enforce referential integrity in SQLite, ensuring borrowing records cannot reference non-existent students or equipment items[cite: 5].
+Without `POSTGRES_INTEGRATION_ADMIN_CONNECTION`, PostgreSQL tests explicitly skip. On an authorized local disposable setup, load a connection privately before running them:
 
-6. **Why can a read-only query benefit from `AsNoTracking()`?**
-   It tells EF Core not to track changes on retrieved entities, saving memory and improving query execution speed for display-only data[cite: 5].
+```powershell
+$env:POSTGRES_INTEGRATION_ADMIN_CONNECTION = [Environment]::GetEnvironmentVariable('EQUIPMENT_BORROWING_CONNECTION_STRING', 'User')
+dotnet test tests/EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj --configuration Release --no-build
+```
 
-7. **What would happen to the rest of the application if the SQLite implementation were replaced later by another database provider?**
-   Only the `DbContext` provider registration in `App.axaml.cs` and Infrastructure package references would change[cite: 5]. All Application services, ViewModels, and Avalonia Views would remain completely untouched[cite: 5].
+Integration tests create unique equipment_borrowing_verify_* databases and retain them locally for inspection; they do not delete/reuse the operational database. The service-process probe requires its own verification-only database naming scope. [Exact verification instructions](docs/lab4/continuous-verification.md).
+
+[GitHub Actions](https://github.com/Khey3m/EquipmentBorrowing/actions/workflows/verify-lab4.yml) builds/tests on a Linux runner with isolated PostgreSQL 18 and disposable CI credentials. It has no deployment step. Logs/TRX are available from each run. The successful baseline includes 79 tests with zero skips and five process stages; a skipped local integration run is not equivalent.
+
+Windows Code Integrity may block unsigned assemblies or Avalonia tasks with 0x800711C7/MSB4061. This was observed locally and not addressed by disabling policy. Use an approved development allowance/environment or inspect CI evidence; a remote pass does not repair local policy.
+
+## Architecture and project layout
+
+- Domain: Student, Equipment, Borrowing and validation/state transitions; no Avalonia/EF dependency.
+- Application: actor-goal services and repository/query/session contracts.
+- Infrastructure: Npgsql/EF mappings, migrations, queries, repositories, bootstrap and serializable transactions.
+- Desktop: AXAML views, CommunityToolkit MVVM state/commands and DI composition root.
+- Tests: backend/domain/service/real PostgreSQL tests.
+- UiTests: Avalonia Headless controls, bindings and asynchronous selection checks.
+- tools/EquipmentBorrowing.PersistenceProbe: verification-only service-process persistence harness.
+- ConsoleDemo: retained in-memory learning/demo path; it does not establish PostgreSQL atomicity.
+
+IDbContextFactory creates short-lived contexts. A write session shares one context/serializable transaction across validation and repository saves, then commits once. Queries are asynchronous/no-tracking. Database-generated normalized unique keys, foreign keys, date/state checks and a partial active-item index supplement Application rules. [Architecture, ERD and rationale](docs/lab4/architecture-and-schema.md).
+
+## Requirements, evidence and submission
+
+- [Use-case diagram](docs/lab4/use-case-diagram.md) / [PlantUML](docs/lab4/use-case-diagram.puml)
+- [33-case scope catalog](docs/lab4/use-case-catalog.md) / [adapted fourteen-case suite](docs/lab4/use-case-suite.md)
+- [Business rules BR-01-19](docs/lab4/business-rules.md) / [final traceability](docs/lab4/final-traceability.md)
+- [Final development report](docs/lab4/development-report-lab4.md) / [progress ledger](docs/lab4/progress.md) / [Git history export](docs/lab4/git-history.txt)
+- [Session 10 evidence](docs/lab4/session10-evidence.md) / [CI summary](docs/lab4/session10-ci-summary.json)
+- [Demonstration script](docs/lab4/demonstration-script.md) / [manual checklist](docs/lab4/manual-verification-checklist.md) / [submission handoff](docs/lab4/submission-handoff.md)
+
+UC-10-11 and UC-17-27 are deferred to Lab 5; UC-28-33 are future scope. No authentication, hard deletion, maintenance/retirement, reporting/export or deployment is required in this Lab 4 implementation.
+
+Earlier laboratory reflections and incremental status notes remain in [the archived README](docs/lab4/archive/readme-through-session10.md), [Labs 1-3 report/review](docs/lab4/labs1-3-review.md), and session evidence files. Historical blocked/pass results apply to their own revisions. Submitter/partner names and IDs were not supplied; add them privately in the required submission location rather than inventing or publishing them.
+
+## Lab 5 in progress
+
+Lab 4 reproduction above remains valid for its direct-database Desktop. On branch lab5/api-integration, Sessions 1-5 add an independent ASP.NET Core host and all sixteen API operations. Sessions 6-7 migrate management, catalog reads, single/multi checkout, Active loans and returns to HTTP. Histories/search retain direct query dependencies until Session 8; full T07/T08 acceptance remains pending.
+
+```powershell
+dotnet run --project src/EquipmentBorrowing.Api --configuration Release
+```
+
+Host status: http://127.0.0.1:5085/api/v1/status. Generated OpenAPI: http://127.0.0.1:5085/openapi/v1.json (all sixteen business operations plus operational status). Override the address with --urls. This foundation does not connect, migrate or seed on startup. See [Lab 5 plan](docs/lab5/session-plan.md), [endpoint target](docs/lab5/endpoint-contract.md), [session evidence](docs/lab5/session1-evidence.md), and [acceptance execution](docs/lab5/test-execution.md).
+
+Student endpoint verification and limits: [Session 2 evidence](docs/lab5/session2-evidence.md). Current generated contract snapshot: [OpenAPI](docs/lab5/openapi-current.json). Session 4 completes those T02 issue/return branches; historical Session 2 evidence remains partial.
+
+Equipment endpoint verification: [Session 3 evidence](docs/lab5/session3-evidence.md). T03 passed its real HTTP/fresh-state/restart execution; other acceptance cases retain their documented incomplete status.
+
+Single borrowing/return and completed student acceptance: [Session 4 evidence](docs/lab5/session4-evidence.md). T02/T03/T04 have passing recorded executions; remaining cases retain their documented status.
+
+Complete API/query/atomicity evidence: [Session 5](docs/lab5/session5-evidence.md). API traceability: [matrix](docs/lab5/traceability.md). T01-T06 have passing executions; existing headless Desktop passes do not constitute T07 HTTP migration acceptance.
+
+Session 6 client setup and current mixed boundary: [HTTP management evidence and launch instructions](docs/lab5/session6-evidence.md). Configure EQUIPMENT_BORROWING_API_BASE_URL (default http://127.0.0.1:5085/). During Sessions 6-7, API and remaining direct Desktop workflows must use the same database; use the Lab 4 submitted checkout for the original Lab 4-only launch instructions/scripts.
+
+HTTP checkout/return and synchronization evidence: [Session 7](docs/lab5/session7-evidence.md). All mutations now use the API; histories/search still require matching direct DB configuration at this intermediate checkpoint. Seventeen UI/client and 76 backend tests pass.

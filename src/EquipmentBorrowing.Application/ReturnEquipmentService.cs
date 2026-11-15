@@ -3,9 +3,9 @@ using EquipmentBorrowing.Domain;
 
 namespace EquipmentBorrowing.Application.Services;
 
-public record ReturnResult(bool Success, string Message, OperationOutcome Outcome = OperationOutcome.Rejected);
+public record ReturnResult(bool Success, string Message, OperationOutcome Outcome = OperationOutcome.Rejected, WorkflowError Error = WorkflowError.None, Borrowing? Borrowing = null);
 
-public class ReturnEquipmentService
+public class ReturnEquipmentService : IReturnWorkflow
 {
     private readonly IBorrowingSessionFactory? _sessions;
     private readonly IWorkflowFailures? _failures;
@@ -39,7 +39,12 @@ public class ReturnEquipmentService
         {
             var outcome = error is CommitOutcomeUnknownException ? OperationOutcome.Unknown :
                 _failures?.Classify(error) ?? OperationOutcome.Failed;
-            return new ReturnResult(false, WorkflowFeedback.Message(outcome), outcome);
+            return new ReturnResult(false, WorkflowFeedback.Message(outcome), outcome, outcome switch
+            {
+                OperationOutcome.Unknown => WorkflowError.UnknownOutcome,
+                OperationOutcome.Conflict => WorkflowError.ConcurrentConflict,
+                _ => WorkflowError.DatabaseFailure
+            });
         }
     }
 
@@ -47,24 +52,24 @@ public class ReturnEquipmentService
     {
         var borrowing = await _borrowingRepo.GetByIdAsync(borrowingId, cancellationToken);
         if (borrowing == null)
-            return new ReturnResult(false, $"Borrowing record #{borrowingId} was not found. Refresh the selection.", OperationOutcome.Conflict);
+            return new ReturnResult(false, $"Borrowing record #{borrowingId} was not found. Refresh the selection.", OperationOutcome.Conflict, WorkflowError.NotFound);
 
         if (borrowing.Status != BorrowingStatus.Active)
-            return new ReturnResult(false, "This borrowing record has already been returned. Refresh the selection.", OperationOutcome.Conflict);
+            return new ReturnResult(false, "This borrowing record has already been returned. Refresh the selection.", OperationOutcome.Conflict, WorkflowError.BusinessRuleConflict);
 
         var returnDate = _clock.Today;
         if (returnDate < borrowing.BorrowedAt)
-            return new ReturnResult(false, "Return cannot precede checkout.");
+            return new ReturnResult(false, "Return cannot precede checkout.", Error: WorkflowError.InvalidInput);
 
         var equipment = await _equipmentRepo.GetByIdAsync(borrowing.EquipmentId, cancellationToken);
         if (equipment == null)
-            return new ReturnResult(false, "Equipment was not found; refresh before retrying.", OperationOutcome.Conflict);
+            return new ReturnResult(false, "Equipment was not found; refresh before retrying.", OperationOutcome.Conflict, WorkflowError.NotFound);
         equipment.MarkAsReturned();
         await _equipmentRepo.UpdateAsync(equipment, cancellationToken);
 
         borrowing.MarkAsReturned(returnDate);
         await _borrowingRepo.UpdateAsync(borrowing, cancellationToken);
 
-        return new ReturnResult(true, "Equipment successfully returned!", OperationOutcome.Succeeded);
+        return new ReturnResult(true, "Equipment successfully returned!", OperationOutcome.Succeeded, Borrowing: borrowing);
     }
 }

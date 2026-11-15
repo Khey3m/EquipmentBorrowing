@@ -1,0 +1,58 @@
+Git history export through dbcb17ef9229f51b8203299e554798d32fb4dfe5
+Generated during Session 11; later documentation commits remain inspectable in Git.
+No fixed commit count is a lab requirement.
+
+040055f 2026-09-08 Initial commit
+9d6536b 2026-09-08 Add Avalonia desktop project structure
+c7d0d6f 2026-09-08 Implement ReturnEquipmentService and update repository abstractions
+a8ec172 2026-09-08 Complete Laboratory Activity 2 with views, viewmodels, and updated documentation
+c87db53 2026-09-27 Add database relational schema design and database-queries.sql
+0cc3d9e 2026-09-27 Add SQLite and Entity Framework Core NuGet packages
+ba148c1 2026-09-27 Implement EF Core repository versions for Student, Equipment, and Borrowing
+358389c 2026-09-27 Configure SQLite DbContext and swap in-memory repositories with EF repositories
+c7af683 2026-09-27 Create initial database migration and database seeder
+594125a 2026-09-27 Add Architectural Reflection Q&A to README
+2970cdb 2026-09-27 Add ERD diagram to README
+5532159 2026-11-14 chore: preserve pre-Lab 4 SQL examples and agent template
+a5fd661 2026-11-14 test: arrange unavailable equipment before checking borrow rejection
+1a83242 2026-11-14 docs: record Lab 4 session plan acceptance map and baseline evidence
+914674c 2026-11-14 Merge pull request #1 from Khey3m/lab4/postgresql-workflows
+1101f1d 2026-11-14 feat: define Lab 4 identities calendar dates and borrowing rules
+4460840 2026-11-14 docs: record Session 2 domain decisions and verification limits
+9b996d4 2026-11-14 feat: add PostgreSQL schema constraints and operation context foundation
+274a470 2026-11-14 docs: record PostgreSQL setup SQL evidence and remaining execution checks
+e7263f7 2026-11-14 Merge pull request #2 from Khey3m/lab4/postgresql-workflows
+a710619 2026-11-14 feat: integrate transactional borrowing returns and responsive workflow screens
+ba765fd 2026-11-14 Merge Session 3 main checkpoint into Lab 4 development
+fb81574 2026-11-14 docs: record Session 4 workflows and pending runtime acceptance
+8c81230 2026-11-14 docs: add detailed Lab 4 Sessions 1-4 development report
+abd6391 2026-11-14 docs: normalize progress report metadata formatting
+de8d5bd 2026-11-14 Implement student registration, information updates, and eligibility services
+34009f8 2026-11-14 Add Students screen with registration, search, editing, and eligibility controls
+9d7c9a8 2026-11-14 Add student-management tests for validation, stale edits, and eligibility changes
+61347b7 2026-11-14 Document Session 5 student-management progress and acceptance requirements
+e6e9b20 2026-11-14 Implement equipment registration and protected descriptive update services
+f9c7ceb 2026-11-14 Add equipment management screen with registration and protected editing
+e4760d7 2026-11-14 Add equipment-management tests for validation and protected transaction state
+0447d40 2026-11-14 Document Session 6 equipment-management progress and remaining acceptance checks
+43bb1a0 2026-11-14 Implement atomic multi-item checkout with shared borrowing validation
+b1169c3 2026-11-14 Add multi-item checkout screen with item checkboxes and shared return date
+62ece26 2026-11-14 Add multi-item checkout validation and real PostgreSQL rollback tests
+529c375 2026-11-14 Document Session 7 checkout progress, rollback tests, and pending A06 evidence
+5f84474 2026-11-14 Implement asynchronous student and equipment borrowing history queries
+add03d6 2026-11-14 Add student and equipment history screen with safe asynchronous selection
+c1d0c2e 2026-11-14 Verify related histories and latest-selection behavior with PostgreSQL integration tests
+7f5b60b 2026-11-14 Document Session 8 histories and passing PostgreSQL backend verification
+358b2bb 2026-11-14 Implement PostgreSQL borrowing search, status filters, and stable date sorting
+dff3d7f 2026-11-14 Add borrowing search screen with combined filters, sorting, and reset
+a289aae 2026-11-14 Add borrowing search tests for matching, filters, date order, and reset
+99e6cb2 2026-11-14 Document Session 9 retrieval progress and current execution limits
+64d6f4a 2026-11-14 Add GitHub Actions verification for full Avalonia build and PostgreSQL tests
+d8bb810 2026-11-14 Add integrated PostgreSQL lifecycle, concurrency, and recovery verification
+2da327d 2026-11-14 Add headless Avalonia verification for workflow views and asynchronous bindings
+9109b66 2026-11-14 Fix Avalonia build warnings found by full CI verification
+9399d10 2026-11-14 Fix headless test application namespace resolution
+8ad740b 2026-11-14 Verify borrowing persistence across separate service processes in CI
+3de02f3 2026-11-14 Align headless test host with Avalonia 12 xUnit v3 requirements
+1e5328d 2026-11-14 Correct headless control targeting and stale-selection test setup
+dbcb17e 2026-11-14 Record Session 10 passing full-build, integration, UI, and process-persistence evidence

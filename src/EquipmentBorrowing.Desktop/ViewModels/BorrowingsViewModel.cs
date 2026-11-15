@@ -9,8 +9,8 @@ namespace EquipmentBorrowing.Desktop.ViewModels;
 
 public partial class BorrowingsViewModel : ObservableObject
 {
-    private readonly ReturnEquipmentService _returns;
-    private readonly ExistingWorkflowQueryService _queries;
+    private readonly IReturnWorkflow _returns;
+    private readonly IActiveBorrowingReader _queries;
     [ObservableProperty] private ObservableCollection<BorrowingDetails> _activeBorrowings = new();
     [ObservableProperty] private BorrowingDetails? _selectedBorrowing;
     [ObservableProperty] private string _statusMessage = "";
@@ -22,7 +22,7 @@ public partial class BorrowingsViewModel : ObservableObject
     [ObservableProperty, NotifyCanExecuteChangedFor(nameof(ReturnCommand))] private bool _isReady;
     [ObservableProperty, NotifyCanExecuteChangedFor(nameof(ReturnCommand))] private bool _needsVerification;
 
-    public BorrowingsViewModel(ReturnEquipmentService returns, ExistingWorkflowQueryService queries)
+    public BorrowingsViewModel(IReturnWorkflow returns, IActiveBorrowingReader queries)
     { _returns = returns; _queries = queries; }
 
     public Task InitializeAsync() => RefreshAsync();

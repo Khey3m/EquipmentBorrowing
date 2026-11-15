@@ -3,30 +3,36 @@
              xmlns:vm="clr-namespace:EquipmentBorrowing.Desktop.ViewModels"
              xmlns:app="clr-namespace:EquipmentBorrowing.Application.Interfaces;assembly=EquipmentBorrowing.Application"
              x:Class="EquipmentBorrowing.Desktop.Views.BorrowingSearchView" x:DataType="vm:BorrowingSearchViewModel">
-    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="10">
-        <TextBlock Text="Search Borrowings" FontSize="20" FontWeight="Bold"/>
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="18">
+        <StackPanel Spacing="5"><TextBlock Text="Search Borrowings" Classes="pageTitle"/><TextBlock Text="Find borrowing records with flexible search, filters, and sorting." Classes="subtitle"/></StackPanel>
         <TextBox x:Name="SearchTextInput" Grid.Row="1" Text="{Binding SearchText}" PlaceholderText="Student name, institutional number, or equipment name"/>
         <WrapPanel Grid.Row="2">
             <StackPanel Margin="0,0,10,5"><TextBlock Text="Status"/><ComboBox ItemsSource="{Binding StatusOptions}" SelectedItem="{Binding StatusFilter}"/></StackPanel>
             <StackPanel Margin="0,0,10,5"><TextBlock Text="Sort date"/><ComboBox ItemsSource="{Binding SortOptions}" SelectedItem="{Binding SortBy}"/></StackPanel>
             <CheckBox Content="Descending" IsChecked="{Binding Descending}" Margin="0,0,10,0"/>
-            <Button Content="Apply / Retry" Command="{Binding ApplyCommand}" Margin="0,0,10,0"/>
+            <Button Classes="primary" Content="Apply / Retry" Command="{Binding ApplyCommand}" Margin="0,0,10,0"/>
             <Button Content="Clear criteria" Command="{Binding ClearCommand}"/>
         </WrapPanel>
         <ListBox Grid.Row="3" ItemsSource="{Binding Rows}">
             <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="app:BorrowingDetails">
-                    <StackPanel Margin="5" Spacing="3">
-                        <TextBlock Text="{Binding Id, StringFormat='Borrowing #{0}'}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding StudentName}"/>
-                        <TextBlock Text="{Binding StudentNumber}"/>
-                        <TextBlock Text="{Binding EquipmentName}"/>
-                        <TextBlock Text="{Binding EquipmentIdentifier}"/>
-                        <TextBlock Text="{Binding CheckoutDate, StringFormat='Checkout: {0:yyyy-MM-dd}'}"/>
-                        <TextBlock Text="{Binding ExpectedReturnDate, StringFormat='Expected return: {0:yyyy-MM-dd}'}"/>
-                        <TextBlock Text="{Binding ActualReturnDate, StringFormat='Actual return: {0:yyyy-MM-dd}', TargetNullValue='Actual return: pending'}"/>
-                        <TextBlock Text="{Binding Status}" FontWeight="Medium"/>
-                    </StackPanel>
+                    <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="18" Margin="0,4">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="{Binding StudentName}" FontWeight="SemiBold" FontSize="15" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding StudentNumber}" Classes="subtitle"/>
+                            <TextBlock Text="{Binding Id, StringFormat='LOAN #{0}'}" Foreground="#087F8C" FontSize="10" FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="6">
+                            <TextBlock Text="{Binding EquipmentName}" FontWeight="Medium" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding EquipmentIdentifier}" Classes="subtitle"/>
+                            <TextBlock Text="{Binding CheckoutDate, StringFormat='Issued: {0:yyyy-MM-dd}'}" Classes="subtitle"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Spacing="7" MinWidth="145">
+                            <Border Background="#E5F3F1" CornerRadius="6" Padding="9,4" HorizontalAlignment="Left"><TextBlock Text="{Binding Status}" Foreground="#146B64" FontSize="11" FontWeight="SemiBold"/></Border>
+                            <TextBlock Text="{Binding ExpectedReturnDate, StringFormat='Due: {0:yyyy-MM-dd}'}" FontWeight="Medium"/>
+                            <TextBlock Text="{Binding ActualReturnDate, StringFormat='Returned: {0:yyyy-MM-dd}', TargetNullValue='Return pending'}" Classes="subtitle"/>
+                        </StackPanel>
+                    </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

@@ -4,9 +4,9 @@ using EquipmentBorrowing.Domain;
 namespace EquipmentBorrowing.Application.Services;
 
 public record BorrowRequest(int StudentId, int EquipmentId, DateOnly ExpectedReturnDate);
-public record BorrowResult(bool Success, string Message, Borrowing? Borrowing = null, OperationOutcome Outcome = OperationOutcome.Rejected);
+public record BorrowResult(bool Success, string Message, Borrowing? Borrowing = null, OperationOutcome Outcome = OperationOutcome.Rejected, WorkflowError Error = WorkflowError.None);
 
-public class BorrowEquipmentService
+public class BorrowEquipmentService : ISingleCheckoutWorkflow
 {
     private readonly IBorrowingSessionFactory? _sessions;
     private readonly IWorkflowFailures? _failures;
@@ -43,7 +43,12 @@ public class BorrowEquipmentService
         {
             var outcome = error is CommitOutcomeUnknownException ? OperationOutcome.Unknown :
                 _failures?.Classify(error) ?? OperationOutcome.Failed;
-            return new BorrowResult(false, WorkflowFeedback.Message(outcome), Outcome: outcome);
+            return new BorrowResult(false, WorkflowFeedback.Message(outcome), Outcome: outcome, Error: outcome switch
+            {
+                OperationOutcome.Unknown => WorkflowError.UnknownOutcome,
+                OperationOutcome.Conflict => WorkflowError.ConcurrentConflict,
+                _ => WorkflowError.DatabaseFailure
+            });
         }
     }
 
@@ -53,7 +58,7 @@ public class BorrowEquipmentService
         var validation = await CheckoutValidation.ValidateAsync(_studentRepo, _equipmentRepo, _borrowingRepo,
             request.StudentId, new[] { request.EquipmentId }, request.ExpectedReturnDate, checkoutDate, 1, cancellationToken);
         if (validation.Value is null)
-            return new BorrowResult(false, validation.Message, Outcome: validation.Outcome);
+            return new BorrowResult(false, validation.Message, Outcome: validation.Outcome, Error: validation.Error);
         var student = validation.Value.Student;
         var equipment = validation.Value.Items[0];
 

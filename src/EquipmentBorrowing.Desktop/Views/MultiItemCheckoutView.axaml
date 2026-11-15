@@ -3,13 +3,13 @@
              xmlns:vm="clr-namespace:EquipmentBorrowing.Desktop.ViewModels"
              xmlns:domain="clr-namespace:EquipmentBorrowing.Domain;assembly=EquipmentBorrowing.Domain"
              x:Class="EquipmentBorrowing.Desktop.Views.MultiItemCheckoutView" x:DataType="vm:MultiItemCheckoutViewModel">
-    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="10">
-        <TextBlock Text="Multi-item Checkout" FontSize="20" FontWeight="Bold"/>
+    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="18">
+        <StackPanel Spacing="5"><TextBlock Text="Multi-item Checkout" Classes="pageTitle"/><TextBlock Text="Select equipment and complete a single coordinated checkout." Classes="subtitle"/></StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10">
             <CheckBox Content="Available items only" IsChecked="{Binding AvailableOnly}"/>
             <Button Content="Apply filter / Refresh" Command="{Binding RefreshCommand}"/>
         </StackPanel>
-        <Grid Grid.Row="2" ColumnDefinitions="2*,*" ColumnSpacing="15">
+        <Grid Grid.Row="2" ColumnDefinitions="*,340" ColumnSpacing="22">
             <ScrollViewer IsEnabled="{Binding CanSelect}">
                 <ItemsControl ItemsSource="{Binding EquipmentList}">
                     <ItemsControl.ItemTemplate>
@@ -18,14 +18,14 @@
                                 <StackPanel Spacing="3">
                                     <TextBlock Text="{Binding Item.Name}" FontWeight="Bold"/>
                                     <TextBlock Text="{Binding Item.EquipmentIdentifier}"/>
-                                    <TextBlock Text="{Binding Item.IsAvailable, StringFormat='Available: {0}'}"/>
+                                    <StackPanel><TextBlock Text="Available" IsVisible="{Binding Item.IsAvailable}" Foreground="#08786C" FontSize="12"/><TextBlock Text="On loan" IsVisible="{Binding !Item.IsAvailable}" Foreground="#9A6118" FontSize="12"/></StackPanel>
                                 </StackPanel>
                             </CheckBox>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-            <StackPanel Grid.Column="1" Spacing="10" IsEnabled="{Binding CanSelect}">
+            <Border Grid.Column="1" Classes="card"><ScrollViewer><StackPanel Spacing="10" IsEnabled="{Binding CanSelect}">
                 <TextBlock Text="Select at least two items. Existing active loans plus this request must not exceed three." TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding SelectedCount, StringFormat='Selected items: {0}'}"/>
                 <TextBlock Text="Student"/>
@@ -41,8 +41,8 @@
                 </ComboBox>
                 <TextBlock Text="Expected return date for all selected items" TextWrapping="Wrap"/>
                 <DatePicker SelectedDate="{Binding ExpectedReturnDate}"/>
-                <Button Content="Check out selected items" Command="{Binding CheckoutCommand}"/>
-            </StackPanel>
+                <Button Classes="primary" Content="Check out selected items" Command="{Binding CheckoutCommand}"/>
+            </StackPanel></ScrollViewer></Border>
         </Grid>
         <StackPanel Grid.Row="3" Spacing="5">
             <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}"/>

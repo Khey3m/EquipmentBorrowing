@@ -7,9 +7,27 @@ namespace EquipmentBorrowing.Desktop.ViewModels;
 
 public partial class MainWindowViewModel : ObservableObject
 {
-    private readonly ApplicationStartupService _startup;
     [ObservableProperty] private string _startupMessage = "";
     [ObservableProperty, NotifyCanExecuteChangedFor(nameof(RetryStartupCommand))] private bool _isStarting;
+    public bool HasStartupMessage => !string.IsNullOrWhiteSpace(StartupMessage);
+    partial void OnStartupMessageChanged(string value) => OnPropertyChanged(nameof(HasStartupMessage));
+    public string PageLabel => CurrentView switch
+    {
+        EquipmentViewModel => "Equipment catalog",
+        BorrowingsViewModel => "Active borrowings",
+        StudentsViewModel => "Student management",
+        EquipmentManagementViewModel => "Equipment management",
+        MultiItemCheckoutViewModel => "Multiple checkout",
+        BorrowingHistoryViewModel => "Borrowing histories",
+        _ => "Search borrowings"
+    };
+    public bool IsEquipment => ReferenceEquals(CurrentView, EquipmentVm);
+    public bool IsBorrowings => ReferenceEquals(CurrentView, BorrowingsVm);
+    public bool IsMultiCheckout => ReferenceEquals(CurrentView, MultiCheckoutVm);
+    public bool IsStudents => ReferenceEquals(CurrentView, StudentsVm);
+    public bool IsEquipmentManagement => ReferenceEquals(CurrentView, EquipmentManagementVm);
+    public bool IsHistory => ReferenceEquals(CurrentView, HistoryVm);
+    public bool IsSearch => ReferenceEquals(CurrentView, SearchVm);
     private bool CanStart() => !IsStarting;
 
     [RelayCommand(CanExecute = nameof(CanStart))]
@@ -17,16 +35,11 @@ public partial class MainWindowViewModel : ObservableObject
     {
         if (IsStarting) return;
         IsStarting = true;
-        StartupMessage = "Connecting and preparing the database...";
+        StartupMessage = "Connecting to the API...";
         try
         {
-            if (!await _startup.InitializeAsync())
-            {
-                StartupMessage = "Database initialization failed. Check local configuration and connection, then retry startup.";
-                return;
-            }
-            StartupMessage = "";
             await EquipmentVm.InitializeAsync();
+            StartupMessage = EquipmentVm.IsReady ? "" : EquipmentVm.LoadMessage;
         }
         finally { IsStarting = false; }
     }
@@ -41,9 +54,8 @@ public partial class MainWindowViewModel : ObservableObject
     public MultiItemCheckoutViewModel MultiCheckoutVm { get; }
     public EquipmentManagementViewModel EquipmentManagementVm { get; }
 
-    public MainWindowViewModel(EquipmentViewModel equipmentVm, BorrowingsViewModel borrowingsVm, ApplicationStartupService startup, StudentsViewModel studentsVm, EquipmentManagementViewModel equipmentManagementVm, MultiItemCheckoutViewModel multiCheckoutVm, BorrowingHistoryViewModel historyVm, BorrowingSearchViewModel searchVm)
+    public MainWindowViewModel(EquipmentViewModel equipmentVm, BorrowingsViewModel borrowingsVm, StudentsViewModel studentsVm, EquipmentManagementViewModel equipmentManagementVm, MultiItemCheckoutViewModel multiCheckoutVm, BorrowingHistoryViewModel historyVm, BorrowingSearchViewModel searchVm)
     {
-        _startup = startup;
         HistoryVm = historyVm;
         SearchVm = searchVm;
         StudentsVm = studentsVm;
@@ -87,6 +99,14 @@ public partial class MainWindowViewModel : ObservableObject
     }
     partial void OnCurrentViewChanged(ObservableObject? oldValue, ObservableObject newValue)
     {
+        OnPropertyChanged(nameof(PageLabel));
+        OnPropertyChanged(nameof(IsEquipment));
+        OnPropertyChanged(nameof(IsBorrowings));
+        OnPropertyChanged(nameof(IsMultiCheckout));
+        OnPropertyChanged(nameof(IsStudents));
+        OnPropertyChanged(nameof(IsEquipmentManagement));
+        OnPropertyChanged(nameof(IsHistory));
+        OnPropertyChanged(nameof(IsSearch));
         if (ReferenceEquals(oldValue, SearchVm) && !ReferenceEquals(newValue, SearchVm)) SearchVm.Deactivate();
         if (ReferenceEquals(oldValue, HistoryVm) && !ReferenceEquals(newValue, HistoryVm)) HistoryVm.Deactivate();
     }

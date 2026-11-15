@@ -4,7 +4,7 @@ using EquipmentBorrowing.Domain;
 namespace EquipmentBorrowing.Application.Services;
 
 public sealed class MultiItemCheckoutService(IBorrowingSessionFactory sessions, ICampusClock clock,
-    IWorkflowFailures failures, ICheckoutWriteObserver? observer = null)
+    IWorkflowFailures failures, ICheckoutWriteObserver? observer = null) : IMultiCheckoutWorkflow
 {
     public async Task<OperationResult<IReadOnlyList<Borrowing>>> ExecuteAsync(MultiItemCheckoutRequest request,
         CancellationToken cancellationToken = default)
@@ -17,7 +17,7 @@ public sealed class MultiItemCheckoutService(IBorrowingSessionFactory sessions, 
             var checkout = clock.Today;
             var validation = await CheckoutValidation.ValidateAsync(session.Students, session.Equipment, session.Borrowings,
                 request.StudentId, ids, request.ExpectedReturnDate, checkout, 2, cancellationToken);
-            if (validation.Value is null) return new(validation.Outcome, validation.Message);
+            if (validation.Value is null) return new(validation.Outcome, validation.Message, Error: validation.Error);
 
             // Every item has been validated before the first mutation/write.
             var loans = new List<Borrowing>();
@@ -36,7 +36,12 @@ public sealed class MultiItemCheckoutService(IBorrowingSessionFactory sessions, 
         catch (Exception error)
         {
             var outcome = error is CommitOutcomeUnknownException ? OperationOutcome.Unknown : failures.Classify(error);
-            return new(outcome, WorkflowFeedback.Message(outcome));
+            return new(outcome, WorkflowFeedback.Message(outcome), Error: outcome switch
+            {
+                OperationOutcome.Unknown => WorkflowError.UnknownOutcome,
+                OperationOutcome.Conflict => WorkflowError.ConcurrentConflict,
+                _ => WorkflowError.DatabaseFailure
+            });
         }
     }
 }

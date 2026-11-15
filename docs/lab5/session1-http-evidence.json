@@ -1,0 +1,44 @@
+{
+  "observed_at_utc": "2026-11-15T08:21:07.706970+00:00",
+  "database_connection_setting": "absent in child process",
+  "url_override_verified": true,
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/api/v1/status",
+      "status": 200,
+      "body": {
+        "service": "CampusEQ API",
+        "version": "v1",
+        "phase": "Session 1 foundation; business endpoints pending"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/openapi/v1.json",
+      "status": 200,
+      "openapi": "3.1.1",
+      "paths": [
+        "/api/v1/status"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/does-not-exist",
+      "status": 404,
+      "body": {
+        "code": "not_found",
+        "message": "The requested resource or route was not found."
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/status",
+      "status": 405,
+      "body": {
+        "code": "method_not_allowed",
+        "message": "This HTTP method is not supported for this route."
+      }
+    }
+  ]
+}

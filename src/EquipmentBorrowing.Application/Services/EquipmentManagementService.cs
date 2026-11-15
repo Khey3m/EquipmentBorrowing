@@ -4,7 +4,7 @@ using EquipmentBorrowing.Domain;
 namespace EquipmentBorrowing.Application.Services;
 
 public sealed class EquipmentManagementService(IEquipmentManagementSessionFactory sessions,
-    IEquipmentRepository reads, IWorkflowFailures failures)
+    IEquipmentRepository reads, IWorkflowFailures failures) : IEquipmentManagementWorkflow
 {
     public async Task<QueryResult<IReadOnlyList<Equipment>>> FindAsync(string? searchText, CancellationToken cancellationToken = default)
     {
@@ -26,7 +26,7 @@ public sealed class EquipmentManagementService(IEquipmentManagementSessionFactor
         {
             var equipment = new Equipment(0, request.EquipmentIdentifier, request.Name, request.Description);
             if (await repository.IdentifierExistsAsync(equipment.EquipmentIdentifier, cancellationToken: ct))
-                return new(OperationOutcome.Rejected, "That equipment identifier is already registered.");
+                return new(OperationOutcome.Rejected, "That equipment identifier is already registered.", Error: WorkflowError.DuplicateIdentifier);
             await repository.AddAsync(equipment, ct);
             return new(OperationOutcome.Succeeded, "Equipment registered and available for borrowing.", equipment);
         }, cancellationToken);
@@ -35,11 +35,13 @@ public sealed class EquipmentManagementService(IEquipmentManagementSessionFactor
         ExecuteAsync(async (repository, ct) =>
         {
             var equipment = await repository.GetByIdAsync(request.EquipmentId, ct);
-            if (equipment is null || EquipmentSnapshot.From(equipment) != request.Expected)
-                return new(OperationOutcome.Conflict, "The equipment is missing or changed since selection. Refresh and select again.");
+            if (equipment is null)
+                return new(OperationOutcome.Conflict, "The equipment was not found.", Error: WorkflowError.NotFound);
+            if (EquipmentSnapshot.From(equipment) != request.Expected)
+                return new(OperationOutcome.Conflict, "The equipment changed since selection. Refresh and select again.", Error: WorkflowError.StaleState);
             equipment.UpdateInformation(request.EquipmentIdentifier, request.Name, request.Description);
             if (await repository.IdentifierExistsAsync(equipment.EquipmentIdentifier, equipment.Id, ct))
-                return new(OperationOutcome.Rejected, "That equipment identifier belongs to another item.");
+                return new(OperationOutcome.Rejected, "That equipment identifier belongs to another item.", Error: WorkflowError.DuplicateIdentifier);
             await repository.UpdateAsync(equipment, ct);
             return new(OperationOutcome.Succeeded, "Equipment details updated; identity and borrowing history preserved.", equipment);
         }, cancellationToken);
@@ -55,11 +57,16 @@ public sealed class EquipmentManagementService(IEquipmentManagementSessionFactor
             if (result.Outcome == OperationOutcome.Succeeded) await session.CommitAsync(cancellationToken);
             return result;
         }
-        catch (ArgumentException) { return new(OperationOutcome.Rejected, "Equipment identifier and name are required; correct the supplied fields."); }
+        catch (ArgumentException) { return new(OperationOutcome.Rejected, "Equipment identifier and name are required; correct the supplied fields.", Error: WorkflowError.InvalidInput); }
         catch (Exception error)
         {
             var outcome = error is CommitOutcomeUnknownException ? OperationOutcome.Unknown : failures.Classify(error);
-            return new(outcome, WorkflowFeedback.Message(outcome));
+            return new(outcome, WorkflowFeedback.Message(outcome), Error: outcome switch
+            {
+                OperationOutcome.Unknown => WorkflowError.UnknownOutcome,
+                OperationOutcome.Conflict => WorkflowError.ConcurrentConflict,
+                _ => WorkflowError.DatabaseFailure
+            });
         }
     }
 }

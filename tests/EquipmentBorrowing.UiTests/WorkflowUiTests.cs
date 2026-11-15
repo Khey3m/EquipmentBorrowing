@@ -75,6 +75,28 @@ public class WorkflowUiTests
     }
 
     [AvaloniaFact]
+    public void ModernShellLoadsProductionThemeAndKeepsAllNavigationAtMinimumSize()
+    {
+        var window = new EquipmentBorrowing.Desktop.MainWindow();
+        window.Show();
+        try
+        {
+            window.Width = window.MinWidth;
+            window.Height = window.MinHeight;
+            Dispatcher.UIThread.RunJobs();
+            var navigation = window.GetVisualDescendants().OfType<Button>()
+                .Where(button => button.Classes.Contains("nav")).ToArray();
+            Assert.Equal(7, navigation.Length);
+            Assert.All(navigation, button =>
+            {
+                Assert.True(button.Bounds.Width > 0);
+                Assert.True(button.Bounds.Height >= 40);
+            });
+        }
+        finally { window.Close(); }
+    }
+
+    [AvaloniaFact]
     public void EveryWorkflowViewLoadsAndLaysOutWithoutStartingAProductionDatabase()
     {
         UserControl[] views=[new EquipmentView(),new BorrowingsView(),new StudentsView(),new EquipmentManagementView(),
