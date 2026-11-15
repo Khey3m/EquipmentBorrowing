@@ -35,6 +35,12 @@ for index, entry in enumerate(data["entries"]):
     for text in entry["explanation"]:
         doc.add_paragraph(text)
     doc.add_paragraph("Evidence scope: " + entry["scope"])
+if data.get("review"):
+    doc.add_page_break()
+    doc.add_heading("Evidence review and supporting references", 1)
+    for paragraph in data["review"]:
+        doc.add_paragraph(paragraph)
+
 output = root / "docs/lab5/DEMO_LAB_5_SCREENSHOT_REPORT.docx"
 doc.save(output)
 if args.copy_to:

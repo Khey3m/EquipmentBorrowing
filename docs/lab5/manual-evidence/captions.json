@@ -563,6 +563,82 @@
         "The query returns the same LoanId values 1, 2 and 3. Camera LoanId 1 retains actual return 2026-11-15 and availability true. Tripod and microphone remain Active with NULL actual return dates and availability false. All expected return dates are 2026-11-20. The camera status text is truncated in SQL; the application history shows the full Returned label."
       ],
       "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 54",
+      "image": "54-step12-http-composition.png",
+      "heading": "Step 12 - Desktop HTTP workflow registrations",
+      "source_filename": "Screenshot 2026-11-16 001336.png",
+      "explanation": [
+        "DesktopComposition.cs registers ApiTransport and HTTP implementations for student/equipment management, catalog, checkout, return, active loans, history and search. This shows how the Desktop workflows are composed using HTTP services."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    },
+    {
+      "id": "Figure 55",
+      "image": "55-step12-project.png",
+      "heading": "Step 12 - Desktop project dependencies",
+      "source_filename": "Screenshot 2026-11-16 001853.png",
+      "explanation": [
+        "The Desktop project directly references EquipmentBorrowing.Http and EquipmentBorrowing.Application. Its displayed packages do not include EF Core or Npgsql, and it has no Infrastructure project reference. This supports the client/server persistence boundary."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    },
+    {
+      "id": "Figure 56",
+      "image": "56-step12-backend.png",
+      "heading": "Step 12 - API owns persistence registrations",
+      "source_filename": "Screenshot 2026-11-16 001216.png",
+      "explanation": [
+        "BackendServices.cs registers the PostgreSQL DbContext factory, EF repositories, session factories and application services inside the API. This complements the Desktop HTTP registrations and locates database access on the server."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    },
+    {
+      "id": "Figure 57",
+      "image": "57-step12-ci-summary.png",
+      "heading": "Step 12 - Recorded CI run succeeded",
+      "source_filename": "Screenshot 2026-11-16 002347.png",
+      "explanation": [
+        "GitHub Actions run 43710719990 shows Success for code revision dc1e541 and a successful build-and-test job. The workflow annotations are separate tooling warnings/notices; they do not change the displayed successful conclusion. This is the recorded earlier run, not validation of every later documentation commit."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    },
+    {
+      "id": "Figure 58",
+      "image": "58-step12-ci-job.png",
+      "heading": "Step 12 - Successful verification job stages",
+      "source_filename": "Screenshot 2026-11-16 002406.png",
+      "explanation": [
+        "The build-and-test job shows successful build, PostgreSQL tests, headless workflow checks and persistence stages. The steps are collapsed, so the test totals are not visible in this screenshot. Retained session9-ci-summary.json records 76 backend and 23 UI/client tests with zero failures/skips; raw TRX is retained in evidence/ci-43710719990.zip."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    },
+    {
+      "id": "Figure 59",
+      "image": "59-step12-traceability.png",
+      "heading": "Step 12 - Requirements and implementation evidence mapping",
+      "source_filename": "Screenshot 2026-11-16 002451.png",
+      "explanation": [
+        "traceability.md maps use cases, business rules, API operations and acceptance cases to implementation and evidence references. This is a navigation aid for reviewing the corresponding source and raw evidence, not a test execution by itself."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    },
+    {
+      "id": "Figure 60",
+      "image": "60-step12-acceptance.png",
+      "heading": "Step 12 - Recorded acceptance ledger and remaining qualification",
+      "source_filename": "Screenshot 2026-11-16 002650.png",
+      "explanation": [
+        "The execution ledger shows T01 through T06 and T08 as Pass and T07 as Partial. Its T07 reason predates this manual screenshot collection. The new pictures expand rendered workflow evidence, but this capture is not an updated all-pass record. T05 cites session5-checkout-evidence.json for after-write rollback; the screenshot does not display the detailed before/after fault evidence."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
     }
+  ],
+  "review": [
+    "Reviewed screenshot collection: 60 figures across Steps 1 to 12. Captions describe visible results and qualify cropped cells, retained UI messages and unshown actions. This is a consolidated evidence report, not an unconditional certification that every acceptance branch passed.",
+    "Supporting automated evidence: docs/lab5/session9-ci-summary.json records 99 passing tests for revision dc1e541. Raw TRX/HTTP evidence is retained in docs/lab5/evidence/ci-43710719990.zip; controlled rollback evidence is in docs/lab5/session5-checkout-evidence.json. Submit these project references alongside the Word report.",
+    "Remaining screenshot qualifications: Step 1 uses an empty catalog and does not visibly establish that Desktop was closed; checked return confirmation before Step 5 was not captured; the initial controlled seven-item seed is not evidenced in this manual sequence. Step 9 shows stale-selection feedback, and later screenshots demonstrate the updated data. Some SQL cells are truncated, with related full values visible in other captures.",
+    "The Step 12 CI screenshots show success but not expanded test totals or detailed rollback comparisons. Those values require the retained raw evidence. The current acceptance ledger still marks T07 Partial; reconcile the new manual evidence against the supplied acceptance reference before declaring the entire submission complete or creating a final submitted tag."
   ]
 }
