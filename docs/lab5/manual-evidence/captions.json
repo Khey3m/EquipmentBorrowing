@@ -423,6 +423,76 @@
         "Student ST-UI-600 / Demo External Edit is selected in Borrowing histories. Microphone Loan #3 and tripod Loan #2 remain Active; camera Loan #1 remains Returned. All show the updated related student name and retain their equipment identifiers and dates."
       ],
       "scope": "Independent API update, displayed client state and database/history readback; unshown user actions are not inferred."
+    },
+    {
+      "id": "Figure 40",
+      "image": "40-step10-offline-ui.png",
+      "heading": "Step 10 - Desktop reports no HTTP response",
+      "source_filename": "Screenshot 2026-11-15 235211.png",
+      "explanation": [
+        "The catalog is empty and the application reports No HTTP response was received from the API. Check its address and whether it is running. The borrowing button is disabled. The older borrowing-success message remains visible and does not describe this failed refresh."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 41",
+      "image": "41-step10-offline-curl.png",
+      "heading": "Step 10 - Stopped API produces a connection failure",
+      "source_filename": "Screenshot 2026-11-15 235323.png",
+      "explanation": [
+        "The terminal shows API shutdown followed by curl.exe GET /api/v1/equipment failing with curl error 7, Could not connect to server. No HTTP status is received for this request. Earlier migration/startup output is separate from the connection test."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 42",
+      "image": "42-step10-500-response.png",
+      "heading": "Step 10 - API responds with a safe HTTP 500",
+      "source_filename": "Screenshot 2026-11-15 235454.png",
+      "explanation": [
+        "A subsequent equipment request receives HTTP/1.1 500 Internal Server Error with JSON code server_error and a message to restore the connection and search or refresh again. The response does not expose a connection string or stack trace. This differs from the preceding no-response failure."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 43",
+      "image": "43-step10-500-ui.png",
+      "heading": "Step 10 - Desktop distinguishes the received server error",
+      "source_filename": "Screenshot 2026-11-15 235502.png",
+      "explanation": [
+        "The Desktop feedback explicitly states API returned HTTP 500: server/database failure. Restore service and refresh before retrying. The catalog is empty and borrowing is disabled. This records distinct UI feedback for a received server error."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 44",
+      "image": "44-step10-restored-http.png",
+      "heading": "Step 10 - Equipment endpoint recovers to HTTP 200",
+      "source_filename": "Screenshot 2026-11-15 235600.png",
+      "explanation": [
+        "After the failure, curl receives HTTP/1.1 200 OK and four equipment objects. Camera EQ-UI-600 has description null and isAvailable true; tablet is also available. Microphone and tripod have isAvailable false. The returned equipment state matches the earlier saved borrowing state."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 45",
+      "image": "45-step10-restored-ui.png",
+      "heading": "Step 10 - Desktop catalog reloads after service recovery",
+      "source_filename": "Screenshot 2026-11-15 235617.png",
+      "explanation": [
+        "The available-only catalog reloads camera EQ-UI-600 and tablet EQ-UI-603, both Available, without the earlier connection-error feedback. The selected filter explains why borrowed microphone and tripod are absent. The image records the recovered view; screenshots alone cannot prove process continuity."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 46",
+      "image": "46-step10-readback.png",
+      "heading": "Step 10 - Database readback preserves identities and loan state",
+      "source_filename": "Screenshot 2026-11-15 235709.png",
+      "explanation": [
+        "Fresh SQL returns student Id 1, ST-UI-600, NULL contact and three retained loans. Camera LoanId 1 has actual return date 2026-11-15 and available true; tripod LoanId 2 and microphone LoanId 3 remain Active with actual return NULL and available false. FullName and the camera Status cell are truncated, while earlier evidence supplies the complete name and Returned label."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
     }
   ]
 }
