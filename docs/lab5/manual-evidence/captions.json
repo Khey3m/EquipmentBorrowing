@@ -273,6 +273,46 @@
         "These screenshots support successful coordinated checkout and database readback. They do not independently demonstrate transaction rollback under failure; retain the separate automated rollback evidence for that check."
       ],
       "scope": "Manual successful multi-item checkout evidence."
+    },
+    {
+      "id": "Figure 25",
+      "image": "25-step7-student-history.png",
+      "heading": "Step 7 - Student history contains both active and returned loans",
+      "source_filename": "Screenshot 2026-11-15 232117.png",
+      "explanation": [
+        "Student ST-UI-600 is selected. Its history contains microphone Loan #3 and tripod Loan #2 as Active with return pending, and camera Loan #1 as Returned on 2026-11-15. All three show expected date 2026-11-20. This preserves completed and outstanding borrowings for the same student."
+      ],
+      "scope": "Manual student/equipment history and empty-state evidence; screenshots capture displayed results, not the raw HTTP exchanges."
+    },
+    {
+      "id": "Figure 26",
+      "image": "26-step7-empty-student.png",
+      "heading": "Step 7 - Unused student has a valid empty history",
+      "source_filename": "Screenshot 2026-11-15 232212.png",
+      "explanation": [
+        "Student ST-UI-603 / Demo Empty Student is selected. The screen displays No borrowing history for this selection and no previous student loan rows. This captures an empty result for the identified control student, with no visible connection error."
+      ],
+      "scope": "Manual student/equipment history and empty-state evidence; screenshots capture displayed results, not the raw HTTP exchanges."
+    },
+    {
+      "id": "Figure 27",
+      "image": "27-step7-camera-history.png",
+      "heading": "Step 7 - Camera history retains its returned loan",
+      "source_filename": "Screenshot 2026-11-15 232238.png",
+      "explanation": [
+        "Equipment mode is selected with camera EQ-UI-600. Its history contains only the displayed camera Loan #1 for ST-UI-600, marked Returned, issued 2026-11-15, due 2026-11-20 and returned 2026-11-15."
+      ],
+      "scope": "Manual student/equipment history and empty-state evidence; screenshots capture displayed results, not the raw HTTP exchanges."
+    },
+    {
+      "id": "Figure 28",
+      "image": "28-step7-empty-tablet.png",
+      "heading": "Step 7 - Unused tablet has a valid empty history",
+      "source_filename": "Screenshot 2026-11-15 232250.png",
+      "explanation": [
+        "Equipment EQ-UI-603 / Demo Tablet is selected and repeated in the heading. No borrowing history for this selection is displayed, and the earlier camera row is absent. The gray microphone background is distinct from the teal selected tablet and does not change the displayed tablet identity."
+      ],
+      "scope": "Manual student/equipment history and empty-state evidence; screenshots capture displayed results, not the raw HTTP exchanges."
     }
   ]
 }
