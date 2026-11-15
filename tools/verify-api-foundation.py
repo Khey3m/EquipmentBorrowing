@@ -77,6 +77,17 @@ with tempfile.TemporaryFile() as log:
             create = paths["/api/v1/equipment"]["post"]["responses"]
             assert {"201", "400", "409", "500"} <= create.keys()
             assert any(p["name"] == "search" for p in paths["/api/v1/students"]["get"]["parameters"])
+        if "/api/v1/borrowings/{id}" in document["paths"]:
+            paths = document["paths"]
+            assert "post" in paths["/api/v1/borrowings"]
+            assert "get" in paths["/api/v1/borrowings/{id}"]
+            assert "post" in paths["/api/v1/borrowings/{id}/return"]
+            schemas = document["components"]["schemas"]
+            assert {"studentId", "equipmentId", "expectedReturnDate"} <= set(schemas["BorrowInput"]["required"])
+            assert schemas["ReturnInput"].get("additionalProperties") is False
+            assert not schemas["ReturnInput"].get("properties", {})
+            assert set(schemas["BorrowingState"]["enum"]) == {"Active", "Returned"}
+            assert {"201", "400", "404", "409", "500"} <= paths["/api/v1/borrowings"]["post"]["responses"].keys()
         if args.openapi_output:
             args.openapi_output.parent.mkdir(parents=True, exist_ok=True)
             args.openapi_output.write_text(json.dumps(document, indent=2) + "\n")

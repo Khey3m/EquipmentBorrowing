@@ -19,3 +19,7 @@ Student API-02-06 implemented in 1788c68. Structured student error categories pr
 ## Session 3 - delivered
 
 Equipment API-01/07-09 implemented in c1b69d9. Catalog/available filter, detail, create/Location and complete descriptive edit/null clearing preserve protected state. Structured equipment failure categories share HTTP mapping with students. Clean full solution Release build, 76 passing backend tests, 35 equipment and 35 student regression HTTP requests with fresh state. T03 passed; T01/T02/T07/T08 remain incomplete. See [Session 3 evidence](session3-evidence.md). Next: Session 4 single borrowing, detail and return API-10/12/13.
+
+## Session 4 - delivered
+
+API-10/12/13 implemented in 8ab98f1, preserving serializable service transactions and adding explicit validation/missing/business-conflict outcomes. Full Release build clean; 76 backend tests pass; 37 T04 borrowing/return and 43 complete T02 student HTTP requests pass with fresh PostgreSQL state and API restart evidence. T02 and T04 are now Pass for these executions. See [Session 4 evidence](session4-evidence.md). Next: Session 5 multi-item checkout and complete query/history API-11/14/15/16.

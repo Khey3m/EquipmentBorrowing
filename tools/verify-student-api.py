@@ -16,7 +16,7 @@ import urllib.error
 import urllib.request
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--resource", choices=["students", "equipment"], default="students")
+parser.add_argument("--resource", choices=["students", "equipment", "borrowings"], default="students")
 parser.add_argument("--database", required=True)
 parser.add_argument("--output", type=Path, required=True)
 args = parser.parse_args()
@@ -148,7 +148,23 @@ try:
         for body in [{},{'isEligible':None},{'isEligible':'false'},{'isEligible':True,'id':ada}]:
             call('PATCH',f'/api/v1/students/{ada}/eligibility',400,body)
         call('PATCH','/api/v1/students/2147483647/eligibility',404,{'isEligible':False})
-    else:
+        items,_=call('GET','/api/v1/equipment',200)
+        item_ids={item['equipmentCode']:item['id'] for item in items}
+        e1_loan=next(loan for loan in snapshot()['borrowings'] if loan['StudentId']==ada and loan['EquipmentId']==item_ids['EQ-001'])
+        known,_=call('GET',f'/api/v1/borrowings/{e1_loan["Id"]}',200)
+        call('PATCH',f'/api/v1/students/{ada}/eligibility',200,{'isEligible':False})
+        assert snapshot()['borrowings']==loans_before
+        due=str(today+datetime.timedelta(days=2))
+        call('POST','/api/v1/borrowings',409,{'studentId':ada,'equipmentId':item_ids['EQ-002'],'expectedReturnDate':due})
+        returned,_=call('POST',f'/api/v1/borrowings/{known["id"]}/return',200,{})
+        assert returned['id']==known['id'] and returned['status']=='Returned' and returned['returnedDate']==str(today)
+        call('PATCH',f'/api/v1/students/{ada}/eligibility',200,{'isEligible':True})
+        issued,_=call('POST','/api/v1/borrowings',201,{'studentId':ada,'equipmentId':item_ids['EQ-001'],'expectedReturnDate':due})
+        assert issued['id']!=returned['id'] and issued['status']=='Active'
+        before=snapshot()
+        call('PATCH',f'/api/v1/students/{ada}/eligibility',200,{'isEligible':True})
+        assert snapshot()==before
+    elif args.resource == "equipment":
         items,_=call('GET','/api/v1/equipment',200)
         assert len(items)==7
         ids={item['equipmentCode']:item['id'] for item in items};camera=ids['EQ-001']
@@ -195,25 +211,65 @@ try:
             value='true' if item['IsAvailable'] else 'false'
             sql(f'UPDATE "Equipment" SET "IsAvailable"={value} WHERE "Id"={item["Id"]};')
         assert snapshot()==previous
+    else:
+        students,_=call('GET','/api/v1/students',200)
+        items,_=call('GET','/api/v1/equipment',200)
+        student_ids={s['studentNumber']:s['id'] for s in students}
+        item_ids={item['equipmentCode']:item['id'] for item in items}
+        due=str(today+datetime.timedelta(days=2))
+        valid={'studentId':student_ids['ST-400'],'equipmentId':item_ids['EQ-002'],'expectedReturnDate':due}
+        created,headers=call('POST','/api/v1/borrowings',201,valid)
+        loan_id=created['id']
+        assert headers['Location']==f'/api/v1/borrowings/{loan_id}'
+        assert created['status']=='Active' and created['borrowedDate']==str(today) and created['returnedDate'] is None
+        assert created['studentId']==valid['studentId'] and created['equipmentId']==valid['equipmentId']
+        assert next(item for item in snapshot()['equipment'] if item['Id']==valid['equipmentId'])['IsAvailable'] is False
+        stored,_=call('GET',headers['Location'],200);assert stored==created
+        for changes,expected in [({'studentId':student_ids['ST-200'],'equipmentId':item_ids['EQ-006']},409),
+                                 ({'equipmentId':item_ids['EQ-001']},409),({'studentId':2147483647,'equipmentId':item_ids['EQ-006']},404),
+                                 ({'equipmentId':2147483647},404),({'expectedReturnDate':str(today)},400),
+                                 ({'expectedReturnDate':str(today-datetime.timedelta(days=1))},400),
+                                 ({'studentId':0},400),({'equipmentId':-1},400),({'expectedReturnDate':'bad-date'},400),
+                                 ({'studentId':'invalid'},400),({'expectedReturnDate':None},400),
+                                 ({'id':999},400),({'status':'Returned'},400),({'borrowedDate':str(today)},400),
+                                 ({'returnedDate':str(today)},400)]:
+            call('POST','/api/v1/borrowings',expected,{**valid,**changes})
+        for missing in ['studentId','equipmentId','expectedReturnDate']:
+            call('POST','/api/v1/borrowings',400,{key:value for key,value in valid.items() if key!=missing})
+        call('POST','/api/v1/borrowings',400,raw='{broken')
+        call('GET','/api/v1/borrowings/2147483647',404)
+        call('GET','/api/v1/borrowings/not-an-id',400)
+        for body in [{'returnedDate':str(today)},{'status':'Returned'},{'unexpected':True}]:
+            call('POST',headers['Location']+'/return',400,body)
+        call('POST',headers['Location']+'/return',400,raw='null')
+        call('POST',headers['Location']+'/return',400)
+        call('POST','/api/v1/borrowings/2147483647/return',404,{})
+        updated,_=call('POST',headers['Location']+'/return',200,{})
+        assert updated['id']==loan_id and updated['status']=='Returned' and updated['returnedDate']==str(today)
+        assert updated['borrowedDate']==created['borrowedDate'] and updated['expectedReturnDate']==due
+        assert next(item for item in snapshot()['equipment'] if item['Id']==valid['equipmentId'])['IsAvailable'] is True
+        stored,_=call('GET',headers['Location'],200);assert stored==updated
+        call('POST',headers['Location']+'/return',409,{})
     saved=snapshot();stop();start()
     reopened,_=call('GET',headers['Location'],200)
     assert reopened==updated and snapshot()==saved
     # Block only this newly created verification database. Admin remains connected to postgres.
     sql(f'ALTER DATABASE "{args.database}" WITH ALLOW_CONNECTIONS false;', 'postgres')
     sql(f"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='{args.database}';",'postgres')
-    try:call('GET','/api/v1/'+args.resource,500,check_state=False)
+    probe_path=headers['Location'] if args.resource=='borrowings' else '/api/v1/'+args.resource
+    try:call('GET',probe_path,500,check_state=False)
     finally:sql(f'ALTER DATABASE "{args.database}" WITH ALLOW_CONNECTIONS true;','postgres')
-    call('GET','/api/v1/'+args.resource,200)
+    call('GET',probe_path,200)
     assert snapshot()==saved
     status,doc_headers,document=None,None,None
     with urllib.request.urlopen(base+'/openapi/v1.json') as response:document=json.load(response)
     operations={value.get('operationId') for path in document['paths'].values() for value in path.values() if isinstance(value,dict)}
-    required={'API-02','API-03','API-04','API-05','API-06'} if args.resource=='students' else {'API-01','API-07','API-08','API-09'}
+    required={'students':{'API-02','API-03','API-04','API-05','API-06'}, 'equipment':{'API-01','API-07','API-08','API-09'}, 'borrowings':{'API-10','API-12','API-13'}}[args.resource]
     assert required<=operations
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps({'database':args.database,'campus_date':str(today),'date_policy':'reference offsets from actual Asia/Manila date',
-       'dataset':'S1-S4/E1-E7 with supplied history relationships; reset once for student subset',
-       'scope':'T02 partial; borrowing/return paths pending' if args.resource=='students' else 'T03 equipment execution','checks':trace,'restart_preserved':True,'openapi_student_operations':sorted(operations)},indent=2)+'\n')
+       'dataset':'S1-S4/E1-E7 with supplied history relationships; reset once for this test',
+       'scope':{'students':'T02 complete execution','equipment':'T03 equipment execution','borrowings':'T04 single borrowing/return execution'}[args.resource],'checks':trace,'restart_preserved':True,'openapi_student_operations':sorted(operations)},indent=2)+'\n')
     print(f'PASS: {len(trace)} HTTP requests; independent before/after reads; identity/history/protected-state/restart/server failure recovery verified.')
     print('Evidence: '+str(args.output))
 finally:
