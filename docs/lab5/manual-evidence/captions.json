@@ -218,6 +218,61 @@
         "The subject list also includes ST-UI-603 / Demo Empty Student, supplying visible evidence that the control student exists. Its empty history is not demonstrated because ST-UI-600 is selected."
       ],
       "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
+    },
+    {
+      "id": "Figure 20",
+      "image": "20-step6-selection.png",
+      "heading": "Step 6 - Two items selected before checkout",
+      "source_filename": "Screenshot 2026-11-15 231446.png",
+      "explanation": [
+        "The Multiple checkout screen selects microphone EQ-UI-602 and tripod EQ-UI-601, with Selected items: 2, student ST-UI-600 and shared expected return date 2026-11-20. Camera and tablet remain unchecked.",
+        "These screenshots support successful coordinated checkout and database readback. They do not independently demonstrate transaction rollback under failure; retain the separate automated rollback evidence for that check."
+      ],
+      "scope": "Manual successful multi-item checkout evidence."
+    },
+    {
+      "id": "Figure 21",
+      "image": "21-step6-success.png",
+      "heading": "Step 6 - Two-item checkout completed",
+      "source_filename": "Screenshot 2026-11-15 231535.png",
+      "explanation": [
+        "The application reports Checked out 2 items together through the API. Selected items resets to 0, and microphone and tripod now display On loan. Camera and tablet remain Available.",
+        "These screenshots support successful coordinated checkout and database readback. They do not independently demonstrate transaction rollback under failure; retain the separate automated rollback evidence for that check."
+      ],
+      "scope": "Manual successful multi-item checkout evidence."
+    },
+    {
+      "id": "Figure 22",
+      "image": "22-step6-active.png",
+      "heading": "Step 6 - Two active loans shown",
+      "source_filename": "Screenshot 2026-11-15 231551.png",
+      "explanation": [
+        "Active borrowings displays tripod LOAN #2 and microphone LOAN #3 for ST-UI-600. Both are Active, issued 2026-11-15 and due 2026-11-20. The older successfully returned message remains at the bottom; it is not the result of this checkout.",
+        "These screenshots support successful coordinated checkout and database readback. They do not independently demonstrate transaction rollback under failure; retain the separate automated rollback evidence for that check."
+      ],
+      "scope": "Manual successful multi-item checkout evidence."
+    },
+    {
+      "id": "Figure 23",
+      "image": "23-step6-sql.png",
+      "heading": "Step 6 - Database confirms the saved loans",
+      "source_filename": "Screenshot 2026-11-15 231622.png",
+      "explanation": [
+        "The query returns three rows for ST-UI-600. Camera LoanId 1 retains its actual return date and available=true. Tripod LoanId 2 and microphone LoanId 3 both have Status Active, ActualReturnAt NULL, expected date 2026-11-20 and IsAvailable=false. These values agree with the active-loan screen.",
+        "These screenshots support successful coordinated checkout and database readback. They do not independently demonstrate transaction rollback under failure; retain the separate automated rollback evidence for that check."
+      ],
+      "scope": "Manual successful multi-item checkout evidence."
+    },
+    {
+      "id": "Figure 24",
+      "image": "24-step6-filter.png",
+      "heading": "Step 6 - Available-only catalog after checkout",
+      "source_filename": "Screenshot 2026-11-15 231648.png",
+      "explanation": [
+        "The checked Available items only filter shows the camera and tablet as Available and excludes the borrowed microphone and tripod. This agrees with the saved availability flags. The catalog message is retained from an earlier borrowing operation; the dedicated checkout screen supplies the two-item success message.",
+        "These screenshots support successful coordinated checkout and database readback. They do not independently demonstrate transaction rollback under failure; retain the separate automated rollback evidence for that check."
+      ],
+      "scope": "Manual successful multi-item checkout evidence."
     }
   ]
 }
