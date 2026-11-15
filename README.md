@@ -6,7 +6,7 @@ Continues the Lab 4 Avalonia application with an independently runnable ASP.NET 
 Avalonia -> HTTP client/contracts -> ASP.NET Core API -> Application -> EF/Npgsql -> PostgreSQL
 ```
 
-Current verification: full Release build with zero warnings/errors; 76 backend and 23 UI/client tests pass. Actual HTTP composition and native catalog startup work without database settings in Desktop. T01-T06 have passing API executions. Full rendered staff walkthrough and consolidated T08 recovery evidence remain pending; this is not the final submission tag.
+Current verification: full Release build with zero warnings/errors; 76 backend and 23 UI/client tests pass. Actual HTTP composition and native catalog startup work without database settings in Desktop. T01-T06 have passing API executions. T08 controlled recovery passed with native feedback and same-client Retry. Full rendered staff walkthrough remains pending; this is not the final submission tag.
 
 ## Prerequisites
 
@@ -66,7 +66,7 @@ Navigation covers catalog/single issue, Active/return with confirmation, coordin
 
 The reference dataset is S1-S4 (ST-100/200/300/400) and E1-E7 with the prescribed active/returned links. Use a NEW verification database; do not reset the historical Lab 4 demo. The harness creates/migrates it and resets before each required subcase. It shifts reference dates by their offsets from recorded actual campus date and resolves IDs from API responses.
 
-The real-HTTP harness requires private PGHOST, PGPORT, PGUSER, PGPASSWORD and LAB5_STUDENT_VERIFY_CONNECTION targeting the matching NEW name. It uses PostgreSQL 18 psql at the standard Windows path or PSQL_PATH override. See [reproduction details](docs/lab5/session2-evidence.md). Available scenarios: students, equipment, borrowings, reads, checkout, client, client-borrowing, client-all. The final scenario also checks the native Windows Desktop and captures its window.
+The real-HTTP harness requires private PGHOST, PGPORT, PGUSER, PGPASSWORD and LAB5_STUDENT_VERIFY_CONNECTION targeting the matching NEW name. It uses PostgreSQL 18 psql at the standard Windows path or PSQL_PATH override. See [reproduction details](docs/lab5/session2-evidence.md). Available scenarios: students, equipment, borrowings, reads, checkout, client, client-borrowing, client-all, recovery. The final scenario also checks the native Windows Desktop and captures its window.
 
 ```powershell
 python tools/verify-api-foundation.py
@@ -93,3 +93,7 @@ Without the integration setting, backend PostgreSQL cases explicitly skip. Repor
 - [Preserved Lab 4 use-case suite](docs/lab4/use-case-suite.md), [business rules](docs/lab4/business-rules.md), [Lab 4 architecture/schema](docs/lab4/architecture-and-schema.md) and [development report](docs/lab4/development-report-lab4.md).
 
 The Lab 4 submitted checkout retains its original direct-database Desktop and launch scripts. Use that revision to reproduce Lab 4 alone; this branch runs API and Desktop separately. Existing migrations and development history are preserved. Final lab5-submitted tag, final handoff and private pair submission actions follow completed acceptance in Sessions 9-10.
+
+Integrated CI and controlled no-response/500/recovery evidence: [Session 9](docs/lab5/session9-evidence.md). CI retains TRX, OpenAPI and HTTP/SQL captures under campuseq-test-results; Linux omits native Windows capture explicitly. Full rendered T07 staff walkthrough remains pending.
+
+Verified integrated checkpoint: [CI run 43710719990](https://github.com/Khey3m/EquipmentBorrowing/actions/runs/43710719990), dc1e541: zero-warning Release build, 99 passing tests, five persistence stages and seven controlled HTTP scenarios. [Durable summary](docs/lab5/session9-ci-summary.json). Native recovery screenshots and exact T07/manual limits are recorded in Session 9 evidence.

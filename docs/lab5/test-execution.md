@@ -11,7 +11,7 @@ Session 1 operational smoke evidence is separate and does not satisfy any comple
 | T05 | Multi-checkout, limit boundaries and after-write rollback | Pass | Session 5: reset subcases, exact-three boundaries, safe after-insert 500 and no partial state; session5-checkout-evidence.json |
 | T06 | Histories/search/filter/sort | Pass | Session 5: fresh dataset and independently derived membership/display/order; session5-query-evidence.json |
 | T07 | HTTP-only responsive Desktop, independent API and refresh | Partial | Session 8: complete HTTP-only composition, all real ViewModels, independent refresh, native catalog and clean runtime dependencies; full rendered staff walkthrough pending |
-| T08 | Transport versus server failure, recovery and restart | Partial supporting checks | Session 2: safe DB-failure 500/recovery and API restart; no-response/Desktop branches pending Session 9 |
+| T08 | Transport versus server failure, recovery and restart | Pass | Session 9: actual stopped API/no response versus invalid DB/safe 500, same-client Retry/recovery, native feedback and fresh saved-state verification |
 
 ## Execution template
 
@@ -44,3 +44,9 @@ T07 supporting execution: single issue, explicit confirmed return, multi checkou
 ## Session 8 execution entry
 
 T07 supporting execution: all seven screen ViewModels resolve through the actual App composition, with histories/search over HTTP; real lifecycle/retrieval/refresh checks pass without database settings in the probe. Actual native Desktop starts without DB settings, shows synthetic API catalog and responds; screenshot and forbidden-dependency scan captured. Diagnosis/correction: two nullable-flow warnings fixed; shell helper extraction resolves capture-command quoting before final execution. Retest: final clean build, 76 backend and 23 UI/client tests pass; 69 captured completed HTTP exchanges. Full rendered staff workflow and consolidated T08 stay pending. See session8-evidence.md and session8-client-evidence.json/png.
+
+## Session 9 execution entry
+
+T08 controlled execution passed: offline status null/unknown mutation without replay; received safe 500/known failed mutation; restored 200 clears feedback via Retry in the same surviving client composition. Actual native screenshots show each category; independent SQL confirms no failed writes and restart durability. Evidence: session9-evidence.md and session9-recovery-evidence.json/png. Correction: strengthened initially separate-process recovery checks to same-client retry; local retest passed. CI repeats all seven reset HTTP scenarios plus regression/persistence checks. T07 still lacks the full rendered staff sequence; its automated boundary/workflow/native startup evidence remains passing.
+
+Final integrated revision dc1e541: CI run 43710719990 succeeded with all seven controlled scenarios, 99 tests, zero skips and five persistence stages. [Observed CI summary](session9-ci-summary.json). Local native screenshots complement explicitly omitted Linux native capture. T07 stays Partial for the full rendered staff sequence, without reducing the recorded passing automated checks.
