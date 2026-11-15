@@ -15,3 +15,7 @@ Generated OpenAPI covers only the operational route so far; API-01-16 and T01-T0
 ## Session 2 - delivered
 
 Student API-02-06 implemented in 1788c68. Structured student error categories preserve Desktop behavior while mapping 400/404/409/500 and repeated eligibility 200. Full Release build is clean; 76 backend tests pass without skips; 35 real HTTP calls with fresh PostgreSQL before/after state pass, including identity/history/contact/no-op/restart and safe database 500/recovery. See [Session 2 evidence](session2-evidence.md) and [current OpenAPI](openapi-current.json). T02 remains partial until issue/return endpoints exist. Next: Session 3 equipment endpoints API-01/07-09.
+
+## Session 3 - delivered
+
+Equipment API-01/07-09 implemented in c1b69d9. Catalog/available filter, detail, create/Location and complete descriptive edit/null clearing preserve protected state. Structured equipment failure categories share HTTP mapping with students. Clean full solution Release build, 76 passing backend tests, 35 equipment and 35 student regression HTTP requests with fresh state. T03 passed; T01/T02/T07/T08 remain incomplete. See [Session 3 evidence](session3-evidence.md). Next: Session 4 single borrowing, detail and return API-10/12/13.

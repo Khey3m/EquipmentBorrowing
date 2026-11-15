@@ -64,6 +64,19 @@ with tempfile.TemporaryFile() as log:
             assert update_schema.get("additionalProperties") is False
             create = document["paths"]["/api/v1/students"]["post"]["responses"]
             assert {"201", "400", "409", "500"} <= create.keys()
+        if "/api/v1/equipment" in document["paths"]:
+            paths = document["paths"]
+            assert {"get", "post"} <= paths["/api/v1/equipment"].keys()
+            assert {"get", "put"} <= paths["/api/v1/equipment/{id}"].keys()
+            available = next(p for p in paths["/api/v1/equipment"]["get"]["parameters"] if p["name"] == "available")
+            assert available["in"] == "query"
+            schema = document["components"]["schemas"]["EquipmentUpdateInput"]
+            assert {"equipmentCode", "name", "description"} <= set(schema["required"])
+            assert schema.get("additionalProperties") is False
+            assert "isAvailable" not in schema["properties"]
+            create = paths["/api/v1/equipment"]["post"]["responses"]
+            assert {"201", "400", "409", "500"} <= create.keys()
+            assert any(p["name"] == "search" for p in paths["/api/v1/students"]["get"]["parameters"])
         if args.openapi_output:
             args.openapi_output.parent.mkdir(parents=True, exist_ok=True)
             args.openapi_output.write_text(json.dumps(document, indent=2) + "\n")

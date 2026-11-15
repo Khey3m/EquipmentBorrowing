@@ -1,4 +1,4 @@
-"""Real HTTP/student verification in a new disposable PostgreSQL database.
+"""Real HTTP student/equipment verification in a new disposable PostgreSQL database.
 Requires private PGHOST/PGPORT/PGUSER/PGPASSWORD and LAB5_STUDENT_VERIFY_CONNECTION.
 The connection setting must already point to the new database name passed in --database.
 """
@@ -16,6 +16,7 @@ import urllib.error
 import urllib.request
 
 parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--resource", choices=["students", "equipment"], default="students")
 parser.add_argument("--database", required=True)
 parser.add_argument("--output", type=Path, required=True)
 args = parser.parse_args()
@@ -109,62 +110,111 @@ def call(method,path,expected,body=None,raw=None,check_state=True):
 
 try:
     start()
-    students,_=call('GET','/api/v1/students',200)
-    assert len(students)==4
-    ids={s['studentNumber']:s['id'] for s in students};ada=ids['ST-100']
-    found,_=call('GET','/api/v1/students?search=%20aDa%20',200);assert [x['id'] for x in found]==[ada]
-    empty,_=call('GET','/api/v1/students?search=NO-SUCH-STUDENT',200);assert empty==[]
-    call('GET','/api/v1/students?search=x&search=y',400)
-    call('GET','/api/v1/students?unknown=true',400)
-    call('GET',f'/api/v1/students/{ada}',200)
-    call('GET','/api/v1/students/2147483647',404)
-    call('GET','/api/v1/students/not-an-id',400)
-    created,headers=call('POST','/api/v1/students',201,{'studentNumber':'ST-500','fullName':'Eli Tan','contact':None})
-    new_id=created['id'];assert created['isEligible'] is True
-    assert headers['Location']==f'/api/v1/students/{new_id}'
-    call('GET',headers['Location'],200)
-    call('PUT',headers['Location'],200,{'studentNumber':'ST-500-A','fullName':'Eli M. Tan','contact':'eli@example.edu'})
-    updated,_=call('PUT',headers['Location'],200,{'studentNumber':'ST-500-A','fullName':'Eli M. Tan','contact':None})
-    assert updated['id']==new_id and updated['contact'] is None
-    for body in [{'studentNumber':'ST-X','fullName':' '},{'studentNumber':' ','fullName':'Test'},
-                 {'fullName':'Missing number'},{'studentNumber':'ST-X','fullName':99},
-                 {'studentNumber':'ST-X','fullName':'Protected','isEligible':False}]:
-        call('POST','/api/v1/students',400,body)
-    call('POST','/api/v1/students',400,raw='{broken')
-    call('POST','/api/v1/students',409,{'studentNumber':' st-100 ','fullName':'Duplicate'})
-    call('PUT',headers['Location'],409,{'studentNumber':' st-100 ','fullName':'Duplicate','contact':None})
-    call('PUT',headers['Location'],400,{'studentNumber':'ST-500-A','fullName':'Missing complete contact'})
-    call('PUT','/api/v1/students/2147483647',404,{'studentNumber':'ST-X','fullName':'Missing','contact':None})
-    loans_before=snapshot()['borrowings']
-    changed,_=call('PUT',f'/api/v1/students/{ada}',200,{'studentNumber':'ST-100','fullName':'Ada M. Cruz','contact':None})
-    assert changed['id']==ada and snapshot()['borrowings']==loans_before
-    for eligible in [False,False,True,True]:
-        before=snapshot()
-        changed,_=call('PATCH',f'/api/v1/students/{ada}/eligibility',200,{'isEligible':eligible})
-        assert changed['isEligible']==eligible and snapshot()['borrowings']==loans_before
-        if before['students'][0]['IsEligibleToBorrow']==eligible:assert before==snapshot()
-    for body in [{},{'isEligible':None},{'isEligible':'false'},{'isEligible':True,'id':ada}]:
-        call('PATCH',f'/api/v1/students/{ada}/eligibility',400,body)
-    call('PATCH','/api/v1/students/2147483647/eligibility',404,{'isEligible':False})
+    if args.resource == "students":
+        students,_=call('GET','/api/v1/students',200)
+        assert len(students)==4
+        ids={s['studentNumber']:s['id'] for s in students};ada=ids['ST-100']
+        found,_=call('GET','/api/v1/students?search=%20aDa%20',200);assert [x['id'] for x in found]==[ada]
+        empty,_=call('GET','/api/v1/students?search=NO-SUCH-STUDENT',200);assert empty==[]
+        call('GET','/api/v1/students?search=x&search=y',400)
+        call('GET','/api/v1/students?unknown=true',400)
+        call('GET',f'/api/v1/students/{ada}',200)
+        call('GET','/api/v1/students/2147483647',404)
+        call('GET','/api/v1/students/not-an-id',400)
+        created,headers=call('POST','/api/v1/students',201,{'studentNumber':'ST-500','fullName':'Eli Tan','contact':None})
+        new_id=created['id'];assert created['isEligible'] is True
+        assert headers['Location']==f'/api/v1/students/{new_id}'
+        call('GET',headers['Location'],200)
+        call('PUT',headers['Location'],200,{'studentNumber':'ST-500-A','fullName':'Eli M. Tan','contact':'eli@example.edu'})
+        updated,_=call('PUT',headers['Location'],200,{'studentNumber':'ST-500-A','fullName':'Eli M. Tan','contact':None})
+        assert updated['id']==new_id and updated['contact'] is None
+        for body in [{'studentNumber':'ST-X','fullName':' '},{'studentNumber':' ','fullName':'Test'},
+                     {'fullName':'Missing number'},{'studentNumber':'ST-X','fullName':99},
+                     {'studentNumber':'ST-X','fullName':'Protected','isEligible':False}]:
+            call('POST','/api/v1/students',400,body)
+        call('POST','/api/v1/students',400,raw='{broken')
+        call('POST','/api/v1/students',409,{'studentNumber':' st-100 ','fullName':'Duplicate'})
+        call('PUT',headers['Location'],409,{'studentNumber':' st-100 ','fullName':'Duplicate','contact':None})
+        call('PUT',headers['Location'],400,{'studentNumber':'ST-500-A','fullName':'Missing complete contact'})
+        call('PUT','/api/v1/students/2147483647',404,{'studentNumber':'ST-X','fullName':'Missing','contact':None})
+        loans_before=snapshot()['borrowings']
+        changed,_=call('PUT',f'/api/v1/students/{ada}',200,{'studentNumber':'ST-100','fullName':'Ada M. Cruz','contact':None})
+        assert changed['id']==ada and snapshot()['borrowings']==loans_before
+        for eligible in [False,False,True,True]:
+            before=snapshot()
+            changed,_=call('PATCH',f'/api/v1/students/{ada}/eligibility',200,{'isEligible':eligible})
+            assert changed['isEligible']==eligible and snapshot()['borrowings']==loans_before
+            if before['students'][0]['IsEligibleToBorrow']==eligible:assert before==snapshot()
+        for body in [{},{'isEligible':None},{'isEligible':'false'},{'isEligible':True,'id':ada}]:
+            call('PATCH',f'/api/v1/students/{ada}/eligibility',400,body)
+        call('PATCH','/api/v1/students/2147483647/eligibility',404,{'isEligible':False})
+    else:
+        items,_=call('GET','/api/v1/equipment',200)
+        assert len(items)==7
+        ids={item['equipmentCode']:item['id'] for item in items};camera=ids['EQ-001']
+        available,_=call('GET','/api/v1/equipment?available=true',200)
+        assert {item['equipmentCode'] for item in available}=={'EQ-002','EQ-003','EQ-006','EQ-007'}
+        all_items,_=call('GET','/api/v1/equipment?available=false',200);assert all_items==items
+        for path in ['?available=garbage','?available=','?available=true&available=false','?unknown=true']:
+            call('GET','/api/v1/equipment'+path,400)
+        call('GET',f'/api/v1/equipment/{camera}',200)
+        call('GET','/api/v1/equipment/2147483647',404)
+        call('GET','/api/v1/equipment/not-an-id',400)
+        created,headers=call('POST','/api/v1/equipment',201,{'equipmentCode':'EQ-008','name':'Monitor','description':None})
+        new_id=created['id'];assert created['isAvailable'] is True
+        assert headers['Location']==f'/api/v1/equipment/{new_id}'
+        call('GET',headers['Location'],200)
+        call('PUT',headers['Location'],200,{'equipmentCode':'EQ-008-A','name':'Portable Monitor','description':'USB-C display'})
+        updated,_=call('PUT',headers['Location'],200,{'equipmentCode':'EQ-008-A','name':'Portable Monitor','description':None})
+        assert updated['id']==new_id and updated['description'] is None and updated['isAvailable'] is True
+        for body in [{'equipmentCode':'EQ-X','name':' '},{'equipmentCode':' ','name':'Test'},
+                     {'name':'Missing code'},{'equipmentCode':'EQ-X','name':99},
+                     {'equipmentCode':'EQ-X','name':'Protected','isAvailable':False}]:
+            call('POST','/api/v1/equipment',400,body)
+        omitted,_=call('POST','/api/v1/equipment',201,{'equipmentCode':'EQ-009','name':'Cable'})
+        assert omitted['description'] is None and omitted['isAvailable'] is True
+        call('POST','/api/v1/equipment',400,raw='{broken')
+        call('POST','/api/v1/equipment',409,{'equipmentCode':' eq-001 ','name':'Duplicate'})
+        call('PUT',headers['Location'],409,{'equipmentCode':' eq-001 ','name':'Duplicate','description':None})
+        call('PUT',headers['Location'],400,{'equipmentCode':'EQ-008-A','name':'Missing complete description'})
+        call('PUT',headers['Location'],400,{'equipmentCode':'EQ-008-A','name':' ','description':None})
+        call('PUT','/api/v1/equipment/2147483647',404,{'equipmentCode':'EQ-X','name':'Missing','description':None})
+        loans_before=snapshot()['borrowings']
+        for key,value in [('isAvailable',True),('id',camera),('status','Returned'),('unexpected','value')]:
+            protected={'equipmentCode':'EQ-001','name':'Camera','description':None,key:value}
+            call('PUT',f'/api/v1/equipment/{camera}',400,protected)
+        changed,_=call('PUT',f'/api/v1/equipment/{camera}',200,
+                       {'equipmentCode':'EQ-001-A','name':'Camera Kit','description':None})
+        assert changed['id']==camera and changed['isAvailable'] is False
+        assert snapshot()['borrowings']==loans_before
+        # Empty available results use explicit temporary query-fixture state in this disposable DB only.
+        previous=snapshot()
+        sql('UPDATE "Equipment" SET "IsAvailable"=false;')
+        empty,_=call('GET','/api/v1/equipment?available=true',200);assert empty==[]
+        for item in previous['equipment']:
+            value='true' if item['IsAvailable'] else 'false'
+            sql(f'UPDATE "Equipment" SET "IsAvailable"={value} WHERE "Id"={item["Id"]};')
+        assert snapshot()==previous
     saved=snapshot();stop();start()
     reopened,_=call('GET',headers['Location'],200)
     assert reopened==updated and snapshot()==saved
     # Block only this newly created verification database. Admin remains connected to postgres.
     sql(f'ALTER DATABASE "{args.database}" WITH ALLOW_CONNECTIONS false;', 'postgres')
     sql(f"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='{args.database}';",'postgres')
-    try:call('GET','/api/v1/students',500,check_state=False)
+    try:call('GET','/api/v1/'+args.resource,500,check_state=False)
     finally:sql(f'ALTER DATABASE "{args.database}" WITH ALLOW_CONNECTIONS true;','postgres')
-    call('GET','/api/v1/students',200)
+    call('GET','/api/v1/'+args.resource,200)
     assert snapshot()==saved
     status,doc_headers,document=None,None,None
     with urllib.request.urlopen(base+'/openapi/v1.json') as response:document=json.load(response)
     operations={value.get('operationId') for path in document['paths'].values() for value in path.values() if isinstance(value,dict)}
-    assert {'API-02','API-03','API-04','API-05','API-06'}<=operations
+    required={'API-02','API-03','API-04','API-05','API-06'} if args.resource=='students' else {'API-01','API-07','API-08','API-09'}
+    assert required<=operations
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps({'database':args.database,'campus_date':str(today),'date_policy':'reference offsets from actual Asia/Manila date',
        'dataset':'S1-S4/E1-E7 with supplied history relationships; reset once for student subset',
-       'scope':'T02 partial; borrowing/return paths pending','checks':trace,'restart_preserved':True,'openapi_student_operations':sorted(operations)},indent=2)+'\n')
-    print(f'PASS: {len(trace)} HTTP requests; independent before/after reads; identity/history/no-op/restart/server failure recovery verified.')
+       'scope':'T02 partial; borrowing/return paths pending' if args.resource=='students' else 'T03 equipment execution','checks':trace,'restart_preserved':True,'openapi_student_operations':sorted(operations)},indent=2)+'\n')
+    print(f'PASS: {len(trace)} HTTP requests; independent before/after reads; identity/history/protected-state/restart/server failure recovery verified.')
     print('Evidence: '+str(args.output))
 finally:
     stop();log.close()
