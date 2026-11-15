@@ -88,6 +88,18 @@ with tempfile.TemporaryFile() as log:
             assert not schemas["ReturnInput"].get("properties", {})
             assert set(schemas["BorrowingState"]["enum"]) == {"Active", "Returned"}
             assert {"201", "400", "404", "409", "500"} <= paths["/api/v1/borrowings"]["post"]["responses"].keys()
+        if "/api/v1/checkout-requests" in document["paths"]:
+            paths = document["paths"]
+            operations = {op.get("operationId") for path in paths.values() for op in path.values() if isinstance(op, dict)}
+            assert {f"API-{i:02}" for i in range(1,17)} <= operations
+            parameters = {p["name"]:p for p in paths["/api/v1/borrowings"]["get"]["parameters"]}
+            for name, default, values in [("status","All",{"All","Active","Returned"}),
+                ("sort","borrowedDate",{"borrowedDate","expectedReturnDate"}), ("direction","asc",{"asc","desc"})]:
+                assert parameters[name]["schema"]["default"] == default
+                assert set(parameters[name]["schema"]["enum"]) == values
+            assert {"studentId", "equipmentIds", "expectedReturnDate"} <= set(document["components"]["schemas"]["CheckoutInput"]["required"])
+            for path in ["/api/v1/students", "/api/v1/equipment", "/api/v1/borrowings"]:
+                assert "Location" in paths[path]["post"]["responses"]["201"]["headers"]
         if args.openapi_output:
             args.openapi_output.parent.mkdir(parents=True, exist_ok=True)
             args.openapi_output.write_text(json.dumps(document, indent=2) + "\n")

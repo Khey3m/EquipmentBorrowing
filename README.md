@@ -140,16 +140,18 @@ Earlier laboratory reflections and incremental status notes remain in [the archi
 
 ## Lab 5 in progress
 
-Lab 4 reproduction above remains valid for its direct-database Desktop. On branch lab5/api-integration, Sessions 1-4 add an independent ASP.NET Core host, transport contracts, student/equipment endpoints and single borrowing/return: API-01-10/12-13. Desktop HTTP migration and API-11/14/15/16 are pending.
+Lab 4 reproduction above remains valid for its direct-database Desktop. On branch lab5/api-integration, Sessions 1-5 add an independent ASP.NET Core host and all sixteen API operations. Desktop HTTP migration and full T07/T08 acceptance remain pending.
 
 ```powershell
 dotnet run --project src/EquipmentBorrowing.Api --configuration Release
 ```
 
-Host status: http://127.0.0.1:5085/api/v1/status. Generated OpenAPI: http://127.0.0.1:5085/openapi/v1.json (currently twelve business operations plus operational status). Override the address with --urls. This foundation does not connect, migrate or seed on startup. See [Lab 5 plan](docs/lab5/session-plan.md), [endpoint target](docs/lab5/endpoint-contract.md), [session evidence](docs/lab5/session1-evidence.md), and [acceptance execution](docs/lab5/test-execution.md).
+Host status: http://127.0.0.1:5085/api/v1/status. Generated OpenAPI: http://127.0.0.1:5085/openapi/v1.json (all sixteen business operations plus operational status). Override the address with --urls. This foundation does not connect, migrate or seed on startup. See [Lab 5 plan](docs/lab5/session-plan.md), [endpoint target](docs/lab5/endpoint-contract.md), [session evidence](docs/lab5/session1-evidence.md), and [acceptance execution](docs/lab5/test-execution.md).
 
 Student endpoint verification and limits: [Session 2 evidence](docs/lab5/session2-evidence.md). Current generated contract snapshot: [OpenAPI](docs/lab5/openapi-current.json). Session 4 completes those T02 issue/return branches; historical Session 2 evidence remains partial.
 
 Equipment endpoint verification: [Session 3 evidence](docs/lab5/session3-evidence.md). T03 passed its real HTTP/fresh-state/restart execution; other acceptance cases retain their documented incomplete status.
 
 Single borrowing/return and completed student acceptance: [Session 4 evidence](docs/lab5/session4-evidence.md). T02/T03/T04 have passing recorded executions; remaining cases retain their documented status.
+
+Complete API/query/atomicity evidence: [Session 5](docs/lab5/session5-evidence.md). API traceability: [matrix](docs/lab5/traceability.md). T01-T06 have passing executions; existing headless Desktop passes do not constitute T07 HTTP migration acceptance.

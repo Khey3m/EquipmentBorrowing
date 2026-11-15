@@ -1,6 +1,6 @@
-# Required endpoint contract - twelve operations implemented
+# Required endpoint contract - all sixteen operations implemented
 
-Source: supplied API and Acceptance Reference Section 2. Prefix /api/v1; UTF-8 JSON. This catalog describes the complete target. Sessions 2-4 implement API-01-10 and API-12-13; API-11/14/15/16 remain pending. Generated OpenAPI at /openapi/v1.json and openapi-current.json describe the implemented routes, including operational status, equipment and single borrowing/return. No placeholder business routes pretend to return successful data.
+Source: supplied API and Acceptance Reference Section 2. Prefix /api/v1; UTF-8 JSON. This catalog describes the complete target. Sessions 2-5 implement all API-01-16. Desktop migration and full T07/T08 evidence remain pending. Generated OpenAPI at /openapi/v1.json and openapi-current.json describe the implemented routes, including operational status, management, single/multi borrowing, queries and histories. No placeholder business routes pretend to return successful data.
 
 | API | Method | Relative route | Request/query | Success and expected rejection |
 |---|---|---|---|---|
@@ -29,4 +29,4 @@ Creates omit optional contact/description or send null; updates send complete ed
 
 Borrowing defaults: status All, sort borrowedDate, direction asc. Search is trimmed case-insensitive partial matching over student name/number and equipment name; filters combine, ascending borrowing ID breaks ties in either date direction. Multi-checkout duplicate/fewer-than-two IDs and invalid dates -> 400; missing references -> 404; business conflicts -> 409. Fresh database reads establish atomicity, not response status alone.
 
-Result mapping gate: Lab 4 OperationOutcome.Rejected and Conflict do not yet distinguish every HTTP category. Sessions 2-4 added structured application failure categories for management and single borrowing/return endpoints; multi-checkout will adopt them in Session 5; do not parse message text or incorrectly equate every conflict with 409. Preserve Unknown and never automatically replay uncertain writes.
+Result mapping gate: Lab 4 OperationOutcome.Rejected and Conflict do not yet distinguish every HTTP category. Sessions 2-5 added structured application failure categories for management, borrowing, multi-checkout and missing history subjects; do not parse message text or incorrectly equate every conflict with 409. Preserve Unknown and never automatically replay uncertain writes.

@@ -16,7 +16,7 @@ import urllib.error
 import urllib.request
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--resource", choices=["students", "equipment", "borrowings"], default="students")
+parser.add_argument("--resource", choices=["students", "equipment", "borrowings", "reads", "checkout"], default="students")
 parser.add_argument("--database", required=True)
 parser.add_argument("--output", type=Path, required=True)
 args = parser.parse_args()
@@ -53,20 +53,24 @@ migrate = subprocess.run(["dotnet", "ef", "database", "update", "--project", "sr
     cwd=root, env=env, capture_output=True, text=True)
 if migrate.returncode:
     raise RuntimeError("Verification migration failed; private output omitted.")
-sql("""INSERT INTO "Students" ("StudentNumber","FullName","IsEligibleToBorrow") VALUES
- ('ST-100','Ada Cruz',true),('ST-200','Ben Diaz',false),('ST-300','Cara Lim',true),('ST-400','Dani Ong',true);
- INSERT INTO "Equipment" ("EquipmentIdentifier","Name","IsAvailable") VALUES
- ('EQ-001','Camera',false),('EQ-002','Laptop',true),('EQ-003','Projector',true),
- ('EQ-004','Tablet',false),('EQ-005','Microphone',false),('EQ-006','Tripod',true),('EQ-007','Speaker',true);""")
 today = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).date()
-for student, item, offset, due, returned in [('ST-100','EQ-001',-9,-1,None),('ST-100','EQ-003',-8,2,-2),
-                                           ('ST-300','EQ-004',-7,2,None),('ST-300','EQ-005',-7,2,None)]:
-    start, expected = today+datetime.timedelta(days=offset), today+datetime.timedelta(days=due)
-    actual = 'NULL' if returned is None else "'"+str(today+datetime.timedelta(days=returned))+"'"
-    status = 'Active' if returned is None else 'Returned'
-    sql(f"""INSERT INTO "Borrowings" ("StudentId","EquipmentId","BorrowedAt","ExpectedReturnAt","ActualReturnAt","Status")
-      SELECT s."Id",e."Id",'{start}','{expected}',{actual},'{status}' FROM "Students" s,"Equipment" e
-      WHERE s."StudentNumber"='{student}' AND e."EquipmentIdentifier"='{item}';""")
+def reset_dataset():
+    sql('TRUNCATE "Borrowings", "Equipment", "Students" RESTART IDENTITY CASCADE;')
+    sql("""INSERT INTO "Students" ("StudentNumber","FullName","IsEligibleToBorrow") VALUES
+     ('ST-100','Ada Cruz',true),('ST-200','Ben Diaz',false),('ST-300','Cara Lim',true),('ST-400','Dani Ong',true);
+     INSERT INTO "Equipment" ("EquipmentIdentifier","Name","IsAvailable") VALUES
+     ('EQ-001','Camera',false),('EQ-002','Laptop',true),('EQ-003','Projector',true),
+     ('EQ-004','Tablet',false),('EQ-005','Microphone',false),('EQ-006','Tripod',true),('EQ-007','Speaker',true);""")
+    for student, item, offset, due, returned in [('ST-100','EQ-001',-9,-1,None),('ST-100','EQ-003',-8,2,-2),
+                                               ('ST-300','EQ-004',-7,2,None),('ST-300','EQ-005',-7,2,None)]:
+        start, expected = today+datetime.timedelta(days=offset), today+datetime.timedelta(days=due)
+        actual = 'NULL' if returned is None else "'"+str(today+datetime.timedelta(days=returned))+"'"
+        status = 'Active' if returned is None else 'Returned'
+        sql(f"""INSERT INTO "Borrowings" ("StudentId","EquipmentId","BorrowedAt","ExpectedReturnAt","ActualReturnAt","Status")
+          SELECT s."Id",e."Id",'{start}','{expected}',{actual},'{status}' FROM "Students" s,"Equipment" e
+          WHERE s."StudentNumber"='{student}' AND e."EquipmentIdentifier"='{item}';""")
+
+reset_dataset()
 with socket.socket() as sock:
     sock.bind(("127.0.0.1",0));port=sock.getsockname()[1]
 base=f"http://127.0.0.1:{port}"
@@ -211,7 +215,7 @@ try:
             value='true' if item['IsAvailable'] else 'false'
             sql(f'UPDATE "Equipment" SET "IsAvailable"={value} WHERE "Id"={item["Id"]};')
         assert snapshot()==previous
-    else:
+    elif args.resource == "borrowings":
         students,_=call('GET','/api/v1/students',200)
         items,_=call('GET','/api/v1/equipment',200)
         student_ids={s['studentNumber']:s['id'] for s in students}
@@ -250,13 +254,132 @@ try:
         assert next(item for item in snapshot()['equipment'] if item['Id']==valid['equipmentId'])['IsAvailable'] is True
         stored,_=call('GET',headers['Location'],200);assert stored==updated
         call('POST',headers['Location']+'/return',409,{})
+    elif args.resource == "reads":
+        # T01: independent reads and complete contract discovery; no Desktop required.
+        students,_=call('GET','/api/v1/students',200)
+        equipment,_=call('GET','/api/v1/equipment',200)
+        sid={row['studentNumber']:row['id'] for row in students}
+        eid={row['equipmentCode']:row['id'] for row in equipment}
+        available,_=call('GET','/api/v1/equipment?available=true',200)
+        assert {row['equipmentCode'] for row in available}=={'EQ-002','EQ-003','EQ-006','EQ-007'}
+        call('GET',f'/api/v1/students/{sid["ST-100"]}',200)
+        call('GET',f'/api/v1/equipment/{eid["EQ-001"]}',200)
+        all_rows,_=call('GET','/api/v1/borrowings',200);assert len(all_rows)==4
+        known=all_rows[0]['id'];call('GET',f'/api/v1/borrowings/{known}',200)
+        for path in [f'/api/v1/students/{sid["ST-100"]}/borrowings',f'/api/v1/equipment/{eid["EQ-001"]}/borrowings']:
+            rows,_=call('GET',path,200);assert rows
+        active,_=call('GET','/api/v1/borrowings?status=Active',200);assert len(active)==3
+        for path in ['/api/v1/students/2147483647','/api/v1/equipment/2147483647','/api/v1/borrowings/2147483647',
+                     '/api/v1/students/2147483647/borrowings','/api/v1/equipment/2147483647/borrowings','/api/v1/wrong-route']:
+            call('GET',path,404)
+        call('DELETE','/api/v1/equipment',405)
+        for path in [f'/api/v1/students/{sid["ST-400"]}/borrowings',f'/api/v1/equipment/{eid["EQ-002"]}/borrowings']:
+            rows,_=call('GET',path,200);assert rows==[]
+        # T06 gets the initial dataset again, independently of T01.
+        reset_dataset()
+        students,_=call('GET','/api/v1/students',200)
+        equipment,_=call('GET','/api/v1/equipment',200)
+        sid={row['studentNumber']:row['id'] for row in students}
+        eid={row['equipmentCode']:row['id'] for row in equipment}
+        baseline=snapshot()
+        smap={row['Id']:row for row in baseline['students']};emap={row['Id']:row for row in baseline['equipment']}
+        expected=[]
+        for loan in baseline['borrowings']:
+            stu=smap[loan['StudentId']];item=emap[loan['EquipmentId']]
+            expected.append({'id':loan['Id'],'studentId':stu['Id'],'equipmentId':item['Id'],'borrowedDate':loan['BorrowedAt'],
+                'expectedReturnDate':loan['ExpectedReturnAt'],'returnedDate':loan['ActualReturnAt'],'status':loan['Status'],
+                'studentNumber':stu['StudentNumber'],'studentName':stu['FullName'],'equipmentCode':item['EquipmentIdentifier'],'equipmentName':item['Name']})
+        def sorted_rows(rows,field='borrowedDate',descending=False):
+            return sorted(sorted(rows,key=lambda r:r['id']),key=lambda r:r[field],reverse=descending)
+        for path,field,identity in [(f'/api/v1/students/{sid["ST-100"]}/borrowings','studentId',sid['ST-100']),
+                                    (f'/api/v1/students/{sid["ST-400"]}/borrowings','studentId',sid['ST-400']),
+                                    (f'/api/v1/equipment/{eid["EQ-001"]}/borrowings','equipmentId',eid['EQ-001']),
+                                    (f'/api/v1/equipment/{eid["EQ-003"]}/borrowings','equipmentId',eid['EQ-003'])]:
+            rows,_=call('GET',path,200)
+            assert sorted(rows,key=lambda r:r['id'])==sorted([row for row in expected if row[field]==identity],key=lambda r:r['id'])
+        for path in ['/api/v1/students/2147483647/borrowings','/api/v1/equipment/2147483647/borrowings']:
+            call('GET',path,404)
+        from urllib.parse import urlencode
+        for search in [' aDA ','st-1','cAM','NON-EXISTENT-999','%','_','\\']:
+            rows,_=call('GET','/api/v1/borrowings?'+urlencode({'search':search}),200)
+            text=search.strip().lower()
+            matching=[row for row in expected if any(text in row[field].lower() for field in ['studentName','studentNumber','equipmentName'])]
+            assert rows==sorted_rows(matching)
+        for status in ['All','Active','Returned']:
+            for field in ['borrowedDate','expectedReturnDate']:
+                for direction in ['asc','desc']:
+                    rows,_=call('GET','/api/v1/borrowings?'+urlencode({'status':status,'sort':field,'direction':direction}),200)
+                    matching=[row for row in expected if status=='All' or row['status']==status]
+                    assert rows==sorted_rows(matching,field,direction=='desc')
+        combined,_=call('GET','/api/v1/borrowings?search=cru&status=Active&sort=expectedReturnDate&direction=desc',200)
+        assert combined==sorted_rows([row for row in expected if row['status']=='Active' and 'cru' in row['studentName'].lower()],'expectedReturnDate',True)
+        restored,_=call('GET','/api/v1/borrowings',200);assert restored==sorted_rows(expected)
+        for query in ['status=bad','sort=bad','direction=bad','status=','status=Active&status=All','other=value']:
+            call('GET','/api/v1/borrowings?'+query,400)
+        assert snapshot()==baseline
+        headers={'Location':'/api/v1/borrowings'};updated=restored
+    else:
+        # T05: reset before each prescribed success/limit/rejection/fault subcase.
+        def checkout_fixture():
+            reset_dataset()
+            students,_=call('GET','/api/v1/students',200)
+            items,_=call('GET','/api/v1/equipment',200)
+            return {s['studentNumber']:s['id'] for s in students},{item['equipmentCode']:item['id'] for item in items}
+        due=str(today+datetime.timedelta(days=2))
+        sid,eid=checkout_fixture()
+        request={'studentId':sid['ST-400'],'equipmentIds':[eid['EQ-002'],eid['EQ-006']],'expectedReturnDate':due}
+        result,_=call('POST','/api/v1/checkout-requests',201,request)
+        assert len(result['borrowings'])==2
+        assert {row['equipmentId'] for row in result['borrowings']}==set(request['equipmentIds'])
+        assert all(row['studentId']==sid['ST-400'] and row['status']=='Active' and row['borrowedDate']==str(today) and row['expectedReturnDate']==due for row in result['borrowings'])
+        state=snapshot();assert len(state['borrowings'])==6
+        assert all(not item['IsAvailable'] for item in state['equipment'] if item['Id'] in request['equipmentIds'])
+        for row in result['borrowings']:call('GET',f'/api/v1/borrowings/{row["id"]}',200)
+        sid,eid=checkout_fixture()
+        call('POST','/api/v1/borrowings',201,{'studentId':sid['ST-300'],'equipmentId':eid['EQ-002'],'expectedReturnDate':due})
+        assert sum(row['StudentId']==sid['ST-300'] and row['Status']=='Active' for row in snapshot()['borrowings'])==3
+        sid,eid=checkout_fixture()
+        call('POST','/api/v1/checkout-requests',201,{'studentId':sid['ST-100'],'equipmentIds':[eid['EQ-002'],eid['EQ-006']],'expectedReturnDate':due})
+        assert sum(row['StudentId']==sid['ST-100'] and row['Status']=='Active' for row in snapshot()['borrowings'])==3
+        sid,eid=checkout_fixture()
+        call('POST','/api/v1/checkout-requests',409,{'studentId':sid['ST-300'],'equipmentIds':[eid['EQ-002'],eid['EQ-006']],'expectedReturnDate':due})
+        for case in ['duplicates','one','empty','unavailable','restricted','missing-student','missing-item','date','invalid-id','null-items','missing-date','protected']:
+            sid,eid=checkout_fixture()
+            body={'studentId':sid['ST-400'],'equipmentIds':[eid['EQ-002'],eid['EQ-006']],'expectedReturnDate':due}
+            expected_status=400
+            if case=='duplicates':body['equipmentIds']=[eid['EQ-002'],eid['EQ-002']]
+            if case=='one':body['equipmentIds']=[eid['EQ-002']]
+            if case=='empty':body['equipmentIds']=[]
+            if case=='unavailable':body['equipmentIds']=[eid['EQ-001'],eid['EQ-002']];expected_status=409
+            if case=='restricted':body['studentId']=sid['ST-200'];expected_status=409
+            if case=='missing-student':body['studentId']=2147483647;expected_status=404
+            if case=='missing-item':body['equipmentIds']=[eid['EQ-002'],2147483647];expected_status=404
+            if case=='date':body['expectedReturnDate']=str(today)
+            if case=='invalid-id':body['equipmentIds']=[0,eid['EQ-002']]
+            if case=='null-items':body['equipmentIds']=None
+            if case=='missing-date':del body['expectedReturnDate']
+            if case=='protected':body['status']='Returned'
+            call('POST','/api/v1/checkout-requests',expected_status,body)
+        sid,eid=checkout_fixture()
+        # PostgreSQL AFTER INSERT fires only once row insertion has been attempted, following the persisted equipment UPDATE.
+        sql("""CREATE FUNCTION lab5_fail_after_insert() RETURNS trigger LANGUAGE plpgsql AS $$
+          BEGIN RAISE EXCEPTION 'Controlled verification failure after borrowing INSERT'; END $$;
+          CREATE TRIGGER lab5_after_insert_fault AFTER INSERT ON "Borrowings"
+          FOR EACH ROW EXECUTE FUNCTION lab5_fail_after_insert();""")
+        fault_definition=sql("SELECT pg_get_triggerdef(oid) FROM pg_trigger WHERE tgname='lab5_after_insert_fault';")
+        try:
+            call('POST','/api/v1/checkout-requests',500,{'studentId':sid['ST-400'],'equipmentIds':[eid['EQ-002'],eid['EQ-006']],'expectedReturnDate':due})
+        finally:
+            sql('DROP TRIGGER lab5_after_insert_fault ON "Borrowings"; DROP FUNCTION lab5_fail_after_insert();')
+        rows,_=call('GET','/api/v1/borrowings',200);assert len(rows)==4
+        headers={'Location':'/api/v1/borrowings'};updated=rows
     saved=snapshot();stop();start()
     reopened,_=call('GET',headers['Location'],200)
     assert reopened==updated and snapshot()==saved
     # Block only this newly created verification database. Admin remains connected to postgres.
     sql(f'ALTER DATABASE "{args.database}" WITH ALLOW_CONNECTIONS false;', 'postgres')
     sql(f"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='{args.database}';",'postgres')
-    probe_path=headers['Location'] if args.resource=='borrowings' else '/api/v1/'+args.resource
+    probe_path=headers['Location'] if args.resource in ['borrowings','reads','checkout'] else '/api/v1/'+args.resource
     try:call('GET',probe_path,500,check_state=False)
     finally:sql(f'ALTER DATABASE "{args.database}" WITH ALLOW_CONNECTIONS true;','postgres')
     call('GET',probe_path,200)
@@ -264,12 +387,12 @@ try:
     status,doc_headers,document=None,None,None
     with urllib.request.urlopen(base+'/openapi/v1.json') as response:document=json.load(response)
     operations={value.get('operationId') for path in document['paths'].values() for value in path.values() if isinstance(value,dict)}
-    required={'students':{'API-02','API-03','API-04','API-05','API-06'}, 'equipment':{'API-01','API-07','API-08','API-09'}, 'borrowings':{'API-10','API-12','API-13'}}[args.resource]
+    required={'students':{'API-02','API-03','API-04','API-05','API-06'}, 'equipment':{'API-01','API-07','API-08','API-09'}, 'borrowings':{'API-10','API-12','API-13'}, 'reads':{f'API-{i:02}' for i in range(1,17)}, 'checkout':{'API-11','API-14','API-15','API-16'}}[args.resource]
     assert required<=operations
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps({'database':args.database,'campus_date':str(today),'date_policy':'reference offsets from actual Asia/Manila date',
-       'dataset':'S1-S4/E1-E7 with supplied history relationships; reset once for this test',
-       'scope':{'students':'T02 complete execution','equipment':'T03 equipment execution','borrowings':'T04 single borrowing/return execution'}[args.resource],'checks':trace,'restart_preserved':True,'openapi_student_operations':sorted(operations)},indent=2)+'\n')
+       'dataset':('S1-S4/E1-E7; reset before every T05 subcase' if args.resource=='checkout' else 'S1-S4/E1-E7; reset before T01 and again before T06' if args.resource=='reads' else 'S1-S4/E1-E7; reset once for this test'),
+       'scope':{'students':'T02 complete execution','equipment':'T03 equipment execution','borrowings':'T04 single borrowing/return execution','reads':'T01/T06 independent reads and query execution','checkout':'T05 atomic checkout and rollback execution'}[args.resource],'fault_definition':fault_definition if args.resource=='checkout' else None,'checks':trace,'restart_preserved':True,'openapi_operations':sorted(operations)},indent=2)+'\n')
     print(f'PASS: {len(trace)} HTTP requests; independent before/after reads; identity/history/protected-state/restart/server failure recovery verified.')
     print('Evidence: '+str(args.output))
 finally:

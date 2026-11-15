@@ -23,3 +23,7 @@ Equipment API-01/07-09 implemented in c1b69d9. Catalog/available filter, detail,
 ## Session 4 - delivered
 
 API-10/12/13 implemented in 8ab98f1, preserving serializable service transactions and adding explicit validation/missing/business-conflict outcomes. Full Release build clean; 76 backend tests pass; 37 T04 borrowing/return and 43 complete T02 student HTTP requests pass with fresh PostgreSQL state and API restart evidence. T02 and T04 are now Pass for these executions. See [Session 4 evidence](session4-evidence.md). Next: Session 5 multi-item checkout and complete query/history API-11/14/15/16.
+
+## Session 5 - delivered
+
+All sixteen endpoints implemented in 387276a. API-11/14/15/16 preserve atomic multi-checkout, combined SQL-backed queries and relational histories. Full Release build clean; 76 backend and four UI tests pass; 57 T01/T06 and 57 reset T05 HTTP requests pass with independent state and controlled after-insert rollback. T01-T06 now have passing executions; T07/full T08 pending. See [Session 5 evidence](session5-evidence.md), [traceability](traceability.md) and [OpenAPI](openapi-current.json). Next: Session 6 asynchronous HTTP client and first Desktop screens.
