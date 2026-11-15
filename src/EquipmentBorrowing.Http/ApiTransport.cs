@@ -21,7 +21,7 @@ public sealed class ApiTransport(HttpClient client)
     }
 
     public async Task<ApiReply<T>> SendAsync<T>(HttpMethod method, string path, object? body = null,
-        int expectedStatus = 200, CancellationToken ct = default)
+        int expectedStatus = 200, CancellationToken ct = default, string? expectedRevision = null)
     {
         if (client.BaseAddress is null)
             return new(false, default, null, OperationOutcome.Failed, WorkflowError.InvalidInput,
@@ -31,6 +31,7 @@ public sealed class ApiTransport(HttpClient client)
         try
         {
             using var request = new HttpRequestMessage(method, path);
+            if (expectedRevision is not null) request.Headers.Add(EntityRevision.Header, expectedRevision);
             if (body is not null) request.Content = JsonContent.Create(body);
             using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
             status = (int)response.StatusCode;

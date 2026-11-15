@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using EquipmentBorrowing.Contracts;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 
@@ -43,6 +44,16 @@ internal static class ApiOpenApi
                 Description = "Relative URL of the created resource's GET endpoint.",
                 Schema = new OpenApiSchema { Type = JsonSchemaType.String, Format = "uri-reference" }
             };
+        }
+        if (operation.OperationId is "API-05" or "API-06" or "API-09")
+        {
+            operation.Parameters ??= [];
+            operation.Parameters.Add(new OpenApiParameter
+            {
+                Name = EntityRevision.Header, In = ParameterLocation.Header, Required = false,
+                Description = "Optional SHA-256 revision of the selected response fields; stale state returns 409. Used by Desktop; editable JSON is unchanged.",
+                Schema = new OpenApiSchema { Type = JsonSchemaType.String }
+            });
         }
         return Task.CompletedTask;
     }

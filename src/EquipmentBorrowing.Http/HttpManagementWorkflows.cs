@@ -34,14 +34,18 @@ public sealed class HttpStudentManagement(ApiTransport api) : IStudentManagement
         var stale = await CheckOriginal(request.StudentId, request.Expected, cancellationToken);
         if (stale is not null) return stale;
         return Map(await api.SendAsync<StudentResponse>(HttpMethod.Put, $"api/v1/students/{request.StudentId}",
-            new StudentUpdateInput(request.StudentNumber, request.FullName, PresentationMapping.Optional(request.ContactInformation)), ct: cancellationToken), "Student details saved.");
+            new StudentUpdateInput(request.StudentNumber, request.FullName, PresentationMapping.Optional(request.ContactInformation)), ct: cancellationToken,
+            expectedRevision: EntityRevision.For(new StudentResponse(request.StudentId, request.Expected.StudentNumber, request.Expected.FullName,
+                request.Expected.ContactInformation, request.Expected.IsEligibleToBorrow))), "Student details saved.");
     }
     public async Task<OperationResult<Student>> SetEligibilityAsync(SetStudentEligibilityRequest request, CancellationToken cancellationToken = default)
     {
         var stale = await CheckOriginal(request.StudentId, request.Expected, cancellationToken);
         if (stale is not null) return stale;
         return Map(await api.SendAsync<StudentResponse>(HttpMethod.Patch, $"api/v1/students/{request.StudentId}/eligibility",
-            new EligibilityInput(request.IsEligible), ct: cancellationToken), "Student eligibility confirmed. Existing loans and history are preserved.");
+            new EligibilityInput(request.IsEligible), ct: cancellationToken,
+            expectedRevision: EntityRevision.For(new StudentResponse(request.StudentId, request.Expected.StudentNumber, request.Expected.FullName,
+                request.Expected.ContactInformation, request.Expected.IsEligibleToBorrow))), "Student eligibility confirmed. Existing loans and history are preserved.");
     }
     private async Task<OperationResult<Student>?> CheckOriginal(int id, StudentSnapshot expected, CancellationToken ct)
     {
@@ -75,7 +79,9 @@ public sealed class HttpEquipmentManagement(ApiTransport api) : IEquipmentManage
         if (EquipmentSnapshot.From(PresentationMapping.Equipment(current.Value!)) != request.Expected)
             return new(OperationOutcome.Conflict, "The equipment changed since selection. Refresh and select again.", Error: WorkflowError.StaleState);
         return Map(await api.SendAsync<EquipmentResponse>(HttpMethod.Put, $"api/v1/equipment/{request.EquipmentId}",
-            new EquipmentUpdateInput(request.EquipmentIdentifier, request.Name, PresentationMapping.Optional(request.Description)), ct: cancellationToken), "Equipment details saved.");
+            new EquipmentUpdateInput(request.EquipmentIdentifier, request.Name, PresentationMapping.Optional(request.Description)), ct: cancellationToken,
+            expectedRevision: EntityRevision.For(new EquipmentResponse(request.EquipmentId, request.Expected.EquipmentIdentifier, request.Expected.Name,
+                request.Expected.Description, request.Expected.IsAvailable))), "Equipment details saved.");
     }
     private static OperationResult<Equipment> Map(ApiReply<EquipmentResponse> reply, string success) => reply.Success
         ? new(OperationOutcome.Succeeded, success, PresentationMapping.Equipment(reply.Value!)) : PresentationMapping.Failure<Equipment, EquipmentResponse>(reply);

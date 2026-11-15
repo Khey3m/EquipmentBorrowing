@@ -38,12 +38,15 @@ public static class EquipmentEndpoints
         }).WithName("API-08").WithSummary("Register equipment initially available")
             .Produces<EquipmentResponse>(201).Produces<ApiError>(400).Produces<ApiError>(409).Produces<ApiError>(500);
 
-        equipment.MapPut("/{id}", async (int id, EquipmentUpdateInput input, IEquipmentRepository repository,
+        equipment.MapPut("/{id}", async (int id, EquipmentUpdateInput input, HttpRequest request, IEquipmentRepository repository,
             EquipmentManagementService service, CancellationToken ct) =>
         {
             if (Invalid(input.EquipmentCode, input.Name)) return InvalidFields();
             var original = await repository.GetByIdAsync(id, ct);
             if (original is null) return Error(404, "not_found", "The equipment was not found.");
+            if (request.Headers.TryGetValue(EntityRevision.Header, out var revision)
+                && (revision.Count != 1 || revision[0] != EntityRevision.For(Response(original))))
+                return Error(409, "conflict", "The equipment changed since selection. Refresh and select again.");
             return MapResult(await service.UpdateAsync(new(id, input.EquipmentCode!, input.Name!, input.Description,
                 EquipmentSnapshot.From(original)), ct));
         }).WithName("API-09").WithSummary("Replace descriptive fields while preserving identity and availability")

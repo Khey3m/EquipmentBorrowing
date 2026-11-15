@@ -27,6 +27,20 @@ try
     await students.PermitCommand.ExecuteAsync(null); Require(students.SelectedStudent?.IsEligibleToBorrow == true);
     using (var response = await independent.PutAsJsonAsync($"api/v1/students/{studentId}", new StudentUpdateInput("ST-HTTP", "Changed outside Desktop", null)))
         Require(response.IsSuccessStatusCode);
+    using (var stale = new HttpRequestMessage(HttpMethod.Put, $"api/v1/students/{studentId}"))
+    {
+        stale.Headers.Add(EntityRevision.Header, EntityRevision.For(new StudentResponse(studentId, "ST-HTTP", "HTTP Edited Student", null, true)));
+        stale.Content = JsonContent.Create(new StudentUpdateInput("ST-HTTP", "Must not overwrite", null));
+        using var rejected = await independent.SendAsync(stale);
+        Require((int)rejected.StatusCode == 409);
+    }
+    using (var staleEligibility = new HttpRequestMessage(HttpMethod.Patch, $"api/v1/students/{studentId}/eligibility"))
+    {
+        staleEligibility.Headers.Add(EntityRevision.Header, EntityRevision.For(new StudentResponse(studentId, "ST-HTTP", "HTTP Edited Student", null, true)));
+        staleEligibility.Content = JsonContent.Create(new EligibilityInput(false));
+        using var rejected = await independent.SendAsync(staleEligibility);
+        Require((int)rejected.StatusCode == 409);
+    }
     await students.RefreshCommand.ExecuteAsync(null);
     students.SelectedStudent = students.Students.Single(s => s.Id == studentId);
     Require(students.FullName == "Changed outside Desktop");
@@ -42,6 +56,13 @@ try
     Require(equipment.SelectedEquipment?.Id == equipmentId && equipment.SelectedEquipment.Description is null);
     using (var response = await independent.PutAsJsonAsync($"api/v1/equipment/{equipmentId}", new EquipmentUpdateInput("EQ-HTTP", "External Display", null)))
         Require(response.IsSuccessStatusCode);
+    using (var staleEquipment = new HttpRequestMessage(HttpMethod.Put, $"api/v1/equipment/{equipmentId}"))
+    {
+        staleEquipment.Headers.Add(EntityRevision.Header, EntityRevision.For(new EquipmentResponse(equipmentId, "EQ-HTTP", "HTTP Edited Display", null, true)));
+        staleEquipment.Content = JsonContent.Create(new EquipmentUpdateInput("EQ-HTTP", "Must not overwrite", null));
+        using var rejected = await independent.SendAsync(staleEquipment);
+        Require((int)rejected.StatusCode == 409);
+    }
     equipment.SearchText = "External";
     await equipment.RefreshCommand.ExecuteAsync(null);
     Require(equipment.Items.Count == 1 && equipment.Items[0].Name == "External Display");
@@ -68,7 +89,8 @@ sealed class TraceHandler(ConcurrentQueue<object> trace, string source) : Delega
         var response = await base.SendAsync(request, ct);
         var content = await response.Content.ReadAsStringAsync(ct);
         trace.Enqueue(new { source, method = request.Method.Method, path = request.RequestUri!.PathAndQuery,
-            request = body, status = (int)response.StatusCode, response = content });
+            request = body, expectedRevision = request.Headers.TryGetValues(EntityRevision.Header, out var revisions) ? revisions.Single() : null,
+            status = (int)response.StatusCode, response = content });
         return response;
     }
 }

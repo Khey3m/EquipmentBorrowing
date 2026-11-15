@@ -36,24 +36,30 @@ public static class StudentEndpoints
         }).WithName("API-04").WithSummary("Register an eligible student")
             .Produces<StudentResponse>(201).Produces<ApiError>(400).Produces<ApiError>(409).Produces<ApiError>(500);
 
-        students.MapPut("/{id}", async (int id, StudentUpdateInput input, IStudentRepository repository,
+        students.MapPut("/{id}", async (int id, StudentUpdateInput input, HttpRequest request, IStudentRepository repository,
             StudentManagementService service, CancellationToken ct) =>
         {
             if (Invalid(input.StudentNumber, input.FullName)) return InvalidFields();
             var original = await repository.GetByIdAsync(id, ct);
             if (original is null) return Error(404, "not_found", "The student was not found.");
+            if (request.Headers.TryGetValue(EntityRevision.Header, out var revision)
+                && (revision.Count != 1 || revision[0] != EntityRevision.For(Response(original))))
+                return Error(409, "conflict", "The student changed since selection. Refresh and select again.");
             return MapResult(await service.UpdateAsync(new(id, input.StudentNumber!, input.FullName!, input.Contact,
                 StudentSnapshot.From(original)), ct));
         }).WithName("API-05").WithSummary("Replace editable student fields; null clears contact")
             .Produces<StudentResponse>(200).Produces<ApiError>(400).Produces<ApiError>(404)
             .Produces<ApiError>(409).Produces<ApiError>(500);
 
-        students.MapPatch("/{id}/eligibility", async (int id, EligibilityInput input, IStudentRepository repository,
+        students.MapPatch("/{id}/eligibility", async (int id, EligibilityInput input, HttpRequest request, IStudentRepository repository,
             StudentManagementService service, CancellationToken ct) =>
         {
             if (input.IsEligible is null) return Error(400, "invalid_request", "isEligible must be a Boolean value.");
             var original = await repository.GetByIdAsync(id, ct);
             if (original is null) return Error(404, "not_found", "The student was not found.");
+            if (request.Headers.TryGetValue(EntityRevision.Header, out var revision)
+                && (revision.Count != 1 || revision[0] != EntityRevision.For(Response(original))))
+                return Error(409, "conflict", "The student changed since selection. Refresh and select again.");
             return MapResult(await service.SetEligibilityAsync(new(id, input.IsEligible.Value,
                 StudentSnapshot.From(original)), ct));
         }).WithName("API-06").WithSummary("Permit or restrict borrowing; repeated state is a no-op")
