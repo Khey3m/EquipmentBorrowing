@@ -106,6 +106,52 @@
         "These four pictures are consistent with the Step 3 equipment checks. The capitalization in Demo edited Camera differs slightly from the guide example but is consistent between the application and database. The separate ST-UI-603 / Demo Empty Student control registration is not visible in these images."
       ],
       "scope": "Equipment management evidence; screenshots do not show HTTP exchanges or establish the full Lab 5 acceptance result."
+    },
+    {
+      "id": "Figure 10",
+      "image": "10-step4-before.png",
+      "heading": "Step 4 - Before borrowing: available camera and zero-row baseline",
+      "source_filename": "Screenshot 2026-11-15 222525.png",
+      "explanation": [
+        "The unfiltered catalog shows Demo edited Camera (EQ-UI-600) as Available. The student selector is blank, so no borrower has been selected in this capture.",
+        "pgAdmin shows a successfully completed query with Total rows: 0. This supports the before-borrowing baseline; the lower query lines, including the student filter, are outside the visible editor area.",
+        "The date control displays November 18, 2026 at this preparation stage. The later active-loan capture records the actual saved due date as November 20, 2026."
+      ],
+      "scope": "Manual single-issue and catalog-filter evidence. Cropped SQL values are not inferred; full acceptance remains subject to the remaining walkthrough evidence."
+    },
+    {
+      "id": "Figure 11",
+      "image": "11-step4-active-loan.png",
+      "heading": "Step 4 - After borrowing: active camera loan and database row",
+      "source_filename": "Screenshot 2026-11-15 222739.png",
+      "explanation": [
+        "Active borrowings displays LOAN #1 for Demo edited Student (ST-UI-600) and Demo edited Camera (EQ-UI-600), with Active status, issued date November 15, 2026 and due date November 20, 2026.",
+        "The fresh pgAdmin result contains one row with borrowing Id 1, student ST-UI-600, equipment EQ-UI-600 and BorrowedAt November 15, 2026. This matches the identity shown in the application.",
+        "The right side of the SQL result is cut off. The full ExpectedReturnAt, ActualReturnAt, Status and IsAvailable values cannot all be verified from this picture. An additional database-only screenshot should expose these columns before returning the camera."
+      ],
+      "scope": "Manual single-issue and catalog-filter evidence. Cropped SQL values are not inferred; full acceptance remains subject to the remaining walkthrough evidence."
+    },
+    {
+      "id": "Figure 12",
+      "image": "12-step4-available-filter.png",
+      "heading": "Step 4 - Available-only filter excludes the borrowed camera",
+      "source_filename": "Screenshot 2026-11-15 222823.png",
+      "explanation": [
+        "The Available items only checkbox is checked. The displayed results contain the available microphone, tablet and tripod, while camera EQ-UI-600 is absent.",
+        "The selected student is ST-UI-600 and the date control displays November 20, 2026. The application also reports Equipment successfully borrowed through the API. The actual HTTP exchange is not displayed in this screenshot."
+      ],
+      "scope": "Manual single-issue and catalog-filter evidence. Cropped SQL values are not inferred; full acceptance remains subject to the remaining walkthrough evidence."
+    },
+    {
+      "id": "Figure 13",
+      "image": "13-step4-on-loan.png",
+      "heading": "Step 4 - Unfiltered catalog retains the camera with On loan status",
+      "source_filename": "Screenshot 2026-11-15 223201.png",
+      "explanation": [
+        "With Available items only unchecked, the camera EQ-UI-600 appears again with the label On loan. The microphone, tablet and tripod remain Available.",
+        "Together with the filtered screenshot, this demonstrates that the borrowed camera remains in the catalog and is excluded when only available items are requested. Leave this loan active until Step 5 demonstrates its return."
+      ],
+      "scope": "Manual single-issue and catalog-filter evidence. Cropped SQL values are not inferred; full acceptance remains subject to the remaining walkthrough evidence."
     }
   ]
 }
