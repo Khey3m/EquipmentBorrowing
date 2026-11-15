@@ -16,10 +16,10 @@ public sealed class BorrowingHistoryService(IHistoryQueries queries)
         {
             var snapshot = await queries.GetHistoryAsync(kind, subjectId, cancellationToken);
             return snapshot is null
-                ? new(OperationOutcome.Rejected, "The selected student or equipment no longer exists. Refresh and select again.")
+                ? new(OperationOutcome.Rejected, "The selected student or equipment no longer exists. Refresh and select again.", Error: WorkflowError.NotFound)
                 : new(OperationOutcome.Succeeded, snapshot.Rows.Count == 0 ? "No borrowing history for this selection." : "", snapshot);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
-        catch (Exception) { return new(OperationOutcome.Failed, "Unable to load history. Restore the connection and retry the selected history."); }
+        catch (Exception) { return new(OperationOutcome.Failed, "Unable to load history. Restore the connection and retry the selected history.", Error: WorkflowError.DatabaseFailure); }
     }
 }

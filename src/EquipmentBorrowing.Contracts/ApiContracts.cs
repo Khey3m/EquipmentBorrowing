@@ -34,6 +34,7 @@ public sealed record EligibilityInput(bool? IsEligible);
 public sealed record BorrowInput([property: JsonRequired] int? StudentId,
     [property: JsonRequired] int? EquipmentId, [property: JsonRequired] DateOnly? ExpectedReturnDate);
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
-public sealed record CheckoutInput(int? StudentId, int[]? EquipmentIds, DateOnly? ExpectedReturnDate);
+public sealed record CheckoutInput([property: JsonRequired] int? StudentId,
+    [property: JsonRequired] int[]? EquipmentIds, [property: JsonRequired] DateOnly? ExpectedReturnDate);
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record ReturnInput;

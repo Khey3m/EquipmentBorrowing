@@ -10,7 +10,7 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     options.SerializerOptions.UnmappedMemberHandling = System.Text.Json.Serialization.JsonUnmappedMemberHandling.Disallow;
 });
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options => options.AddOperationTransformer(ApiOpenApi.DescribeQueries));
 builder.Services.AddBorrowingBackend();
 
 var app = builder.Build();
@@ -52,7 +52,8 @@ app.MapOpenApi();
 app.MapStudentEndpoints();
 app.MapEquipmentEndpoints();
 app.MapBorrowingEndpoints();
-app.MapGet("/api/v1/status", () => new ApiStatus("CampusEQ API", "v1", "Session 4 single issue/return; multi-checkout and queries pending"))
+app.MapQueryAndCheckoutEndpoints();
+app.MapGet("/api/v1/status", () => new ApiStatus("CampusEQ API", "v1", "Session 5 all sixteen business operations implemented; Desktop migration pending"))
     .WithName("ApiStatus").WithSummary("Host liveness only; does not establish database readiness.")
     .Produces<ApiStatus>(200).Produces<ApiError>(405).Produces<ApiError>(500);
 app.Run();
