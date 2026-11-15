@@ -313,6 +313,66 @@
         "Equipment EQ-UI-603 / Demo Tablet is selected and repeated in the heading. No borrowing history for this selection is displayed, and the earlier camera row is absent. The gray microphone background is distinct from the teal selected tablet and does not change the displayed tablet identity."
       ],
       "scope": "Manual student/equipment history and empty-state evidence; screenshots capture displayed results, not the raw HTTP exchanges."
+    },
+    {
+      "id": "Figure 29",
+      "image": "29-step8-number.png",
+      "heading": "Step 8 - Search by institutional number",
+      "source_filename": "Screenshot 2026-11-15 232632.png",
+      "explanation": [
+        "Search ST-UI-600 with Status All returns three records: Returned camera Loan #1, Active tripod Loan #2 and Active microphone Loan #3. The displayed sort label is CheckoutDate, corresponding to the borrowing/issued date."
+      ],
+      "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
+    },
+    {
+      "id": "Figure 30",
+      "image": "30-step8-name.png",
+      "heading": "Step 8 - Search by student name",
+      "source_filename": "Screenshot 2026-11-15 232650.png",
+      "explanation": [
+        "Search Demo edited with Status All returns the same three loans for Demo edited Student. This supports name-based matching."
+      ],
+      "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
+    },
+    {
+      "id": "Figure 31",
+      "image": "31-step8-equipment.png",
+      "heading": "Step 8 - Search by equipment name",
+      "source_filename": "Screenshot 2026-11-15 232705.png",
+      "explanation": [
+        "Search Tripod returns one matching record: Active Loan #2, equipment EQ-UI-601, belonging to ST-UI-600."
+      ],
+      "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
+    },
+    {
+      "id": "Figure 32",
+      "image": "32-step8-combined.png",
+      "heading": "Step 8 - Combined search, status and date sorting",
+      "source_filename": "Screenshot 2026-11-15 232808.png",
+      "explanation": [
+        "Search ST-UI-600, Status Active, Sort date ExpectedReturnDate and checked Descending return exactly tripod Loan #2 followed by microphone Loan #3. Both are due 2026-11-20; the visible order agrees with ascending borrowing-ID tie breaking for equal dates."
+      ],
+      "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
+    },
+    {
+      "id": "Figure 33",
+      "image": "33-step8-no-match.png",
+      "heading": "Step 8 - Valid no-match result",
+      "source_filename": "Screenshot 2026-11-15 232835.png",
+      "explanation": [
+        "Search NON-EXISTENT-999 with the retained Active/date/descending criteria shows No borrowings match these criteria and an empty result area, without a visible connection error."
+      ],
+      "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
+    },
+    {
+      "id": "Figure 34",
+      "image": "34-step8-clear.png",
+      "heading": "Step 8 - Clear restores the default search",
+      "source_filename": "Screenshot 2026-11-15 232855.png",
+      "explanation": [
+        "After clearing, the search field is blank, Status is All, Sort date is CheckoutDate and Descending is unchecked. All three borrowing records are restored. The actual UI labels are CheckoutDate and ExpectedReturnDate, rather than the database names BorrowedAt and ExpectedReturnAt used in the earlier instructions."
+      ],
+      "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
     }
   ]
 }
