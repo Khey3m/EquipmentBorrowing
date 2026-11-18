@@ -10,6 +10,7 @@
     <Project Path="src/EquipmentBorrowing.Infrastructure/EquipmentBorrowing.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/EquipmentBorrowing.ApiTests/EquipmentBorrowing.ApiTests.csproj" />
     <Project Path="tests/EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj" />
     <Project Path="tests/EquipmentBorrowing.UiTests/EquipmentBorrowing.UiTests.csproj" />
   </Folder>
