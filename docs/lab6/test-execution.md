@@ -1,6 +1,6 @@
 # Lab 6 test execution and defect record
 
-Planning only. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. No Lab 6 tests or manual acceptance checks were run while preparing this plan.
+Session 1 foundation executed; full TC6 objectives/manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. The table below tracks full objectives; infrastructure and supporting regression results are recorded separately.
 
 Each execution entry must record source commit, run date/environment, PostgreSQL version and isolated database alias, D/clock arrangement, exact test command or manual method, expected and observed behavior, status, evidence and any defect/correction/retest. Keep credentials out of commands and output. Link focused TRX, HTTP exchanges, fresh PostgreSQL reads and short manual captures rather than redundant screenshots.
 
@@ -37,11 +37,30 @@ The table records initial status. Add dated execution entries below as work happ
 
 ## Execution entries
 
-No execution entries yet. For each run include expected versus observed values, enabled assertions, passed/failed/skipped counts, source revision and evidence. Record all E02 subcases independently. For E07 identify each simulation/fault mechanism and its limits. For E08 include both automated fresh-connection results and harness-based or supervised manual restart steps/outcome.
+For each run include expected versus observed values, enabled assertions, passed/failed/skipped counts, source revision and evidence. Record all E02 subcases independently. For E07 identify each simulation/fault mechanism and its limits. For E08 include both automated fresh-connection results and harness-based or supervised manual restart steps/outcome.
+
+### Session 1 - foundation and baseline regression
+
+Tested source: `cbd1373` (the implementation was built/tested before committing its unchanged contents). Actual run timestamps and full revision are retained in [the execution summary](evidence/session1-summary.json). Environment: Windows, .NET SDK 10.0.404/net10.0, local PostgreSQL 18, real ASP.NET TestServer pipeline in Production environment. D is fixed at 2026-11-18 local Asia/Manila in the test host. Each foundation scenario creates its own database with the prescribed S1-S4/E1-E7 relationships; physical snapshot connections have pooling disabled. Existing regression tests retain their original fixtures/dates and scope.
+
+Commands: root README Lab 6 setup, full Release solution build, then all three test projects with `--configuration Release --no-build` and TRX output. Private admin setting was supplied from the existing private API connection without printing it. No separate API/Desktop process was needed for foundation tests.
+
+| Actual enabled test / check | Expected | Observed | Status |
+|---|---|---|---|
+| Full Release solution build | Successful build, no warnings/errors | Successful; 0 warnings, 0 errors | Passed |
+| `FoundationTests.SeededHostUsesRealRoutesAndExactRelativeFixture` | Real status 200 JSON and unknown-route 404/not_found; migration; exact students/items/eligibility/availability and four dated borrowing relationships | All assertions satisfied; independent physical SQL snapshot retained in TRX stdout | Passed |
+| `FoundationTests.FixedClockAndResetRestoreFixtureAfterMutationAndEmptyState` | HTTP issue uses D; mutation changes persisted state; empty reset clears three tables; reseed restores exact baseline | 201 with borrowed date 2026-11-18; fresh-state change and exact empty/reseed comparisons satisfied | Passed |
+| `FoundationTests.SeparateScenariosRemainIndependentAndOwnedDatabasesAreRemoved` | Two simultaneous independent hosts/DBs; clearing first leaves second unchanged; first DB absent after disposal; repeat disposal safe | Independent state and admin existence assertions satisfied; owned cleanup logged | Passed |
+| Existing backend regression | Enabled pure-rule/PostgreSQL assertions pass with private admin setting | 76 passed, 0 failed, 0 skipped | Passed |
+| Existing UI/client regression | Enabled client-double/headless assertions pass | 23 passed, 0 failed, 0 skipped | Passed |
+
+Total: **102 passed, 0 failed, 0 skipped**, including three infrastructure tests. Four owned foundation databases were created/dropped across those tests. Compact raw output: [three TRX files in ZIP](evidence/session1-trx.zip); checksums/counters/method names/fixture database lifecycle are in [summary](evidence/session1-summary.json). Build output was observed directly; the TRX archive contains test output rather than a build log.
+
+Scope limits: TestServer exercises middleware/routing/JSON and real database services but not TCP/process restart; seed setup is direct EF followed by HTTP ID discovery; this is not complete U01/U03/E08 acceptance. Empty/fixture/date checks are foundation evidence only. No manual checks, real-server fault injection, unknown-acknowledgement experiment or Lab 6 CI execution is claimed. All 22 full objectives and MA6-01/02 retain Not Run until their sessions implement and execute complete required assertions. No failed test or application correction occurred in this session.
 
 ## Defects, corrections and regression
 
-No defect has been established during planning. The baseline documentation discrepancy is an audit item, not an executed application failure.
+No application defect has been established in Session 1; no failed run or runtime correction was concealed. The Lab 5 evidence reconciliation is recorded in baseline.md with its remaining qualifications.
 
 Use one record per discovered defect:
 
