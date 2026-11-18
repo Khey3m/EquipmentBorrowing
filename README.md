@@ -1,5 +1,7 @@
 # Campus Equipment Borrowing System - Lab 5
 
+Lab 6 planning continues this implementation on `lab6/automated-verification`: [two-week session plan](docs/lab6/session-plan.md), [progress](docs/lab6/progress.md), [baseline](docs/lab6/baseline.md), [traceability](docs/lab6/traceability.md), and [execution/defect records](docs/lab6/test-execution.md). Planning is complete; Lab 6 implementation and acceptance have not started. The Lab 5 instructions and historical results below remain the current application baseline.
+
 Continues the Lab 4 Avalonia application with an independently runnable ASP.NET Core API and PostgreSQL. All sixteen API contracts are implemented. As of Session 8, all seven Desktop screens use asynchronous HTTP; Desktop has no Infrastructure, EF Core, Npgsql or direct database dependency.
 
 ```text
