@@ -1,6 +1,6 @@
 # Lab 6 requirements traceability
 
-Planning matrix transcribed from the companion suite. U/E abbreviate TC6-U/TC6-E. Actual method names and evidence remain pending until inspected and executed; scenario IDs alone are not proof. Existing Lab 5 coverage is historical support. See [execution record](test-execution.md) and [session plan](session-plan.md).
+Matrix transcribed from the companion suite. U/E abbreviate TC6-U/TC6-E. Full objective method names and evidence remain pending; scenario IDs alone are not proof. Session 1 added and executed `EquipmentBorrowing.ApiTests/FoundationTests.cs` as infrastructure checks, and reran existing regression tests. Those checks do not complete the objective rows below. See [execution record](test-execution.md), [baseline assertion audit](baseline.md#existing-assertion-audit-and-remaining-work) and [session plan](session-plan.md).
 
 | UC | BR | API | TC6 | Actual test implementation | Execution result | Evidence |
 |---|---|---|---|---|---|---|

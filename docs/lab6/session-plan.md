@@ -1,6 +1,6 @@
 # Lab 6 session plan - automated verification and regression
 
-Status: planning checkpoint only. Implementation Sessions 1-10 have not started. All Lab 6 objectives are Not Run. Work on `lab6/automated-verification`, continuing the existing solution and history.
+Status: Session 1 foundation completed; Sessions 2-10 pending. All full TC6 objectives and manual checks remain Not Run; three infrastructure checks and 99 existing regression cases passed in Session 1. See the progress and execution records. Work on `lab6/automated-verification`, continuing the existing solution and history.
 
 ## Requirements and scope
 
