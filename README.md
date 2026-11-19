@@ -1,6 +1,6 @@
 # Campus Equipment Borrowing System - Lab 5
 
-Lab 6 continues this implementation on `lab6/automated-verification`: [two-week session plan](docs/lab6/session-plan.md), [progress](docs/lab6/progress.md), [baseline and assertion audit](docs/lab6/baseline.md), [traceability](docs/lab6/traceability.md), and [execution/defect records](docs/lab6/test-execution.md). Sessions 1-3 are complete. The latest API run passed 14 tests, including eleven Lab 6 objectives.
+Lab 6 continues this implementation on `lab6/automated-verification`: [two-week session plan](docs/lab6/session-plan.md), [progress](docs/lab6/progress.md), [baseline and assertion audit](docs/lab6/baseline.md), [traceability](docs/lab6/traceability.md), and [execution/defect records](docs/lab6/test-execution.md). Sessions 1-4 are complete. The latest API run passed 20 tests, including fifteen Lab 6 objectives.
 
 Continues the Lab 4 Avalonia application with an independently runnable ASP.NET Core API and PostgreSQL. All sixteen API contracts are implemented. As of Session 8, all seven Desktop screens use asynchronous HTTP; Desktop has no Infrastructure, EF Core, Npgsql or direct database dependency.
 
@@ -37,7 +37,7 @@ dotnet test tests/EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj --con
 dotnet test tests/EquipmentBorrowing.UiTests/EquipmentBorrowing.UiTests.csproj --configuration Release --no-build --logger 'trx;LogFileName=ui-client.trx' --results-directory TestResults/lab6/local
 ```
 
-Observed results and compact raw TRX archives for Sessions 1-3 are linked from [the execution record](docs/lab6/test-execution.md). The API test command now executes 14 tests, including eleven Lab 6 objectives. Lab 6 CI wiring is scheduled for Session 8; the new branch does not yet trigger the existing push-only branch filter.
+Observed results and compact raw TRX archives for Sessions 1-4 are linked from [the execution record](docs/lab6/test-execution.md). The API test command now executes 20 tests, including fifteen Lab 6 objectives. Lab 6 CI wiring is scheduled for Session 8; the new branch does not yet trigger the existing push-only branch filter.
 
 ## Application prerequisites
 

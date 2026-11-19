@@ -1,13 +1,13 @@
 # Lab 6 progress
 
-Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 branch: test infrastructure/baseline audit followed by five read objectives, without production application changes. TC6-U01/U02/U04/U07/U08 passed; Session 3 completed six more objectives. Eleven automated objectives and manual acceptance remain pending.
+Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 branch: test infrastructure/baseline audit followed by five read objectives, without production application changes. TC6-U01/U02/U04/U07/U08 passed; Session 3 completed six more objectives. Session 4 brought the total to 15 passed objectives. Seven automated objectives and both manual checks remain pending.
 
 | Week | Session | Deliverable | Status |
 |---|---|---|---|
 | 1 | 1 | Baseline reconciliation, assertion audit, real HTTP xUnit host, fixed clock and isolated fixture | Complete |
 | 1 | 2 | Catalog, filtering, active lists and histories | Complete |
 | 1 | 3 | Management, eligibility, optional/protected fields | Complete |
-| 1 | 4 | Borrowing, returns, multi-checkout and exact limits | Not started |
+| 1 | 4 | Borrowing, returns, multi-checkout and exact limits | Complete |
 | 1 | 5 | Search, protocol errors, all sixteen API contracts/OpenAPI | Not started |
 | 2 | 6 | PostgreSQL constraints, uniqueness and stale conflicts | Not started |
 | 2 | 7 | After-write rollback and E07a/b/c failure handling | Not started |
@@ -31,4 +31,8 @@ Full Release build: 0 warnings/errors. All eight API tests passed with no failur
 
 U12/U13/U14/U15/U16/E06 passed in the real HTTP and PostgreSQL suite. The suite passed 14 tests with zero failures or skips. Source commit `b85b40c`. [Execution record](test-execution.md#session-3---management-eligibility-and-protected-edits).
 
-Next checkpoint is Session 4, covering borrowing, returns, multi-item checkout and the active loan limit.
+## Session 4 - completed
+
+U03/U05/U06/E02 passed. All 20 API tests passed with zero failures or skips. The limit tests confirmed that exactly three active loans are allowed and over-limit checkout leaves both items available. Source commit `7a1dc99`. [Execution record](test-execution.md#session-4---borrowing-lifecycle-and-active-loan-limits).
+
+Next checkpoint is Session 5, covering search, protocol responses and OpenAPI consistency.

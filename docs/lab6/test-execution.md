@@ -1,6 +1,6 @@
 # Lab 6 test execution and defect record
 
-Sessions 1-3 executed. Eleven automated objectives passed. The other eleven and both manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
+Sessions 1-4 executed. Fifteen automated objectives passed. Seven automated objectives and both manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
 
 Each execution entry must record source commit, run date/environment, PostgreSQL version and isolated database alias, D/clock arrangement, exact test command or manual method, expected and observed behavior, status, evidence and any defect/correction/retest. Keep credentials out of commands and output. Link focused TRX, HTTP exchanges, fresh PostgreSQL reads and short manual captures rather than redundant screenshots.
 
@@ -10,10 +10,10 @@ The table records current status. Add dated execution entries below as work happ
 |---|---|---|---|---|---|---|---|
 | TC6-U01 | 2 | Exact seven catalog IDs/names/availability; empty [] | `ReadApiTests.U01_CatalogReturnsExactFixtureAndEmptyArray` | Exact seven/empty, 200; unchanged SQL | Passed | No defect; no correction/retest needed | [Session 2](evidence/session2-summary.json) |
 | TC6-U02 | 2 | Only E2/E3/E6/E7 available; none available [] | `ReadApiTests.U02_AvailableFilterIncludesOnlyAvailableItemsAndHandlesNone` | Exact available four; none available [] with seven items retained, 200; unchanged SQL | Passed | No defect; no correction/retest needed | [Session 2](evidence/session2-summary.json) |
-| TC6-U03 | 4 | S4/E2 201, Location/GET, D, active durable loan | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-U03 | 4 | S4/E2 201, Location/GET, D, active durable loan | `LifecycleApiTests.U03_IssueAndFollowLocation` | 201 and Location GET 200 matched the stored active loan and unavailable item. | Passed | None observed | [Session 4](evidence/session4-trx.zip) |
 | TC6-U04 | 2 | Active E1/E4/E5 with correct students; exclude returned E3 | `ReadApiTests.U04_ActiveLoansHaveExactIdsAndRelatedRecordsWithoutReturnedLoan` | Exact three borrowing IDs/relationships/dates; returned E3 excluded; unchanged SQL | Passed | No defect; no correction/retest needed | [Session 2](evidence/session2-summary.json) |
-| TC6-U05 | 4 | Return D; same ID/history; E1 available; repeat 409 unchanged | Pending | Not executed | Not Run | None recorded | Pending |
-| TC6-U06 | 4 | S4/E2/E6 201; both IDs/relationships; both unavailable | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-U05 | 4 | Return D; same ID/history; E1 available; repeat 409 unchanged | `LifecycleApiTests.U05_ReturnRetainsHistoryAndRepeatLeavesStateUntouched` | Return retained the loan ID and history. Repeat returned 409 with unchanged PostgreSQL state. | Passed | None observed | [Session 4](evidence/session4-trx.zip) |
+| TC6-U06 | 4 | S4/E2/E6 201; both IDs/relationships; both unavailable | `LifecycleApiTests.U06_CheckoutPersistsBothLoansAndAvailability` | 201 produced two distinct durable loans and both items became unavailable. | Passed | None observed | [Session 4](evidence/session4-trx.zip) |
 | TC6-U07 | 2 | Correct S1 active/returned history; S4 []; missing 404 | `ReadApiTests.U07_StudentHistoryDistinguishesMixedEmptyAndMissingSubjects` | S1 active E1/returned E3; S4 []; missing detail/history 404; unchanged SQL | Passed | No defect; no correction/retest needed | [Session 2](evidence/session2-summary.json) |
 | TC6-U08 | 2 | E1/E3 correct borrower/state; E2 []; missing 404 | `ReadApiTests.U08_EquipmentHistoryDistinguishesActiveReturnedEmptyAndMissingSubjects` | E1 active/E3 returned for S1; E2 []; missing detail/history 404; unchanged SQL | Passed | No defect; no correction/retest needed | [Session 2](evidence/session2-summary.json) |
 | TC6-U09 | 5 | Partial search/all filters/sorts/combinations/reset/no match/stable ties | Pending | Not executed | Not Run | None recorded | Pending |
@@ -23,7 +23,7 @@ The table records current status. Add dated execution entries below as work happ
 | TC6-U15 | 3 | EQ-008 201/default/Location/GET; duplicate EQ-001 409; fresh row | `ManagementApiTests.U15_RegisterEquipmentAndRejectDuplicate` | 201 with generated ID and Location. Duplicate returned 409 with unchanged SQL. | Passed | None observed | [Session 3](evidence/session3-trx.zip) |
 | TC6-U16 | 3 | Edit E1 description; same ID/unavailable/active history | `ManagementApiTests.U16_EditEquipmentAndPreserveAvailabilityAndHistory` | Edits persisted with the same ID, unavailable state and unchanged loan rows. | Passed | None observed | [Session 3](evidence/session3-trx.zip) |
 | TC6-E01 | 6 | Normalized create/update duplicates 409; direct PostgreSQL rejects; fresh counts | Pending | Not executed | Not Run | None recorded | Pending |
-| TC6-E02 | 4 | Single/multi exactly-three 201; over-limit 409; reset each subcase | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-E02 | 4 | Single/multi exactly-three 201; over-limit 409; reset each subcase | `LifecycleApiTests.E02_MultipleAtLimitSucceeds`, `LifecycleApiTests.E02_MultipleOverLimitLeavesBothItemsAvailable`, `LifecycleApiTests.E02_SingleAtLimitSucceeds` | Single and multi-item checkout reached exactly three active loans. Over-limit checkout returned 409 with no writes. | Passed | None observed | [Session 4](evidence/session4-trx.zip) |
 | TC6-E03 | 5 | Invalid 400/missing-route 404/method 405/conflict 409; safe/unchanged | Pending | Not executed | Not Run | None recorded | Pending |
 | TC6-E04 | 7 | Fault reached after PostgreSQL write attempt; safe 500; independent rollback state | Pending | Not executed | Not Run | None recorded | Pending |
 | TC6-E05 | 6 | Stale 409; one active E2; other item unchanged; direct DB rejects second active row | Pending | Not executed | Not Run | None recorded | Pending |
@@ -96,9 +96,27 @@ The private PostgreSQL test admin setting was supplied as documented in the READ
 
 Archive SHA-256 is `6d56b4d00c3c32df080688d2bab25bf6ff0875f63a3a108ae724bdb50549d21c`.
 
+### Session 4 - borrowing lifecycle and active loan limits
+
+Tested source revision `7a1dc99440ef906cc681561c2c1da48a813dd720` on Windows against local PostgreSQL 18 via ASP.NET Core TestServer. The fixed campus date was 2026-11-18. Each test used a separate disposable database.
+
+```powershell
+dotnet test tests/EquipmentBorrowing.ApiTests/EquipmentBorrowing.ApiTests.csproj -c Release --logger 'trx;LogFileName=api-lifecycle.trx' --results-directory TestResults/lab6/session4
+```
+
+All 20 API tests passed with zero failures or skips. Six new tests fulfilled four objectives. Fresh PostgreSQL reads confirmed the persisted loan rows, item availability and active counts. Repeat return and over-limit checkout both returned 409 with identical before and after snapshots.
+
+| E02 subcase | HTTP | Active loans | PostgreSQL result |
+|---|---|---|---|
+| S3 borrows E2 | 201 | 2 to 3 | New loan persisted and E2 unavailable |
+| S1 checks out E2 and E6 | 201 | 1 to 3 | Both loans persisted and both items unavailable |
+| S3 attempts checkout of E2 and E6 | 409 | 2 to 2 | No writes and both items remained available |
+
+[Raw TRX archive](evidence/session4-trx.zip). Archive SHA-256 is `5f985d1b95f9141e3a548ab8aafce5b5adc80d85b55889988aa2fe37e4f6890f`.
+
 ## Defects, corrections and regression
 
-No application defect has been established in Sessions 1-3; no failed run or runtime correction was concealed. The Lab 5 evidence reconciliation is recorded in baseline.md with its remaining qualifications.
+No application defect has been established in Sessions 1-4; no failed run or runtime correction was concealed. The Lab 5 evidence reconciliation is recorded in baseline.md with its remaining qualifications.
 
 Use one record per discovered defect:
 
