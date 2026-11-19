@@ -1,6 +1,6 @@
 # Campus Equipment Borrowing System - Lab 5
 
-Lab 6 planning continues this implementation on `lab6/automated-verification`: [two-week session plan](docs/lab6/session-plan.md), [progress](docs/lab6/progress.md), [baseline](docs/lab6/baseline.md), [traceability](docs/lab6/traceability.md), and [execution/defect records](docs/lab6/test-execution.md). Planning is complete; Lab 6 implementation and acceptance have not started. The Lab 5 instructions and historical results below remain the current application baseline.
+Lab 6 continues this implementation on `lab6/automated-verification`: [two-week session plan](docs/lab6/session-plan.md), [progress](docs/lab6/progress.md), [baseline and assertion audit](docs/lab6/baseline.md), [traceability](docs/lab6/traceability.md), and [execution/defect records](docs/lab6/test-execution.md). Sessions 1-2 are complete: TC6-U01/U02/U04/U07/U08 and the three foundation regressions passed in Session 2 without skips; the existing 99 backend/UI cases last passed in Session 1. The other 17 automated objectives and manual acceptance remain pending. The Lab 5 instructions and historical results below retain their original scope.
 
 Continues the Lab 4 Avalonia application with an independently runnable ASP.NET Core API and PostgreSQL. All sixteen API contracts are implemented. As of Session 8, all seven Desktop screens use asynchronous HTTP; Desktop has no Infrastructure, EF Core, Npgsql or direct database dependency.
 
@@ -10,7 +10,36 @@ Avalonia -> HTTP client/contracts -> ASP.NET Core API -> Application -> EF/Npgsq
 
 Current verification: full Release build with zero warnings/errors; 76 backend and 23 UI/client tests pass. Actual HTTP composition and native catalog startup work without database settings in Desktop. T01-T06 have passing API executions. T08 controlled recovery passed with native feedback and same-client Retry. Full rendered staff walkthrough remains pending; this is not the final submission tag.
 
-## Prerequisites
+## Lab 6 automated test setup
+
+Use a local PostgreSQL role permitted to create/drop disposable databases and apply migrations. Enter its connection string privately in the test terminal; the database field is replaced with `postgres` for administration and a generated name for each scenario. The fixture never resets the database named in the supplied connection string.
+
+```powershell
+$lab6AdminSecret = Read-Host 'Private PostgreSQL test admin connection string' -AsSecureString
+$env:POSTGRES_INTEGRATION_ADMIN_CONNECTION = [System.Net.NetworkCredential]::new('', $lab6AdminSecret).Password
+dotnet restore EquipmentBorrowing.slnx
+dotnet build EquipmentBorrowing.slnx --configuration Release --no-restore
+dotnet test tests/EquipmentBorrowing.ApiTests/EquipmentBorrowing.ApiTests.csproj --configuration Release --no-build --logger 'trx;LogFileName=api-foundation.trx' --results-directory TestResults/lab6/local
+```
+
+Connection shape: `Host=localhost;Port=5432;Database=postgres;Username=<local-test-role>;Password=<private-password>`. If the existing private API connection uses a role with these permissions, the test terminal may instead set `$env:POSTGRES_INTEGRATION_ADMIN_CONNECTION = $env:EQUIPMENT_BORROWING_CONNECTION_STRING`. No private values belong in source files or screenshots.
+
+`EquipmentBorrowing.ApiTests` starts the real ASP.NET Core middleware/routing/JSON pipeline through `WebApplicationFactory<Program>` and TestServer. It uses real PostgreSQL, not an HTTP response fake or an in-memory database. TestServer runs in the test process: this foundation does not prove TCP transport behavior or actual API process restart. No separately running API/Desktop is needed for these tests.
+
+Each `ApiScenario` owns a generated `equipment_borrowing_lab6_<32-hex-GUID>` database, applies existing migrations without demo bootstrap data, and seeds S1-S4/E1-E7 at fixed local campus D = **2026-11-18**. Only the test host substitutes `ICampusClock` and its database factory; it does not change production settings or the machine clock. IDs are read through the API. Reset/reseed is explicit per scenario/subcase. Physical snapshot connections disable pooling and are independent of HTTP writes.
+
+Disposal closes the scenario's host/client and drops only its own generated database after validating the name; it does not stop PostgreSQL, clear global pools or remove demo/legacy databases. Cleanup failures fail the test and identify the owned database for private inspection. An abruptly terminated test process may leave its generated database behind; inspect ownership before manual cleanup. Existing backend PostgreSQL tests still retain their own historical verification databases.
+
+The private admin setting is mandatory for actual PostgreSQL execution. Without it, API/PostgreSQL cases explicitly skip; do not report skips as passes. Run existing regression projects with the same private setting:
+
+```powershell
+dotnet test tests/EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj --configuration Release --no-build --logger 'trx;LogFileName=backend.trx' --results-directory TestResults/lab6/local
+dotnet test tests/EquipmentBorrowing.UiTests/EquipmentBorrowing.UiTests.csproj --configuration Release --no-build --logger 'trx;LogFileName=ui-client.trx' --results-directory TestResults/lab6/local
+```
+
+Observed results and compact raw TRX archives for Sessions 1-2 are linked from [the execution record](docs/lab6/test-execution.md). The API test command now executes eight tests, including five read objectives; no application/fixture source changes were needed in Session 2. Lab 6 CI wiring is scheduled for Session 8; the new branch does not yet trigger the existing push-only branch filter.
+
+## Application prerequisites
 
 - .NET 10 SDK; dotnet-ef 10.0.12 is pinned in dotnet-tools.json.
 - PostgreSQL server/client tools (18 is the verified baseline). API's local role needs permissions for migrations; isolated verification additionally needs CREATE DATABASE.

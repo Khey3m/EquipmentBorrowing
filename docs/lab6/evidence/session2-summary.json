@@ -1,0 +1,241 @@
+{
+  "session": 2,
+  "tested_source_commit": "95a882cc416636a573622122b5a54c5cc4f14f48",
+  "run_times_from_trx": {
+    "creation": "2026-11-20T07:16:39.9593473+08:00",
+    "queuing": "2026-11-20T07:16:39.9593481+08:00",
+    "start": "2026-11-20T07:16:25.6331742+08:00",
+    "finish": "2026-11-20T07:17:00.7387510+08:00"
+  },
+  "environment": {
+    "os": "Windows",
+    "dotnet_sdk": "10.0.404",
+    "target": "net10.0",
+    "postgresql": "18 (local service)",
+    "http_host": "WebApplicationFactory/TestServer; Production",
+    "fixed_local_campus_D": "2026-11-18",
+    "timezone": "Asia/Manila",
+    "fresh_snapshot_pooling": false
+  },
+  "build": {
+    "configuration": "Release",
+    "warnings": 0,
+    "errors": 0,
+    "evidence": "Observed build console output; no retained build log"
+  },
+  "total": {
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0
+  },
+  "completed_objectives": [
+    "TC6-U01",
+    "TC6-U02",
+    "TC6-U04",
+    "TC6-U07",
+    "TC6-U08"
+  ],
+  "api_contracts_exercised": [
+    "API-01",
+    "API-03",
+    "API-07",
+    "API-14 (Active query only)",
+    "API-15",
+    "API-16"
+  ],
+  "http_evidence": {
+    "recorded_gets": 20,
+    "status_counts": {
+      "200": 16,
+      "404": 4
+    },
+    "independent_unchanged_snapshot_pairs": 20,
+    "exchanges": [
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; [{\"id\":1,\"equipmentCode\":\"EQ-001\",\"name\":\"Camera\",\"description\":null,\"isAvailable\":false},{\"id\":2,\"equipmentCode\":\"EQ-002\",\"name\":\"Laptop\",\"description\":null,\"isAvailable\":true},{\"id\":5,\"equipmentCode\":\"EQ-005\",\"name\":\"Microphone\",\"description\":null,\"isAvailable\":false},{\"id\":3,\"equipmentCode\":\"EQ-003\",\"name\":\"Projector\",\"description\":null,\"isAvailable\":true},{\"id\":7,\"equipmentCode\":\"EQ-007\",\"name\":\"Speaker\",\"description\":null,\"isAvailable\":true},{\"id\":4,\"equipmentCode\":\"EQ-004\",\"name\":\"Tablet\",\"description\":null,\"isAvailable\":false},{\"id\":6,\"equipmentCode\":\"EQ-006\",\"name\":\"Tripod\",\"description\":null,\"isAvailable\":true}]"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; []"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment/1",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; {\"id\":1,\"equipmentCode\":\"EQ-001\",\"name\":\"Camera\",\"description\":null,\"isAvailable\":false}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment/1/borrowings",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; [{\"id\":1,\"studentId\":1,\"equipmentId\":1,\"borrowedDate\":\"2026-11-09\",\"expectedReturnDate\":\"2026-11-17\",\"returnedDate\":null,\"status\":\"Active\",\"studentNumber\":\"ST-100\",\"studentName\":\"Ada\",\"equipmentCode\":\"EQ-001\",\"equipmentName\":\"Camera\"}]"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment/3",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; {\"id\":3,\"equipmentCode\":\"EQ-003\",\"name\":\"Projector\",\"description\":null,\"isAvailable\":true}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment/3/borrowings",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; [{\"id\":2,\"studentId\":1,\"equipmentId\":3,\"borrowedDate\":\"2026-11-10\",\"expectedReturnDate\":\"2026-11-20\",\"returnedDate\":\"2026-11-16\",\"status\":\"Returned\",\"studentNumber\":\"ST-100\",\"studentName\":\"Ada\",\"equipmentCode\":\"EQ-003\",\"equipmentName\":\"Projector\"}]"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment/2",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; {\"id\":2,\"equipmentCode\":\"EQ-002\",\"name\":\"Laptop\",\"description\":null,\"isAvailable\":true}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment/2/borrowings",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; []"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment/2147483647",
+        "status": 404,
+        "content_type_and_body": "application/json; charset=utf-8; {\"code\":\"not_found\",\"message\":\"The equipment was not found.\"}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment/2147483647/borrowings",
+        "status": 404,
+        "content_type_and_body": "application/json; charset=utf-8; {\"code\":\"not_found\",\"message\":\"The selected student or equipment no longer exists. Refresh and select again.\"}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment?available=true",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; [{\"id\":2,\"equipmentCode\":\"EQ-002\",\"name\":\"Laptop\",\"description\":null,\"isAvailable\":true},{\"id\":3,\"equipmentCode\":\"EQ-003\",\"name\":\"Projector\",\"description\":null,\"isAvailable\":true},{\"id\":7,\"equipmentCode\":\"EQ-007\",\"name\":\"Speaker\",\"description\":null,\"isAvailable\":true},{\"id\":6,\"equipmentCode\":\"EQ-006\",\"name\":\"Tripod\",\"description\":null,\"isAvailable\":true}]"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment?available=true",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; []"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/equipment",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; [{\"id\":1,\"equipmentCode\":\"EQ-001\",\"name\":\"Camera\",\"description\":null,\"isAvailable\":false},{\"id\":2,\"equipmentCode\":\"EQ-002\",\"name\":\"Laptop\",\"description\":null,\"isAvailable\":false},{\"id\":5,\"equipmentCode\":\"EQ-005\",\"name\":\"Microphone\",\"description\":null,\"isAvailable\":false},{\"id\":3,\"equipmentCode\":\"EQ-003\",\"name\":\"Projector\",\"description\":null,\"isAvailable\":false},{\"id\":7,\"equipmentCode\":\"EQ-007\",\"name\":\"Speaker\",\"description\":null,\"isAvailable\":false},{\"id\":4,\"equipmentCode\":\"EQ-004\",\"name\":\"Tablet\",\"description\":null,\"isAvailable\":false},{\"id\":6,\"equipmentCode\":\"EQ-006\",\"name\":\"Tripod\",\"description\":null,\"isAvailable\":false}]"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/borrowings?status=Active",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; [{\"id\":1,\"studentId\":1,\"equipmentId\":1,\"borrowedDate\":\"2026-11-09\",\"expectedReturnDate\":\"2026-11-17\",\"returnedDate\":null,\"status\":\"Active\",\"studentNumber\":\"ST-100\",\"studentName\":\"Ada\",\"equipmentCode\":\"EQ-001\",\"equipmentName\":\"Camera\"},{\"id\":3,\"studentId\":3,\"equipmentId\":4,\"borrowedDate\":\"2026-11-11\",\"expectedReturnDate\":\"2026-11-20\",\"returnedDate\":null,\"status\":\"Active\",\"studentNumber\":\"ST-300\",\"studentName\":\"Cara\",\"equipmentCode\":\"EQ-004\",\"equipmentName\":\"Tablet\"},{\"id\":4,\"studentId\":3,\"equipmentId\":5,\"borrowedDate\":\"2026-11-11\",\"expectedReturnDate\":\"2026-11-20\",\"returnedDate\":null,\"status\":\"Active\",\"studentNumber\":\"ST-300\",\"studentName\":\"Cara\",\"equipmentCode\":\"EQ-005\",\"equipmentName\":\"Microphone\"}]"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/students/1",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; {\"id\":1,\"studentNumber\":\"ST-100\",\"fullName\":\"Ada\",\"contact\":null,\"isEligible\":true}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/students/1/borrowings",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; [{\"id\":2,\"studentId\":1,\"equipmentId\":3,\"borrowedDate\":\"2026-11-10\",\"expectedReturnDate\":\"2026-11-20\",\"returnedDate\":\"2026-11-16\",\"status\":\"Returned\",\"studentNumber\":\"ST-100\",\"studentName\":\"Ada\",\"equipmentCode\":\"EQ-003\",\"equipmentName\":\"Projector\"},{\"id\":1,\"studentId\":1,\"equipmentId\":1,\"borrowedDate\":\"2026-11-09\",\"expectedReturnDate\":\"2026-11-17\",\"returnedDate\":null,\"status\":\"Active\",\"studentNumber\":\"ST-100\",\"studentName\":\"Ada\",\"equipmentCode\":\"EQ-001\",\"equipmentName\":\"Camera\"}]"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/students/4",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; {\"id\":4,\"studentNumber\":\"ST-400\",\"fullName\":\"Dani\",\"contact\":null,\"isEligible\":true}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/students/4/borrowings",
+        "status": 200,
+        "content_type_and_body": "application/json; charset=utf-8; []"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/students/2147483647",
+        "status": 404,
+        "content_type_and_body": "application/json; charset=utf-8; {\"code\":\"not_found\",\"message\":\"The student was not found.\"}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/students/2147483647/borrowings",
+        "status": 404,
+        "content_type_and_body": "application/json; charset=utf-8; {\"code\":\"not_found\",\"message\":\"The selected student or equipment no longer exists. Refresh and select again.\"}"
+      }
+    ]
+  },
+  "database_lifecycle": {
+    "created": [
+      "equipment_borrowing_lab6_ae38297e11b643048d85465d6c2a99a1",
+      "equipment_borrowing_lab6_a26ceb348f224f2f827744de03e9897c",
+      "equipment_borrowing_lab6_64f03e294a214ce480321a2b2576e983",
+      "equipment_borrowing_lab6_26bd0d34c2b843daa120d10ef3d2c8ca",
+      "equipment_borrowing_lab6_0cdcd849f9e649e7af6fc265ddea793e",
+      "equipment_borrowing_lab6_58fbad4f09e1410e9d66805b931c403c",
+      "equipment_borrowing_lab6_b041e9581b694ddb873661ea761b67d6",
+      "equipment_borrowing_lab6_d50e7b121ada4dd1b200cd47b4ea353b",
+      "equipment_borrowing_lab6_9202a83a2a5a4a80af9eb2d8453016f9"
+    ],
+    "dropped": [
+      "equipment_borrowing_lab6_ae38297e11b643048d85465d6c2a99a1",
+      "equipment_borrowing_lab6_a26ceb348f224f2f827744de03e9897c",
+      "equipment_borrowing_lab6_26bd0d34c2b843daa120d10ef3d2c8ca",
+      "equipment_borrowing_lab6_64f03e294a214ce480321a2b2576e983",
+      "equipment_borrowing_lab6_0cdcd849f9e649e7af6fc265ddea793e",
+      "equipment_borrowing_lab6_58fbad4f09e1410e9d66805b931c403c",
+      "equipment_borrowing_lab6_b041e9581b694ddb873661ea761b67d6",
+      "equipment_borrowing_lab6_d50e7b121ada4dd1b200cd47b4ea353b",
+      "equipment_borrowing_lab6_9202a83a2a5a4a80af9eb2d8453016f9"
+    ]
+  },
+  "tests": [
+    {
+      "name": "EquipmentBorrowing.ApiTests.ReadApiTests.U01_CatalogReturnsExactFixtureAndEmptyArray",
+      "outcome": "Passed"
+    },
+    {
+      "name": "EquipmentBorrowing.ApiTests.ReadApiTests.U08_EquipmentHistoryDistinguishesActiveReturnedEmptyAndMissingSubjects",
+      "outcome": "Passed"
+    },
+    {
+      "name": "EquipmentBorrowing.ApiTests.FoundationTests.SeparateScenariosRemainIndependentAndOwnedDatabasesAreRemoved",
+      "outcome": "Passed"
+    },
+    {
+      "name": "EquipmentBorrowing.ApiTests.FoundationTests.SeededHostUsesRealRoutesAndExactRelativeFixture",
+      "outcome": "Passed"
+    },
+    {
+      "name": "EquipmentBorrowing.ApiTests.ReadApiTests.U02_AvailableFilterIncludesOnlyAvailableItemsAndHandlesNone",
+      "outcome": "Passed"
+    },
+    {
+      "name": "EquipmentBorrowing.ApiTests.FoundationTests.FixedClockAndResetRestoreFixtureAfterMutationAndEmptyState",
+      "outcome": "Passed"
+    },
+    {
+      "name": "EquipmentBorrowing.ApiTests.ReadApiTests.U04_ActiveLoansHaveExactIdsAndRelatedRecordsWithoutReturnedLoan",
+      "outcome": "Passed"
+    },
+    {
+      "name": "EquipmentBorrowing.ApiTests.ReadApiTests.U07_StudentHistoryDistinguishesMixedEmptyAndMissingSubjects",
+      "outcome": "Passed"
+    }
+  ],
+  "archive": {
+    "file": "session2-trx.zip",
+    "sha256": "865a5b8b72c05b9b9df24888e49be3546ffd454bef37fafc7550fecd4da1f029",
+    "bytes": 6269,
+    "trx_sha256": "ed28cbafb65ca561f1262a2c11b9fc497b69ce058364595401bc78a16543ce13"
+  },
+  "scope": "Five read objectives plus three foundation regressions. Existing 76 backend/23 UI-client tests were not rerun in Session 2; their Session 1 results remain historical. No production changes, TCP/process restart, mutation acceptance or manual acceptance claimed."
+}

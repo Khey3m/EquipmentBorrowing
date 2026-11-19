@@ -1,0 +1,547 @@
+{
+  "session": 1,
+  "tested_source_commit": "cbd13733e9a13d1300c063e5a46de34e30a01395",
+  "run_times_from_trx": [
+    {
+      "creation": "2026-11-18T21:34:44.4551132+08:00",
+      "queuing": "2026-11-18T21:34:44.4551143+08:00",
+      "start": "2026-11-18T21:34:23.3201698+08:00",
+      "finish": "2026-11-18T21:34:53.9289497+08:00"
+    },
+    {
+      "creation": "2026-11-18T21:34:27.6297977+08:00",
+      "queuing": "2026-11-18T21:34:27.6297980+08:00",
+      "start": "2026-11-18T21:34:23.3327722+08:00",
+      "finish": "2026-11-18T21:34:39.9762164+08:00"
+    },
+    {
+      "creation": "2026-11-18T21:34:50.8678191+08:00",
+      "queuing": "2026-11-18T21:34:50.8678199+08:00",
+      "start": "2026-11-18T21:34:42.5567138+08:00",
+      "finish": "2026-11-18T21:34:55.6262695+08:00"
+    }
+  ],
+  "environment": {
+    "os": "Windows",
+    "dotnet_sdk": "10.0.404",
+    "target": "net10.0",
+    "postgresql": "18 (local service)",
+    "http_host": "WebApplicationFactory/TestServer; Production",
+    "fixed_local_campus_D": "2026-11-18",
+    "timezone": "Asia/Manila",
+    "fresh_snapshot_pooling": false
+  },
+  "build": {
+    "configuration": "Release",
+    "warnings": 0,
+    "errors": 0,
+    "evidence": "Observed dotnet build console output; no retained build log"
+  },
+  "total": {
+    "passed": 102,
+    "failed": 0,
+    "skipped": 0
+  },
+  "foundation_database_lifecycle": {
+    "created": [
+      "equipment_borrowing_lab6_65671d48dcdd4fb9a61f167c1078a240",
+      "equipment_borrowing_lab6_8299a82074d2490fa1311e29731ecdac",
+      "equipment_borrowing_lab6_4659d41bf7544b07998a4d0de88b9be6",
+      "equipment_borrowing_lab6_00453aa710c44052b0d4a47c23bbac4d"
+    ],
+    "dropped": [
+      "equipment_borrowing_lab6_65671d48dcdd4fb9a61f167c1078a240",
+      "equipment_borrowing_lab6_4659d41bf7544b07998a4d0de88b9be6",
+      "equipment_borrowing_lab6_8299a82074d2490fa1311e29731ecdac",
+      "equipment_borrowing_lab6_00453aa710c44052b0d4a47c23bbac4d"
+    ]
+  },
+  "archive": {
+    "file": "session1-trx.zip",
+    "sha256": "a3f5d9a1c7b0937f51d1a3da9d09f23167249103312f230cefb68a15eb4fcb1a",
+    "bytes": 24288
+  },
+  "projects": [
+    {
+      "file": "api-foundation.trx",
+      "sha256": "89f7622933b1ce4e6dbf6ad21c5350e4ed5ee24316452a1d4833118d08f9b106",
+      "counters": {
+        "total": "3",
+        "executed": "3",
+        "passed": "3",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      },
+      "tests": [
+        {
+          "name": "EquipmentBorrowing.ApiTests.FoundationTests.SeededHostUsesRealRoutesAndExactRelativeFixture",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.ApiTests.FoundationTests.SeparateScenariosRemainIndependentAndOwnedDatabasesAreRemoved",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.ApiTests.FoundationTests.FixedClockAndResetRestoreFixtureAfterMutationAndEmptyState",
+          "outcome": "Passed"
+        }
+      ]
+    },
+    {
+      "file": "backend.trx",
+      "sha256": "8dee797b58009aa1da12ac8cb0220d52f79b0d1a67db52e489e0606299f7e2b5",
+      "counters": {
+        "total": "76",
+        "executed": "76",
+        "passed": "76",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      },
+      "tests": [
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.InvalidRequestMakesNoWrites(scenario: \"duplicate\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.StudentManagementServiceTests.FindSupportsTrimmedCaseInsensitiveNumberAndNameAndEmptyResults",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.InvalidRequestMakesNoWrites(scenario: \"restricted\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingSearchTests.InvalidEnumCriteriaAreRejectedBeforeDatabaseAccess(invalidSort: True)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingSearchTests.CancellationPropagatesInsteadOfReportingConnectionFailure",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.InvalidRequestMakesNoWrites(scenario: \"invalid-date\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.Lab4DomainTests.ActiveLimitCountsEveryRequestedItem(active: 3, requested: 1, allowed: False)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.WorkflowSessionTests.RestrictedStudentCanReturnAndActualDateIsRecorded",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.Lab4DomainTests.ReturnAllowsEarlyReturnButRejectsInvalidAndRepeatedTransitions",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.StudentManagementServiceTests.RegistrationTrimsValuesDefaultsEligibleAndCommitsOnce",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.Lab4DomainTests.ActiveLimitCountsEveryRequestedItem(active: 0, requested: 0, allowed: False)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.Lab4DomainTests.ActiveLimitCountsEveryRequestedItem(active: -1, requested: 1, allowed: False)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.InvalidRequestMakesNoWrites(scenario: \"missing-student\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemPostgresTests.SuccessfulCheckoutPersistsBothLoansAndAvailability",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.EquipmentManagementServiceTests.InvalidRegistrationDoesNotWriteOrCommit(identifier: \" eq-010 \", name: \"Duplicate\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowEquipmentServiceTests.ExecuteAsync_ShouldSucceed_WhenRequestIsValid",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingSearchPostgresTests.SearchFiltersSortDirectionsTiesAndResetMatchControlledRecords",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.EquipmentManagementServiceTests.DescriptiveEditPreservesBorrowedAvailabilityAndIdentity",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.StudentManagementServiceTests.InvalidRegistrationDoesNotWriteOrCommit(number: \" s-007 \", name: \"Duplicate\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.InvalidRequestMakesNoWrites(scenario: \"invalid-id\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.IntegratedLifecyclePostgresTests.RegisterEditBorrowRestrictReturnCheckoutAndReloadPreserveHistory",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingSearchTests.InvalidEnumCriteriaAreRejectedBeforeDatabaseAccess(invalidSort: False)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.Lab4DomainTests.ActiveLimitCountsEveryRequestedItem(active: 2, requested: 2, allowed: False)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowEquipmentServiceTests.ExecuteAsync_ShouldFail_WhenStudentIsIneligible",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingSearchTests.CriteriaAreTrimmedAndCombinedWithoutDroppingOptions",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.WorkflowSessionTests.ValidBorrowCommitsBothWritesOnceAndDisposesSession",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.StudentManagementServiceTests.UnknownRegistrationCommitIsNotReplayedOrReportedAsSuccess",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.Lab4DomainTests.ActiveLimitCountsEveryRequestedItem(active: 0, requested: 3, allowed: True)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.EquipmentManagementServiceTests.InvalidRegistrationDoesNotWriteOrCommit(identifier: \" \", name: \"Name\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.PostgresModelTests.FrozenMigrationModelMatchesRuntimeModel",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.Lab4DomainTests.CampusDateUsesManilaCalendarRatherThanUtcCalendar",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemPostgresTests.ControlledFailureAfterWritesRollsBackAllChanges",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowEquipmentServiceTests.ExecuteAsync_ShouldFail_WhenEquipmentIsUnavailable",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.Lab4DomainTests.ActiveLimitCountsEveryRequestedItem(active: 2147483647, requested: 1, allowed: False)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.UnknownCommitDoesNotReplayWrites",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.WorkflowSessionTests.InvalidDateMakesNoWritesAndDoesNotCommit",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.InvalidRequestMakesNoWrites(scenario: \"unavailable\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingSearchTests.FailureDiffersFromEmptyAndDoesNotExposeDetails",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.WorkflowSessionTests.ActiveLoanBlocksIssueEvenIfAvailabilityFlagIsStale",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.InvalidRequestMakesNoWrites(scenario: \"one\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingHistoryTests.SubjectsAndHistoriesRemainDistinctWithBothStatuses(kind: Equipment)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingHistoryTests.EmptyMissingAndDatabaseErrorHaveDifferentOutcomes",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingSearchTests.DefaultRequestRestoresAllStatusesAndDefaultSort",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.StudentManagementServiceTests.InvalidRegistrationDoesNotWriteOrCommit(number: \"New\", name: \" \")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingHistoryTests.SubjectsAndHistoriesRemainDistinctWithBothStatuses(kind: Student)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.EquipmentManagementServiceTests.InvalidRegistrationDoesNotWriteOrCommit(identifier: \"New\", name: \" \")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.IntegratedLifecyclePostgresTests.CompetingRequestsCannotExceedStudentQuotaOrDuplicateActiveItem",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.InvalidRequestMakesNoWrites(scenario: \"missing\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.StudentManagementServiceTests.EligibilityChangesDoNotEditDescriptiveFields",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingHistoryTests.CallerCancellationIsNotReportedAsDatabaseFailure",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.EquipmentManagementServiceTests.RegistrationTrimsValuesAndDefaultsToAvailable",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.EquipmentManagementServiceTests.FindSupportsIdentifierNameAndEmptyResults",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.ValidRequestCommitsEveryItemExactlyAtLimit(active: 0, count: 3)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.StudentManagementServiceTests.InvalidRegistrationDoesNotWriteOrCommit(number: \" \", name: \"Name\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.WorkflowSessionTests.FailureAfterEquipmentWriteDoesNotCommitOrExposeProviderDetails",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.WorkflowSessionTests.UnknownCommitIsReportedWithoutSuccessOrReplay",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.EquipmentManagementServiceTests.UnknownCommitDoesNotReplayOrClaimSuccess",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.WorkflowSessionTests.RepeatedReturnDoesNotWriteOrCommit",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.IntegratedLifecyclePostgresTests.FailedConnectionDoesNotReportSuccessAndRecoveryWorks",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.Lab4DomainTests.StudentEditsNormalizeIdentifiersAndPreserveIdentityAndEligibility",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.EquipmentManagementServiceTests.AvailabilityChangedSinceSelectionRejectsStaleEdit",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.Lab4DomainTests.EquipmentDescriptiveEditsDoNotChangeAvailability",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.EquipmentManagementServiceTests.DuplicateEditPreservesExistingData",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.ValidRequestCommitsEveryItemExactlyAtLimit(active: 1, count: 2)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.InvalidRequestMakesNoWrites(scenario: \"over-limit\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.StudentManagementServiceTests.StaleEditIsRejectedBeforeMutation",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.FailureAfterFirstPersistedItemDisposesWithoutCommit",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.StudentManagementServiceTests.UpdatePreservesIdentityAndEligibilityAndClearsOptionalContact",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.InvalidRequestMakesNoWrites(scenario: \"empty\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingHistoryTests.DeactivationInvalidatesPendingReadsAndNavigationCanBeginAgain",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.Lab4DomainTests.ActiveLimitCountsEveryRequestedItem(active: 1, requested: 2, allowed: True)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.MultiItemCheckoutTests.InvalidRequestMakesNoWrites(scenario: \"active-loan\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.StudentManagementServiceTests.RepeatedEligibilityDoesNotWriteOrCommit",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingHistoryPostgresTests.RelatedHistoriesFilterSubjectsAndRetainBothStatusesAndEmptySubjects",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.EquipmentManagementServiceTests.MissingEquipmentRejectsWithoutWrites",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.Tests.BorrowingHistoryTests.OlderCompletionCannotReplaceLatestEvenIfProviderIgnoresCancellation",
+          "outcome": "Passed"
+        }
+      ]
+    },
+    {
+      "file": "ui-client.trx",
+      "sha256": "727f6a4940df002c29fed91f6baa106c97af8f7dd2e9c392096b308ce37fc7cd",
+      "counters": {
+        "total": "23",
+        "executed": "23",
+        "passed": "23",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      },
+      "tests": [
+        {
+          "name": "EquipmentBorrowing.UiTests.RetrievalHttpClientTests.HistoryDistinguishesEmptyMissingAndMixedSubjectPayload(mode: \"missing\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.BorrowingHttpClientTests.ActiveListWithoutRequiredRelatedDisplayDataIsNotReady",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.RetrievalHttpClientTests.FullDesktopCompositionLoadsThroughHttpWithoutPersistenceServices",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.RetrievalHttpClientTests.HistoryDistinguishesEmptyMissingAndMixedSubjectPayload(mode: \"empty\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.HttpClientTests.MalformedSuccessfulMutationIsUnknownNotFalseSuccess(body: \"{broken\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.BorrowingHttpClientTests.IncompleteOrMismatchedMultiSuccessIsUnknown(empty: False)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.WorkflowUiTests.EveryWorkflowViewLoadsAndLaysOutWithoutStartingAProductionDatabase",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.RetrievalHttpClientTests.HistoryDistinguishesEmptyMissingAndMixedSubjectPayload(mode: \"mixed\")",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.BorrowingHttpClientTests.LostSingleIssueResponseBlocksAnotherIssueUntilRefresh",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.HttpClientTests.MalformedSuccessfulMutationIsUnknownNotFalseSuccess(body: \"{\\\"id\\\":1,\\\"studentNumber\\\":\\\"S1\\\",\\\"fullName\\\":\\\"\"\u00b7\u00b7\u00b7)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.HttpClientTests.ServerUnknownOutcomeIsNotTreatedAsOrdinary500",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.BorrowingHttpClientTests.ReturnRequiresConfirmationSendsEmptyObjectAndRefreshesActiveList",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.HttpClientTests.ChangedSelectionIsRefreshedBeforeAnyPutIsSent",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.WorkflowUiTests.HistorySelectionReplacesRowsAndDistinguishesEmptyFromMissing",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.RetrievalHttpClientTests.HistoryLateHttpResponseCannotMixNewSubjectRows",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.RetrievalHttpClientTests.SearchLateHttpResponseCannotOverwriteNewCriteria",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.HttpClientTests.LostMutationResponseBlocksWritesUntilFreshReadWithoutReplay",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.BorrowingHttpClientTests.IncompleteOrMismatchedMultiSuccessIsUnknown(empty: True)",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.HttpClientTests.SlowReadReturnsPendingTaskAndExposesBusyState",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.HttpClientTests.ReadTransportFailureAndReceived500AreDistinctAndSafe",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.WorkflowUiTests.ModernShellLoadsProductionThemeAndKeepsAllNavigationAtMinimumSize",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.BorrowingHttpClientTests.LostMultiCheckoutResponseBlocksResubmissionWithoutReplay",
+          "outcome": "Passed"
+        },
+        {
+          "name": "EquipmentBorrowing.UiTests.WorkflowUiTests.SearchBindingRemainsResponsiveAndLateResultCannotOverwriteNewCriteria",
+          "outcome": "Passed"
+        }
+      ]
+    }
+  ],
+  "scope": "Three infrastructure tests and 99 existing regression cases. Full TC6 objectives and manual acceptance remain Not Run. No TCP/process restart, server fault or unknown acknowledgement experiment claimed."
+}
