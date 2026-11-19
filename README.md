@@ -1,6 +1,6 @@
 # Campus Equipment Borrowing System - Lab 5
 
-Lab 6 continues this implementation on `lab6/automated-verification`: [two-week session plan](docs/lab6/session-plan.md), [progress](docs/lab6/progress.md), [baseline and assertion audit](docs/lab6/baseline.md), [traceability](docs/lab6/traceability.md), and [execution/defect records](docs/lab6/test-execution.md). Session 1 infrastructure is complete: three real HTTP/PostgreSQL foundation tests and all 99 existing regression cases passed with no skips. Full TC6 objectives and manual acceptance remain pending. The Lab 5 instructions and historical results below retain their original scope.
+Lab 6 continues this implementation on `lab6/automated-verification`: [two-week session plan](docs/lab6/session-plan.md), [progress](docs/lab6/progress.md), [baseline and assertion audit](docs/lab6/baseline.md), [traceability](docs/lab6/traceability.md), and [execution/defect records](docs/lab6/test-execution.md). Sessions 1-2 are complete: TC6-U01/U02/U04/U07/U08 and the three foundation regressions passed in Session 2 without skips; the existing 99 backend/UI cases last passed in Session 1. The other 17 automated objectives and manual acceptance remain pending. The Lab 5 instructions and historical results below retain their original scope.
 
 Continues the Lab 4 Avalonia application with an independently runnable ASP.NET Core API and PostgreSQL. All sixteen API contracts are implemented. As of Session 8, all seven Desktop screens use asynchronous HTTP; Desktop has no Infrastructure, EF Core, Npgsql or direct database dependency.
 
@@ -37,7 +37,7 @@ dotnet test tests/EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj --con
 dotnet test tests/EquipmentBorrowing.UiTests/EquipmentBorrowing.UiTests.csproj --configuration Release --no-build --logger 'trx;LogFileName=ui-client.trx' --results-directory TestResults/lab6/local
 ```
 
-Session 1 observed results and compact raw TRX archive are linked from [the execution record](docs/lab6/test-execution.md). Lab 6 CI wiring is scheduled for Session 8; the new branch does not yet trigger the existing push-only branch filter.
+Observed results and compact raw TRX archives for Sessions 1-2 are linked from [the execution record](docs/lab6/test-execution.md). The API test command now executes eight tests, including five read objectives; no application/fixture source changes were needed in Session 2. Lab 6 CI wiring is scheduled for Session 8; the new branch does not yet trigger the existing push-only branch filter.
 
 ## Application prerequisites
 

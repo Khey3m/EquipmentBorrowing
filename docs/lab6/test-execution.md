@@ -1,21 +1,21 @@
 # Lab 6 test execution and defect record
 
-Session 1 foundation executed; full TC6 objectives/manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. The table below tracks full objectives; infrastructure and supporting regression results are recorded separately.
+Sessions 1-2 executed. TC6-U01/U02/U04/U07/U08 passed; the other 17 automated objectives and both manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
 
 Each execution entry must record source commit, run date/environment, PostgreSQL version and isolated database alias, D/clock arrangement, exact test command or manual method, expected and observed behavior, status, evidence and any defect/correction/retest. Keep credentials out of commands and output. Link focused TRX, HTTP exchanges, fresh PostgreSQL reads and short manual captures rather than redundant screenshots.
 
-The table records initial status. Add dated execution entries below as work happens; replace Pending with exact file/class/method references only after implementation. E07a/b/c have separate rows to prevent a transport-only test from hiding missing server/database evidence.
+The table records current status. Add dated execution entries below as work happens; replace Pending with exact file/class/method references only after implementation. E07a/b/c have separate rows to prevent a transport-only test from hiding missing server/database evidence. Session 2 methods are in `tests/EquipmentBorrowing.ApiTests/ReadApiTests.cs`.
 
 | Objective | Planned session | Expected assertion/observation summary | Actual implementation / manual method | Observed | Status | Defect / correction / retest | Evidence |
 |---|---|---|---|---|---|---|---|
-| TC6-U01 | 2 | Exact seven catalog IDs/names/availability; empty [] | Pending | Not executed | Not Run | None recorded | Pending |
-| TC6-U02 | 2 | Only E2/E3/E6/E7 available; none available [] | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-U01 | 2 | Exact seven catalog IDs/names/availability; empty [] | `ReadApiTests.U01_CatalogReturnsExactFixtureAndEmptyArray` | Exact seven/empty, 200; unchanged SQL | Passed | No defect; no correction/retest needed | [Session 2](evidence/session2-summary.json) |
+| TC6-U02 | 2 | Only E2/E3/E6/E7 available; none available [] | `ReadApiTests.U02_AvailableFilterIncludesOnlyAvailableItemsAndHandlesNone` | Exact available four; none available [] with seven items retained, 200; unchanged SQL | Passed | No defect; no correction/retest needed | [Session 2](evidence/session2-summary.json) |
 | TC6-U03 | 4 | S4/E2 201, Location/GET, D, active durable loan | Pending | Not executed | Not Run | None recorded | Pending |
-| TC6-U04 | 2 | Active E1/E4/E5 with correct students; exclude returned E3 | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-U04 | 2 | Active E1/E4/E5 with correct students; exclude returned E3 | `ReadApiTests.U04_ActiveLoansHaveExactIdsAndRelatedRecordsWithoutReturnedLoan` | Exact three borrowing IDs/relationships/dates; returned E3 excluded; unchanged SQL | Passed | No defect; no correction/retest needed | [Session 2](evidence/session2-summary.json) |
 | TC6-U05 | 4 | Return D; same ID/history; E1 available; repeat 409 unchanged | Pending | Not executed | Not Run | None recorded | Pending |
 | TC6-U06 | 4 | S4/E2/E6 201; both IDs/relationships; both unavailable | Pending | Not executed | Not Run | None recorded | Pending |
-| TC6-U07 | 2 | Correct S1 active/returned history; S4 []; missing 404 | Pending | Not executed | Not Run | None recorded | Pending |
-| TC6-U08 | 2 | E1/E3 correct borrower/state; E2 []; missing 404 | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-U07 | 2 | Correct S1 active/returned history; S4 []; missing 404 | `ReadApiTests.U07_StudentHistoryDistinguishesMixedEmptyAndMissingSubjects` | S1 active E1/returned E3; S4 []; missing detail/history 404; unchanged SQL | Passed | No defect; no correction/retest needed | [Session 2](evidence/session2-summary.json) |
+| TC6-U08 | 2 | E1/E3 correct borrower/state; E2 []; missing 404 | `ReadApiTests.U08_EquipmentHistoryDistinguishesActiveReturnedEmptyAndMissingSubjects` | E1 active/E3 returned for S1; E2 []; missing detail/history 404; unchanged SQL | Passed | No defect; no correction/retest needed | [Session 2](evidence/session2-summary.json) |
 | TC6-U09 | 5 | Partial search/all filters/sorts/combinations/reset/no match/stable ties | Pending | Not executed | Not Run | None recorded | Pending |
 | TC6-U12 | 3 | Unique ST-500 201; ID/defaults/fields/Location/GET/fresh row | Pending | Not executed | Not Run | None recorded | Pending |
 | TC6-U13 | 3 | API-02 match/no match; update fields; same ID/history foreign keys | Pending | Not executed | Not Run | None recorded | Pending |
@@ -56,11 +56,37 @@ Commands: root README Lab 6 setup, full Release solution build, then all three t
 
 Total: **102 passed, 0 failed, 0 skipped**, including three infrastructure tests. Four owned foundation databases were created/dropped across those tests. Compact raw output: [three TRX files in ZIP](evidence/session1-trx.zip); checksums/counters/method names/fixture database lifecycle are in [summary](evidence/session1-summary.json). Build output was observed directly; the TRX archive contains test output rather than a build log.
 
-Scope limits: TestServer exercises middleware/routing/JSON and real database services but not TCP/process restart; seed setup is direct EF followed by HTTP ID discovery; this is not complete U01/U03/E08 acceptance. Empty/fixture/date checks are foundation evidence only. No manual checks, real-server fault injection, unknown-acknowledgement experiment or Lab 6 CI execution is claimed. All 22 full objectives and MA6-01/02 retain Not Run until their sessions implement and execute complete required assertions. No failed test or application correction occurred in this session.
+Scope limits: TestServer exercises middleware/routing/JSON and real database services but not TCP/process restart; seed setup is direct EF followed by HTTP ID discovery; this is not complete U01/U03/E08 acceptance. Empty/fixture/date checks are foundation evidence only. No manual checks, real-server fault injection, unknown-acknowledgement experiment or Lab 6 CI execution is claimed. At the Session 1 checkpoint all 22 full objectives and MA6-01/02 remained Not Run. No failed test or application correction occurred in that session.
+
+### Session 2 - catalog, available items, active loans and histories
+
+Executed on 2026-11-20 at source `95a882c` (unchanged tested contents committed after the run). Full revision, actual timestamps, all eight test names, HTTP bodies and checksums: [summary](evidence/session2-summary.json). Raw test output with fresh physical PostgreSQL before/after snapshots: [TRX archive](evidence/session2-trx.zip). Environment: Windows/.NET SDK 10.0.404/net10.0, real local PostgreSQL 18, actual ASP.NET middleware/routing/JSON via TestServer in Production. D stays fixed at **2026-11-18**, independently of the execution date.
+
+Pulled upstream with `--ff-only` before work; branch was current. Ran:
+
+```powershell
+dotnet build EquipmentBorrowing.slnx --configuration Release --no-restore
+$env:POSTGRES_INTEGRATION_ADMIN_CONNECTION = $env:EQUIPMENT_BORROWING_CONNECTION_STRING
+dotnet test tests/EquipmentBorrowing.ApiTests/EquipmentBorrowing.ApiTests.csproj --configuration Release --no-build --logger 'trx;LogFileName=api-reads.trx' --results-directory TestResults/lab6/session2
+```
+
+The private existing connection used a role with disposable-database permissions; it was not printed or committed. Result: **build passed with 0 warnings/errors; 8 tests passed, 0 failed, 0 skipped** (five new read objectives plus three foundation regressions). The unchanged 76 backend and 23 UI/client cases were not rerun; Session 1 remains their latest recorded execution. No application correction or failed run occurred.
+
+| Objective / method suffix in `ReadApiTests` | Expected | Observed |
+|---|---|---|
+| U01 `CatalogReturnsExactFixtureAndEmptyArray` | Seven unique IDs/codes, exact names/availability and null descriptions, then empty catalog | 200 with exact seven; independently reset empty subcase returned 200 [] |
+| U02 `AvailableFilterIncludesOnlyAvailableItemsAndHandlesNone` | Only E2/E3/E6/E7, excluding E1/E4/E5; none-available [] | 200 with exact available four; reset/prepared none-available subcase returned 200 []; unfiltered catalog retained all seven unavailable items |
+| U04 `ActiveLoansHaveExactIdsAndRelatedRecordsWithoutReturnedLoan` | Exactly E1/E4/E5; generated loan IDs, correct students/display data/dates; no returned E3 | 200 with exact three loans, related values and dates, matching fresh persisted rows; E3 excluded |
+| U07 `StudentHistoryDistinguishesMixedEmptyAndMissingSubjects` | API-03 detail plus S1 active E1/returned E3, S4 empty, missing subject 404 | Both real subjects/detail/history 200; exact S1 relationships/dates/status; S4 []; missing detail/history 404/not_found |
+| U08 `EquipmentHistoryDistinguishesActiveReturnedEmptyAndMissingSubjects` | API-07 detail plus E1 active S1, E3 returned S1, E2 empty, missing subject 404 | Details/history 200 with exact relationships/dates/status or []; missing detail/history 404/not_found |
+
+Every tested GET asserts JSON content type and expected status and compares **every row/field of Students, Equipment and Borrowings** using independent physical PostgreSQL connections before/after. All **20 captured GETs** satisfied these unchanged-state assertions (16 returned 200; four returned 404). Generated loan IDs are discovered from actual HTTP history/list responses and matched to independent no-tracking persisted rows. Each scenario owns a fresh database; resets occur before each separate subcase. The none-available setup adds genuine active loans after reset, respects student limits, and retains the existing returned history rather than merely deleting equipment. Nine owned databases were created/dropped across the eight tests; lifecycle records are retained in the summary.
+
+Coverage: API-01, API-03, API-07, API-14 Active query, API-15 and API-16. U09 search/sort and other later scenarios remain pending even where they share these routes. This session establishes five complete automated objectives, not manual acceptance, full protocol-error coverage, TCP transport, API process restart or transaction-failure recovery. CI branch wiring remains planned for Session 8.
 
 ## Defects, corrections and regression
 
-No application defect has been established in Session 1; no failed run or runtime correction was concealed. The Lab 5 evidence reconciliation is recorded in baseline.md with its remaining qualifications.
+No application defect has been established in Sessions 1-2; no failed run or runtime correction was concealed. The Lab 5 evidence reconciliation is recorded in baseline.md with its remaining qualifications.
 
 Use one record per discovered defect:
 
