@@ -1,6 +1,6 @@
 # Lab 6 test execution and defect record
 
-Sessions 1-4 executed. Fifteen automated objectives passed. Seven automated objectives and both manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
+Sessions 1-5 executed. Seventeen automated objectives passed, including all fourteen use cases. Five automated objectives and both manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
 
 Each execution entry must record source commit, run date/environment, PostgreSQL version and isolated database alias, D/clock arrangement, exact test command or manual method, expected and observed behavior, status, evidence and any defect/correction/retest. Keep credentials out of commands and output. Link focused TRX, HTTP exchanges, fresh PostgreSQL reads and short manual captures rather than redundant screenshots.
 
@@ -16,7 +16,7 @@ The table records current status. Add dated execution entries below as work happ
 | TC6-U06 | 4 | S4/E2/E6 201; both IDs/relationships; both unavailable | `LifecycleApiTests.U06_CheckoutPersistsBothLoansAndAvailability` | 201 produced two distinct durable loans and both items became unavailable. | Passed | None observed | [Session 4](evidence/session4-trx.zip) |
 | TC6-U07 | 2 | Correct S1 active/returned history; S4 []; missing 404 | `ReadApiTests.U07_StudentHistoryDistinguishesMixedEmptyAndMissingSubjects` | S1 active E1/returned E3; S4 []; missing detail/history 404; unchanged SQL | Passed | No defect; no correction/retest needed | [Session 2](evidence/session2-summary.json) |
 | TC6-U08 | 2 | E1/E3 correct borrower/state; E2 []; missing 404 | `ReadApiTests.U08_EquipmentHistoryDistinguishesActiveReturnedEmptyAndMissingSubjects` | E1 active/E3 returned for S1; E2 []; missing detail/history 404; unchanged SQL | Passed | No defect; no correction/retest needed | [Session 2](evidence/session2-summary.json) |
-| TC6-U09 | 5 | Partial search/all filters/sorts/combinations/reset/no match/stable ties | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-U09 | 5 | Partial search/all filters/sorts/combinations/reset/no match/stable ties | `ProtocolApiTests.U09_SearchFiltersSortsAndResets` | 14 GETs matched expected IDs, filters, date orders, ascending ID ties, empty results and reset. | Passed | None observed | [Session 5 TRX](evidence/session5-trx.zip) |
 | TC6-U12 | 3 | Unique ST-500 201; ID/defaults/fields/Location/GET/fresh row | `ManagementApiTests.U12_RegisterStudent` | 201 with generated ID and Location. GET and fresh SQL matched. | Passed | None observed | [Session 3](evidence/session3-trx.zip) |
 | TC6-U13 | 3 | API-02 match/no match; update fields; same ID/history foreign keys | `ManagementApiTests.U13_EditStudentAndPreserveHistory` | Search matched ST-100 and returned an empty no-match result. Edits persisted with the same ID and unchanged loan rows. | Passed | None observed | [Session 3](evidence/session3-trx.zip) |
 | TC6-U14 | 3 | Restrict/409 issue/return/permit/reissue; retained history | `ManagementApiTests.U14_RestrictionBlocksIssueButAllowsReturnAndReissue` | Restriction rejected checkout with 409. Return and re-enabled checkout succeeded with retained history. | Passed | None observed | [Session 3](evidence/session3-trx.zip) |
@@ -24,7 +24,7 @@ The table records current status. Add dated execution entries below as work happ
 | TC6-U16 | 3 | Edit E1 description; same ID/unavailable/active history | `ManagementApiTests.U16_EditEquipmentAndPreserveAvailabilityAndHistory` | Edits persisted with the same ID, unavailable state and unchanged loan rows. | Passed | None observed | [Session 3](evidence/session3-trx.zip) |
 | TC6-E01 | 6 | Normalized create/update duplicates 409; direct PostgreSQL rejects; fresh counts | Pending | Not executed | Not Run | None recorded | Pending |
 | TC6-E02 | 4 | Single/multi exactly-three 201; over-limit 409; reset each subcase | `LifecycleApiTests.E02_MultipleAtLimitSucceeds`, `LifecycleApiTests.E02_MultipleOverLimitLeavesBothItemsAvailable`, `LifecycleApiTests.E02_SingleAtLimitSucceeds` | Single and multi-item checkout reached exactly three active loans. Over-limit checkout returned 409 with no writes. | Passed | None observed | [Session 4](evidence/session4-trx.zip) |
-| TC6-E03 | 5 | Invalid 400/missing-route 404/method 405/conflict 409; safe/unchanged | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-E03 | 5 | Invalid 400/missing-route 404/method 405/conflict 409; safe/unchanged | `ProtocolApiTests.E03_ProtocolErrorsHaveSafeJsonAndNoWrites` | 10 requests returned the expected 400/404/405/409 JSON errors and preserved PostgreSQL state. | Passed | None observed | [Session 5 TRX](evidence/session5-trx.zip) |
 | TC6-E04 | 7 | Fault reached after PostgreSQL write attempt; safe 500; independent rollback state | Pending | Not executed | Not Run | None recorded | Pending |
 | TC6-E05 | 6 | Stale 409; one active E2; other item unchanged; direct DB rejects second active row | Pending | Not executed | Not Run | None recorded | Pending |
 | TC6-E06 | 3 | Null clearing 200; required/protected 400; duplicate 409; intact history | `ManagementApiTests.E06_ClearOptionalFieldsAndRejectInvalidEdits` | Null clears persisted. Blank/protected edits returned 400 and duplicates returned 409 with unchanged SQL. | Passed | None observed | [Session 3](evidence/session3-trx.zip) |
@@ -114,9 +114,25 @@ All 20 API tests passed with zero failures or skips. Six new tests fulfilled fou
 
 [Raw TRX archive](evidence/session4-trx.zip). Archive SHA-256 is `5f985d1b95f9141e3a548ab8aafce5b5adc80d85b55889988aa2fe37e4f6890f`.
 
+### Session 5 - search, protocol responses and OpenAPI
+
+Tested source `c7fdf61d6da75b843355e688daa6742fc5536a1c` on Windows against local PostgreSQL 18 through ASP.NET Core TestServer. The fixed campus date was 2026-11-18. Each test used a disposable database.
+
+```powershell
+dotnet test tests/EquipmentBorrowing.ApiTests/EquipmentBorrowing.ApiTests.csproj -c Release --logger 'trx;LogFileName=api-protocol.trx' --results-directory TestResults/lab6/session5
+```
+
+All 23 API tests passed with zero failures or skips. U09 exercised student name, student number and equipment name searches, all status filters, both date sorts in both directions, ties, combined filters, empty results and reset. E03 checked malformed JSON, missing or wrong-type fields, invalid dates and query values, duplicate checkout items, a missing resource, an unknown route, a wrong method and an ineligible borrower. Each rejected request had a safe JSON error and an independently verified unchanged PostgreSQL snapshot.
+
+`ProtocolApiTests.OpenApiMatchesTheReviewedContract` matched the live paths, methods, operation IDs, parameters, request bodies, response statuses and component schemas to the retained Lab 5 OpenAPI document. Sessions 2?5 have real HTTP assertions for all 16 business routes. Later edge and manual objectives remain pending.
+
+The initial test build reported CS1061 because the new test file lacked the JSON HTTP extensions import. Adding the import resolved the build error before the successful full API test run.
+
+[Session 5 TRX](evidence/session5-trx.zip). Archive SHA-256 is `7806396fd6d8a3f68e6797d9b5a9357d7e83067990c016ed234ce996cb3e41bb`.
+
 ## Defects, corrections and regression
 
-No application defect has been established in Sessions 1-4; no failed run or runtime correction was concealed. The Lab 5 evidence reconciliation is recorded in baseline.md with its remaining qualifications.
+No application defect has been established in Sessions 1-5. The Session 5 test compilation correction is recorded above. The Lab 5 evidence reconciliation is recorded in baseline.md with its remaining qualifications.
 
 Use one record per discovered defect:
 
