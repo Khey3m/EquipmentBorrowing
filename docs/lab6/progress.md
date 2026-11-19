@@ -1,12 +1,12 @@
 # Lab 6 progress
 
-Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 branch: test infrastructure/baseline audit followed by five read objectives, without production application changes. TC6-U01/U02/U04/U07/U08 passed; the other 17 automated objectives and manual acceptance remain pending.
+Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 branch: test infrastructure/baseline audit followed by five read objectives, without production application changes. TC6-U01/U02/U04/U07/U08 passed; Session 3 completed six more objectives. Eleven automated objectives and manual acceptance remain pending.
 
 | Week | Session | Deliverable | Status |
 |---|---|---|---|
 | 1 | 1 | Baseline reconciliation, assertion audit, real HTTP xUnit host, fixed clock and isolated fixture | Complete |
 | 1 | 2 | Catalog, filtering, active lists and histories | Complete |
-| 1 | 3 | Management, eligibility, optional/protected fields | Not started |
+| 1 | 3 | Management, eligibility, optional/protected fields | Complete |
 | 1 | 4 | Borrowing, returns, multi-checkout and exact limits | Not started |
 | 1 | 5 | Search, protocol errors, all sixteen API contracts/OpenAPI | Not started |
 | 2 | 6 | PostgreSQL constraints, uniqueness and stale conflicts | Not started |
@@ -27,4 +27,8 @@ On 2026-11-20, fetched origin and pulled the Lab 6 branch with `--ff-only`; alre
 
 Full Release build: 0 warnings/errors. All eight API tests passed with no failures/skips (five objectives plus three foundation regressions). Recorded 20 GETs and 20 unchanged before/after pairs; nine owned databases created/dropped. Source commit: `95a882c`. [Execution and scope](test-execution.md#session-2---catalog-available-items-active-loans-and-histories), [summary](evidence/session2-summary.json) and [raw TRX](evidence/session2-trx.zip). No production fix was needed; the 99 older backend/UI tests were not rerun because only the new test file changed.
 
-Next checkpoint: Session 3, management, eligibility and optional/protected fields (U12/U13/U14/U15/U16/E06). Explain each session before implementation and report actual checks, corrections, remaining limits and Git commit/push afterward. Maintain this ledger instead of redundant session reports.
+## Session 3 - completed
+
+U12/U13/U14/U15/U16/E06 passed in the real HTTP and PostgreSQL suite. The suite passed 14 tests with zero failures or skips. Source commit `b85b40c`. [Execution record](test-execution.md#session-3---management-eligibility-and-protected-edits).
+
+Next checkpoint is Session 4, covering borrowing, returns, multi-item checkout and the active loan limit.
