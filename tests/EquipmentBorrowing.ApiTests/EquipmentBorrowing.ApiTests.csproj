@@ -13,4 +13,7 @@
     <ProjectReference Include="../../src/EquipmentBorrowing.Api/EquipmentBorrowing.Api.csproj" />
   </ItemGroup>
   <ItemGroup><Using Include="Xunit" /></ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../docs/lab5/openapi-current.json" LogicalName="ReviewedOpenApi.json" />
+  </ItemGroup>
 </Project>
