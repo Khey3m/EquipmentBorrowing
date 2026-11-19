@@ -33,20 +33,44 @@ footer._p.append(field)
 def para(text): doc.add_paragraph(text)
 def bullet(text): doc.add_paragraph(text, "List Bullet")
 def code(text):
+    text = text.strip()
+    if text.startswith("CREATE DATABASE"):
+        location = "pgAdmin > right-click postgres > Query Tool. Paste SQL and press F5."
+    elif text.startswith(("SELECT", "BEGIN;", "WITH", "INSERT")):
+        location = "pgAdmin > right-click YOUR WALKTHROUGH DATABASE > Query Tool. Paste SQL and press F5; inspect Data Output."
+    elif text.startswith("$walkthroughSecret"):
+        location = "Visual Studio > View > Terminal > Developer PowerShell, TERMINAL 1 (API). Enter the connection privately; do not screenshot credentials."
+    elif text.startswith("$env:EQUIPMENT_BORROWING_API_BASE_URL"):
+        location = "TERMINAL 2 (Desktop), from the project root. Paste commands and press Enter; leave Terminal 1/API running."
+    elif text.startswith(("$workingApiConnection", "$env:EQUIPMENT_BORROWING_CONNECTION_STRING = $workingApiConnection")):
+        location = "TERMINAL 1 (API), after pressing Ctrl+C to stop its current server."
+    elif text.startswith("cd "):
+        location = "ALL THREE PowerShell tabs, once per tab, before other terminal commands."
+    elif text.startswith(("curl.exe", "$matches")):
+        location = "TERMINAL 3 (Requests). Keep API running except for the deliberate outage step."
+    else:
+        location = "TYPE THESE VALUES INTO THE APP fields described in this step. This is data, not executable code."
+    doc.add_paragraph("WHERE TO PASTE / ENTER: " + location).runs[0].bold = True
     table = doc.add_table(rows=1, cols=1)
     table.style = "Table Grid"
-    table.cell(0, 0).text = text.strip()
+    table.cell(0, 0).text = text
     for p in table.cell(0, 0).paragraphs:
         for run in p.runs:
             run.font.name = "Consolas"
             run.font.size = Pt(9)
     para("")
 
+SCREENSHOT_RESULTS = [('Terminal 3 - Requests', 'Show the GET command/URL, HTTP 200 and equipment JSON. Keep Desktop closed. Include seeded equipment names/codes; never capture the connection string.'), ('Browser', 'Show http://127.0.0.1:5085/openapi/v1.json in the address bar and part of its paths/schemas. This proves contract retrieval; retain the actual JSON in the source evidence too.'), ('Desktop Students + pgAdmin', 'Capture the registered ST-UI-600 record and original SQL Id, full name/contact and IsEligibleToBorrow=true BEFORE editing. Use S03a/S03b if two images are needed.'), ('Desktop Students + pgAdmin', 'Show Demo Edited Student, the SAME Id as S03, ContactInformation=NULL and eligible=true AFTER Save and a newly executed SQL query.'), ('Desktop Manage equipment', 'Show selected camera, its code/name, and registration/edit controls. Show availability is read-only; do not claim an ID comparison without SQL.'), ('pgAdmin walkthrough DB', 'Capture equipment SQL before AND after editing: same camera Id, Demo Edited Camera, Description=NULL and IsAvailable=true. Label S06a before / S06b after.'), ('Desktop Active borrowings', 'Show the new ST-UI-600 camera loan, Active status, checkout/expected dates. Keep a before/after SQL result from the issue step too.'), ('Desktop Equipment catalog', 'Show camera On loan; apply Available items only and show it is excluded. Capture both filter states if needed.'), ('Desktop Active borrowings', 'Capture selected camera loan with confirmation ticked BEFORE return, then refreshed Active list AFTER return. Existing seeded active loans may remain: only this camera loan must disappear.'), ('Desktop history + pgAdmin', 'Show SAME borrowing Id now Returned, actual return date, camera IsAvailable=true. Retained history must be visible in fresh SQL; capture S10a/S10b if needed.'), ('Desktop Multiple checkout', 'Before: selected student and exactly EQ-UI-601/602 checked, shared future due date. After: success/refresh and cleared selections. Capture two images if needed.'), ('Desktop Active borrowings + pgAdmin', 'Show two Active tripod/microphone loans and prior Returned camera loan; fresh SQL shows both active items unavailable and the expected dates.'), ('Desktop Borrowing histories - Student', 'Show ST-UI-600 selected with one Returned and two Active rows, related names/codes/dates. The instructor seed has other loans; this subject must not show those.'), ('Desktop Borrowing histories', 'Show returned camera history and an EMPTY control (ST-UI-603 or EQ-UI-603). Label subject/mode for every image so empty is distinguishable from load failure.'), ('Desktop Search borrowings', 'Show visible student search, Active filter, expected-return date/direction and exactly the two matching Active loans. For equal dates, IDs remain ascending.'), ('Desktop Search borrowings', 'Capture NON-EXISTENT-999 with a clear no-match message; after Clear, show All/default borrowed-date/ascending and the complete list. With four seeded plus three demo loans, seven rows are expected.'), ('Terminal 3 - Requests', 'Show the independent PUT target/command context, HTTP 200 and JSON with Demo External Edit. Keep the API-discovered student Id, not a guessed key.'), ('Desktop Students + pgAdmin', 'After Search/Refresh and reselection, show Demo External Edit; fresh SQL confirms same Id, NULL contact and unchanged relationships. This demonstrates external change refresh.'), ('Desktop + Terminal 3', 'With API stopped, show No HTTP response feedback, and curl connection failure. There is NO HTTP status here; do not label it HTTP 500.'), ('Desktop + Terminal 3', 'With API running but invalid DB port, show HTTP 500 plus safe JSON error and distinct server/database UI feedback. Exclude private connection settings and server stack traces.'), ('Same Desktop window + pgAdmin', 'After restoring API and clicking Retry/Refresh, show loaded catalog and cleared failure feedback; fresh SQL confirms no lost/partial saved data.'), ('Reopened Desktop', 'Show persisted Demo External Edit, Active loans and Returned history after a full Desktop restart against the SAME API/database. Use multiple images to cover these screens.'), ('pgAdmin walkthrough DB', 'Execute student/equipment/loan queries again AFTER restart. Show stable IDs, NULL fields, Returned camera/available flag, and two Active unavailable items.'), ('Visual Studio', 'Capture DesktopComposition.cs HTTP registrations, Desktop csproj without EF/Infrastructure, and API BackendServices.cs persistence registrations. Label each code image.'), ('Browser CI + evidence documents', 'Show successful run 43710719990 and 99 tests; show traceability and exact retained rollback/HTTP evidence reference. This is existing automated evidence, not a claim of a newly performed test.')]
+
 shot_number = 0
 def shot(caption):
     global shot_number
     shot_number += 1
     doc.add_paragraph(f"S{shot_number:02} - {caption}").runs[0].bold = True
+    location, result = SCREENSHOT_RESULTS[shot_number-1]
+    bullet("TAKE SCREENSHOT IN: " + location)
+    bullet("RESULT THAT MUST BE VISIBLE: " + result)
+    bullet(f"Suggested filename: S{shot_number:02}.png (or S{shot_number:02}a / S{shot_number:02}b for before/after).")
     table = doc.add_table(rows=1, cols=1)
     table.style = "Table Grid"
     table.rows[0].height = Inches(1.1)
@@ -58,13 +82,31 @@ def shot(caption):
 def step(title):
     doc.add_page_break()
     doc.add_heading(title, 1)
+    number = title.split(" ")[1] if title.startswith("Step ") else "Preparation" if title.startswith("Preparation") else None
+    places = {
+        "Preparation":"pgAdmin for SQL; Visual Studio PowerShell for build/migration/API/Desktop commands.",
+        "1":"Terminal 3 and browser, with Desktop closed.",
+        "2":"Desktop > Students, then pgAdmin on walkthrough database.",
+        "3":"Desktop > Manage equipment / Students, then pgAdmin.",
+        "4":"Desktop > Equipment catalog / Active borrowings, then pgAdmin.",
+        "5":"Desktop > Active borrowings / Histories, then pgAdmin.",
+        "6":"Desktop > Multiple checkout / Active borrowings, then pgAdmin.",
+        "7":"Desktop > Borrowing histories; switch Student/Equipment mode.",
+        "8":"Desktop > Search borrowings.",
+        "9":"Terminal 3 for independent API edit, Desktop Students for refresh, pgAdmin for readback.",
+        "10":"Terminal 1 to stop/change/restore API; Terminal 3 for curl; SAME Desktop for retry; pgAdmin for verification.",
+        "11":"Terminal 2 to reopen Desktop; pgAdmin for fresh readback.",
+        "12":"Visual Studio source files, browser CI and project evidence documents."
+    }
+    if number in places:
+        doc.add_paragraph("WORK IN: " + places[number]).runs[0].bold = True
 
 def expected(text):
     doc.add_paragraph("Expected: " + text).runs[0].bold = True
     para("Observed: [Fill after execution; do not copy the expected result as an observation.]")
     para("Result: [Pass / Fail / Not run]    Evidence filename: __________________")
 
-doc.add_heading("DEMO LAB 5", 0)
+doc.add_heading("DEMO LAB 5 - Detailed manual guide", 0)
 doc.add_heading("Step-by-step walkthrough and screenshot evidence draft", 1)
 para("Campus Equipment Borrowing System - API Integration and Acceptance Testing")
 para("DRAFT: Screenshot boxes and observed-result fields are intentionally blank. This document does not mark T07 passed.")
@@ -81,6 +123,18 @@ for text in [
 para("Date: __________  Tested commit: __________  Demo database: __________")
 para("Campus date (Asia/Manila): __________  Shared future due date: __________")
 
+doc.add_heading("Where does each code block go?", 1)
+for item in [
+    "SQL beginning CREATE / SELECT / BEGIN / INSERT / WITH: pgAdmin Query Tool. Press F5 or Execute; inspect Data Output.",
+    "Commands beginning dotnet / $env: / curl.exe / PowerShell variables: Developer PowerShell. Press Enter, not pgAdmin F5.",
+    "Student number/name/contact or item code/name/description: app fields. Do not execute these as commands.",
+    "Standalone http:// address: browser address bar unless it is inside a terminal command."
+]: bullet(item)
+para("Open Visual Studio > View > Terminal and create THREE PowerShell tabs. Label them mentally: 1 API, 2 Desktop, 3 Requests. In EACH tab first enter the project folder:")
+code('cd "C:/Users/kheye/Documents/3RD YEAR/DESKTOP DEVELOPMENT/FINAL LAB 1/EquipmentBorrowing-Final-Output-Activity-1"')
+para("The API occupies Terminal 1 while running. Use Terminal 3 for requests; Ctrl+C in Terminal 1 only when the guide asks you to stop API.")
+para("For each screenshot: press Windows+Shift+S, select the relevant window/result, click the corresponding Word placeholder and paste with Ctrl+V. Remove placeholder text and resize the image so status, field names and values remain readable. Use more than one image for before/after or UI+SQL evidence.")
+para("Expected results below describe what SHOULD happen. Only your filled Observed fields describe what DID happen. Keep original API/SQL text captures and included raw test evidence as well as screenshots.")
 step("Preparation - Separate database, API terminal and Desktop terminal")
 bullet("In pgAdmin, open Query Tool on postgres and create a NEW database. If this name exists, choose a new one; never overwrite existing data.")
 code("CREATE DATABASE equipment_borrowing_lab5_walkthrough;")

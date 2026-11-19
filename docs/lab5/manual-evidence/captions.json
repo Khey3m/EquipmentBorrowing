@@ -1,0 +1,644 @@
+{
+  "title": "Lab 5 - Manual Screenshot Evidence",
+  "entries": [
+    {
+      "id": "Figure 1",
+      "image": "01-equipment-empty-array.png",
+      "heading": "Step 1 - Equipment endpoint: empty JSON result",
+      "source_filename": "Screenshot 2026-11-15 215359.png",
+      "explanation": [
+        "The browser opens http://127.0.0.1:5085/api/v1/equipment and displays the JSON response []. This records direct browser access to the equipment-list endpoint.",
+        "The empty array means that this API response contains no equipment items. It is the expected list representation for an empty result, rather than an equipment object or a connection-error message.",
+        "This screenshot does not display the HTTP status code, the PostgreSQL database name, or whether the Desktop process is closed. Those points need separate terminal/database/process evidence; they are not inferred from this image.",
+        "For the walkthrough after the seven-item controlled dataset has been prepared, capture an additional populated equipment response. Retain this image as supplemental empty-result evidence rather than labeling it as the seven-item seeded catalog."
+      ],
+      "scope": "Supporting API-01 / Step 1 evidence only. No complete T01 or T07 pass is established by this image."
+    },
+    {
+      "image": "08-step1-http-response.png",
+      "heading": "Step 1 - Direct equipment request returns HTTP 200",
+      "source_filename": "Screenshot 2026-11-15 215132.png",
+      "explanation": [
+        "The Developer PowerShell terminal runs curl.exe -i http://127.0.0.1:5085/api/v1/equipment. Two displayed requests both receive HTTP/1.1 200 OK with Content-Type application/json; charset=utf-8 and an empty JSON array [].",
+        "This confirms that the equipment endpoint responded successfully over HTTP and returned a valid empty-list response at the time of capture. The status code is now visible in this additional evidence, unlike the browser-only image.",
+        "The response contains no equipment records. This capture predates the equipment registration pictures in Step 3; it does not demonstrate the seven-item seeded dataset or prove that the Desktop process was closed."
+      ],
+      "scope": "Actual GET command, HTTP status, response headers and body; database identity and Desktop process state are not shown.",
+      "id": "Figure 2"
+    },
+    {
+      "image": "09-step1-openapi.png",
+      "heading": "Step 1 - Retrieve the OpenAPI contract",
+      "source_filename": "Screenshot 2026-11-15 215233.png",
+      "explanation": [
+        "The browser retrieves http://127.0.0.1:5085/openapi/v1.json. The document identifies OpenAPI 3.1.1 and EquipmentBorrowing.Api | v1, with the local server URL http://127.0.0.1:5085/.",
+        "The visible section documents POST /api/v1/checkout-requests (operation API-11), its JSON request schema and response definitions including 201 Created and 400 Bad Request. This describes the API contract and shows it can be retrieved.",
+        "The documented response definitions are not evidence that checkout was executed. This image supports contract availability; transaction behavior needs the separate checkout and database evidence."
+      ],
+      "scope": "Retrieved OpenAPI document; the screenshot shows a portion of the contract and does not establish execution of the documented operations.",
+      "id": "Figure 3"
+    },
+    {
+      "id": "Figure 4",
+      "image": "02-student-registered.png",
+      "heading": "Step 2 - Register a student and verify the database row",
+      "source_filename": "Screenshot 2026-11-15 220316.png",
+      "explanation": [
+        "The Students screen displays Demo Student with institutional number ST-UI-600 and contact demo.student@example.edu. The message \"Student registered and eligible to borrow\" confirms the registration result shown by the application.",
+        "The pgAdmin query filters the Students table by ST-UI-600. Its result contains one matching row with Id 1 and IsEligibleToBorrow set to true. The application also labels this student \"Eligible to borrow\", matching the database value.",
+        "This captures a registered student and a database readback of the matching identity. The displayed eligibility is the state after registration; no eligibility-change action is shown in this picture."
+      ],
+      "scope": "Student registration and matching database readback; HTTP request/response details are not visible."
+    },
+    {
+      "id": "Figure 5",
+      "image": "03-student-details-saved.png",
+      "heading": "Step 2 - Update student details and verify the same identity",
+      "source_filename": "Screenshot 2026-11-15 220427.png",
+      "explanation": [
+        "The selected student now has the name Demo edited Student. The institutional number remains ST-UI-600, and the application displays \"Student details saved\".",
+        "The pgAdmin result shows one matching row with the same Id 1 and institutional number, with the updated name visible in the FullName column. Comparing this picture with Figure 4 supports that the existing student was updated while retaining the same database identity.",
+        "The contact field still contains demo.student@example.edu. These pictures demonstrate registration and a name edit; clearing the optional contact field is not demonstrated. If contact clearing is part of the walkthrough, add a separate screenshot showing a blank contact field and a database NULL result."
+      ],
+      "scope": "Student name update and retained identity. Contact clearing and persistence after a process restart are not shown."
+    },
+    {
+      "id": "Figure 6",
+      "image": "04-equipment-list.png",
+      "heading": "Step 3 - Equipment registered in the management screen",
+      "source_filename": "Screenshot 2026-11-15 221112.png",
+      "explanation": [
+        "The management list contains Demo Camera (EQ-UI-600), Demo Tripod (EQ-UI-601), Demo Microphone (EQ-UI-602) and Demo Tablet (EQ-UI-603). All four items are displayed as Available.",
+        "The screen explains that availability is read-only here and is controlled by borrowing and returns. The blank form is ready for a new item; the following database screenshot supplies the saved identifiers and descriptions."
+      ],
+      "scope": "Equipment management evidence; screenshots do not show HTTP exchanges or establish the full Lab 5 acceptance result."
+    },
+    {
+      "id": "Figure 7",
+      "image": "05-equipment-database-before.png",
+      "heading": "Step 3 - Database readback before editing the camera",
+      "source_filename": "Screenshot 2026-11-15 221129.png",
+      "explanation": [
+        "The SELECT query returns four equipment records with identifiers EQ-UI-600 through EQ-UI-603 and database Id values 1 through 4. All four IsAvailable values are true.",
+        "Before the edit, the camera has Id 1, name Demo Camera and description Demonstration camera. The tablet description is Zero-history control; that label alone does not prove an empty borrowing history."
+      ],
+      "scope": "Equipment management evidence; screenshots do not show HTTP exchanges or establish the full Lab 5 acceptance result."
+    },
+    {
+      "id": "Figure 8",
+      "image": "06-equipment-edited-ui.png",
+      "heading": "Step 3 - Camera name edited and optional description cleared",
+      "source_filename": "Screenshot 2026-11-15 221437.png",
+      "explanation": [
+        "The selected EQ-UI-600 item is now named Demo edited Camera. The description field is blank and the application reports Equipment details saved.",
+        "The camera remains Available, and the management page still states that availability is read-only. The next screenshot verifies the saved name and NULL description in PostgreSQL."
+      ],
+      "scope": "Equipment management evidence; screenshots do not show HTTP exchanges or establish the full Lab 5 acceptance result."
+    },
+    {
+      "id": "Figure 9",
+      "image": "07-equipment-database-after.png",
+      "heading": "Step 3 - Database readback after the camera edit",
+      "source_filename": "Screenshot 2026-11-15 221505.png",
+      "explanation": [
+        "The camera still has database Id 1 and identifier EQ-UI-600. Its name is now Demo edited Camera, its Description is NULL, and IsAvailable remains true.",
+        "Comparing the before and after results shows that the existing camera identity was retained while its name and optional description changed. The other three equipment records retain their displayed names, descriptions and available status.",
+        "These four pictures are consistent with the Step 3 equipment checks. The capitalization in Demo edited Camera differs slightly from the guide example but is consistent between the application and database. The separate ST-UI-603 / Demo Empty Student control registration is not visible in these images."
+      ],
+      "scope": "Equipment management evidence; screenshots do not show HTTP exchanges or establish the full Lab 5 acceptance result."
+    },
+    {
+      "id": "Figure 10",
+      "image": "10-step4-before.png",
+      "heading": "Step 4 - Before borrowing: available camera and zero-row baseline",
+      "source_filename": "Screenshot 2026-11-15 222525.png",
+      "explanation": [
+        "The unfiltered catalog shows Demo edited Camera (EQ-UI-600) as Available. The student selector is blank, so no borrower has been selected in this capture.",
+        "pgAdmin shows a successfully completed query with Total rows: 0. This supports the before-borrowing baseline; the lower query lines, including the student filter, are outside the visible editor area.",
+        "The date control displays November 18, 2026 at this preparation stage. The later active-loan capture records the actual saved due date as November 20, 2026."
+      ],
+      "scope": "Manual single-issue and catalog-filter evidence. Cropped SQL values are not inferred; full acceptance remains subject to the remaining walkthrough evidence."
+    },
+    {
+      "id": "Figure 11",
+      "image": "11-step4-active-loan.png",
+      "heading": "Step 4 - After borrowing: active camera loan and database row",
+      "source_filename": "Screenshot 2026-11-15 222739.png",
+      "explanation": [
+        "Active borrowings displays LOAN #1 for Demo edited Student (ST-UI-600) and Demo edited Camera (EQ-UI-600), with Active status, issued date November 15, 2026 and due date November 20, 2026.",
+        "The fresh pgAdmin result contains one row with borrowing Id 1, student ST-UI-600, equipment EQ-UI-600 and BorrowedAt November 15, 2026. This matches the identity shown in the application.",
+        "The right side of the SQL result is cut off. The full ExpectedReturnAt, ActualReturnAt, Status and IsAvailable values cannot all be verified from this picture. An additional database-only screenshot should expose these columns before returning the camera."
+      ],
+      "scope": "Manual single-issue and catalog-filter evidence. Cropped SQL values are not inferred; full acceptance remains subject to the remaining walkthrough evidence."
+    },
+    {
+      "id": "Figure 12",
+      "image": "12-step4-available-filter.png",
+      "heading": "Step 4 - Available-only filter excludes the borrowed camera",
+      "source_filename": "Screenshot 2026-11-15 222823.png",
+      "explanation": [
+        "The Available items only checkbox is checked. The displayed results contain the available microphone, tablet and tripod, while camera EQ-UI-600 is absent.",
+        "The selected student is ST-UI-600 and the date control displays November 20, 2026. The application also reports Equipment successfully borrowed through the API. The actual HTTP exchange is not displayed in this screenshot."
+      ],
+      "scope": "Manual single-issue and catalog-filter evidence. Cropped SQL values are not inferred; full acceptance remains subject to the remaining walkthrough evidence."
+    },
+    {
+      "id": "Figure 13",
+      "image": "13-step4-on-loan.png",
+      "heading": "Step 4 - Unfiltered catalog retains the camera with On loan status",
+      "source_filename": "Screenshot 2026-11-15 223201.png",
+      "explanation": [
+        "With Available items only unchecked, the camera EQ-UI-600 appears again with the label On loan. The microphone, tablet and tripod remain Available.",
+        "Together with the filtered screenshot, this demonstrates that the borrowed camera remains in the catalog and is excluded when only available items are requested. Leave this loan active until Step 5 demonstrates its return."
+      ],
+      "scope": "Manual single-issue and catalog-filter evidence. Cropped SQL values are not inferred; full acceptance remains subject to the remaining walkthrough evidence."
+    },
+    {
+      "id": "Figure 14",
+      "image": "14-step5-query-message.png",
+      "heading": "Step 5 - Borrowing query completed",
+      "source_filename": "Screenshot 2026-11-15 224934.png",
+      "explanation": [
+        "pgAdmin shows the borrowing SELECT filtered by ST-UI-600, with a successful execution message and Total rows: 1. The Messages tab is selected, so the returned column values are not visible.",
+        "This is supporting query-execution evidence only. It cannot establish the before-return Active status, NULL actual return date or unavailable flag. For this SELECT, the message does not indicate that a row was changed."
+      ],
+      "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
+    },
+    {
+      "id": "Figure 15",
+      "image": "15-step5-return-success.png",
+      "heading": "Step 5 - Successful return and empty active list",
+      "source_filename": "Screenshot 2026-11-15 225037.png",
+      "explanation": [
+        "The Active borrowings screen is empty and reports No active borrowings and Equipment successfully returned through the API. This records the visible result after the return.",
+        "The confirmation checkbox is unchecked in the completed state. The supplied pictures do not capture it checked before the return, so this image does not independently document that interaction."
+      ],
+      "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
+    },
+    {
+      "id": "Figure 16",
+      "image": "16-step5-camera-available.png",
+      "heading": "Step 5 - Camera available again in the catalog",
+      "source_filename": "Screenshot 2026-11-15 225137.png",
+      "explanation": [
+        "The catalog lists EQ-UI-600, Demo edited Camera, as Available again. The availability filter is unchecked, so this is the unfiltered catalog.",
+        "The bottom message still says Equipment successfully borrowed through the API, apparently retained from the earlier catalog operation. It is not a return confirmation; the active-list success message and database/history screenshots supply the return evidence."
+      ],
+      "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
+    },
+    {
+      "id": "Figure 17",
+      "image": "17-step5-returned-sql.png",
+      "heading": "Step 5 - Same loan retained with actual return date",
+      "source_filename": "Screenshot 2026-11-15 225234.png",
+      "explanation": [
+        "The database result retains LoanId 1 for ST-UI-600 and EQ-UI-600. BorrowedAt is 2026-11-15, ExpectedReturnAt is 2026-11-20, ActualReturnAt is 2026-11-15, and IsAvailable is true.",
+        "The Status cell is shortened to Return...; the following history pictures display the full Returned label. Together these captures support that the original loan was retained and the camera became available."
+      ],
+      "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
+    },
+    {
+      "id": "Figure 18",
+      "image": "18-step5-equipment-history.png",
+      "heading": "Step 5 - Returned loan retained in camera history",
+      "source_filename": "Screenshot 2026-11-15 225259.png",
+      "explanation": [
+        "History for is set to Equipment and EQ-UI-600 is selected. Its history retains LOAN #1 for ST-UI-600 with Returned status, issued 2026-11-15, due 2026-11-20 and returned 2026-11-15.",
+        "This demonstrates that returning an item removes it from the active list while preserving its equipment history."
+      ],
+      "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
+    },
+    {
+      "id": "Figure 19",
+      "image": "19-step5-student-history.png",
+      "heading": "Step 5 - Returned loan retained in student history",
+      "source_filename": "Screenshot 2026-11-15 225322.png",
+      "explanation": [
+        "History for is set to Student and ST-UI-600 is selected. The same LOAN #1 appears as Returned with matching camera identifier and dates.",
+        "The subject list also includes ST-UI-603 / Demo Empty Student, supplying visible evidence that the control student exists. Its empty history is not demonstrated because ST-UI-600 is selected."
+      ],
+      "scope": "Manual return and retained-history evidence; unshown pre-return confirmation and database values are not inferred."
+    },
+    {
+      "id": "Figure 20",
+      "image": "20-step6-selection.png",
+      "heading": "Step 6 - Two items selected before checkout",
+      "source_filename": "Screenshot 2026-11-15 231446.png",
+      "explanation": [
+        "The Multiple checkout screen selects microphone EQ-UI-602 and tripod EQ-UI-601, with Selected items: 2, student ST-UI-600 and shared expected return date 2026-11-20. Camera and tablet remain unchecked.",
+        "These screenshots support successful coordinated checkout and database readback. They do not independently demonstrate transaction rollback under failure; retain the separate automated rollback evidence for that check."
+      ],
+      "scope": "Manual successful multi-item checkout evidence."
+    },
+    {
+      "id": "Figure 21",
+      "image": "21-step6-success.png",
+      "heading": "Step 6 - Two-item checkout completed",
+      "source_filename": "Screenshot 2026-11-15 231535.png",
+      "explanation": [
+        "The application reports Checked out 2 items together through the API. Selected items resets to 0, and microphone and tripod now display On loan. Camera and tablet remain Available.",
+        "These screenshots support successful coordinated checkout and database readback. They do not independently demonstrate transaction rollback under failure; retain the separate automated rollback evidence for that check."
+      ],
+      "scope": "Manual successful multi-item checkout evidence."
+    },
+    {
+      "id": "Figure 22",
+      "image": "22-step6-active.png",
+      "heading": "Step 6 - Two active loans shown",
+      "source_filename": "Screenshot 2026-11-15 231551.png",
+      "explanation": [
+        "Active borrowings displays tripod LOAN #2 and microphone LOAN #3 for ST-UI-600. Both are Active, issued 2026-11-15 and due 2026-11-20. The older successfully returned message remains at the bottom; it is not the result of this checkout.",
+        "These screenshots support successful coordinated checkout and database readback. They do not independently demonstrate transaction rollback under failure; retain the separate automated rollback evidence for that check."
+      ],
+      "scope": "Manual successful multi-item checkout evidence."
+    },
+    {
+      "id": "Figure 23",
+      "image": "23-step6-sql.png",
+      "heading": "Step 6 - Database confirms the saved loans",
+      "source_filename": "Screenshot 2026-11-15 231622.png",
+      "explanation": [
+        "The query returns three rows for ST-UI-600. Camera LoanId 1 retains its actual return date and available=true. Tripod LoanId 2 and microphone LoanId 3 both have Status Active, ActualReturnAt NULL, expected date 2026-11-20 and IsAvailable=false. These values agree with the active-loan screen.",
+        "These screenshots support successful coordinated checkout and database readback. They do not independently demonstrate transaction rollback under failure; retain the separate automated rollback evidence for that check."
+      ],
+      "scope": "Manual successful multi-item checkout evidence."
+    },
+    {
+      "id": "Figure 24",
+      "image": "24-step6-filter.png",
+      "heading": "Step 6 - Available-only catalog after checkout",
+      "source_filename": "Screenshot 2026-11-15 231648.png",
+      "explanation": [
+        "The checked Available items only filter shows the camera and tablet as Available and excludes the borrowed microphone and tripod. This agrees with the saved availability flags. The catalog message is retained from an earlier borrowing operation; the dedicated checkout screen supplies the two-item success message.",
+        "These screenshots support successful coordinated checkout and database readback. They do not independently demonstrate transaction rollback under failure; retain the separate automated rollback evidence for that check."
+      ],
+      "scope": "Manual successful multi-item checkout evidence."
+    },
+    {
+      "id": "Figure 25",
+      "image": "25-step7-student-history.png",
+      "heading": "Step 7 - Student history contains both active and returned loans",
+      "source_filename": "Screenshot 2026-11-15 232117.png",
+      "explanation": [
+        "Student ST-UI-600 is selected. Its history contains microphone Loan #3 and tripod Loan #2 as Active with return pending, and camera Loan #1 as Returned on 2026-11-15. All three show expected date 2026-11-20. This preserves completed and outstanding borrowings for the same student."
+      ],
+      "scope": "Manual student/equipment history and empty-state evidence; screenshots capture displayed results, not the raw HTTP exchanges."
+    },
+    {
+      "id": "Figure 26",
+      "image": "26-step7-empty-student.png",
+      "heading": "Step 7 - Unused student has a valid empty history",
+      "source_filename": "Screenshot 2026-11-15 232212.png",
+      "explanation": [
+        "Student ST-UI-603 / Demo Empty Student is selected. The screen displays No borrowing history for this selection and no previous student loan rows. This captures an empty result for the identified control student, with no visible connection error."
+      ],
+      "scope": "Manual student/equipment history and empty-state evidence; screenshots capture displayed results, not the raw HTTP exchanges."
+    },
+    {
+      "id": "Figure 27",
+      "image": "27-step7-camera-history.png",
+      "heading": "Step 7 - Camera history retains its returned loan",
+      "source_filename": "Screenshot 2026-11-15 232238.png",
+      "explanation": [
+        "Equipment mode is selected with camera EQ-UI-600. Its history contains only the displayed camera Loan #1 for ST-UI-600, marked Returned, issued 2026-11-15, due 2026-11-20 and returned 2026-11-15."
+      ],
+      "scope": "Manual student/equipment history and empty-state evidence; screenshots capture displayed results, not the raw HTTP exchanges."
+    },
+    {
+      "id": "Figure 28",
+      "image": "28-step7-empty-tablet.png",
+      "heading": "Step 7 - Unused tablet has a valid empty history",
+      "source_filename": "Screenshot 2026-11-15 232250.png",
+      "explanation": [
+        "Equipment EQ-UI-603 / Demo Tablet is selected and repeated in the heading. No borrowing history for this selection is displayed, and the earlier camera row is absent. The gray microphone background is distinct from the teal selected tablet and does not change the displayed tablet identity."
+      ],
+      "scope": "Manual student/equipment history and empty-state evidence; screenshots capture displayed results, not the raw HTTP exchanges."
+    },
+    {
+      "id": "Figure 29",
+      "image": "29-step8-number.png",
+      "heading": "Step 8 - Search by institutional number",
+      "source_filename": "Screenshot 2026-11-15 232632.png",
+      "explanation": [
+        "Search ST-UI-600 with Status All returns three records: Returned camera Loan #1, Active tripod Loan #2 and Active microphone Loan #3. The displayed sort label is CheckoutDate, corresponding to the borrowing/issued date."
+      ],
+      "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
+    },
+    {
+      "id": "Figure 30",
+      "image": "30-step8-name.png",
+      "heading": "Step 8 - Search by student name",
+      "source_filename": "Screenshot 2026-11-15 232650.png",
+      "explanation": [
+        "Search Demo edited with Status All returns the same three loans for Demo edited Student. This supports name-based matching."
+      ],
+      "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
+    },
+    {
+      "id": "Figure 31",
+      "image": "31-step8-equipment.png",
+      "heading": "Step 8 - Search by equipment name",
+      "source_filename": "Screenshot 2026-11-15 232705.png",
+      "explanation": [
+        "Search Tripod returns one matching record: Active Loan #2, equipment EQ-UI-601, belonging to ST-UI-600."
+      ],
+      "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
+    },
+    {
+      "id": "Figure 32",
+      "image": "32-step8-combined.png",
+      "heading": "Step 8 - Combined search, status and date sorting",
+      "source_filename": "Screenshot 2026-11-15 232808.png",
+      "explanation": [
+        "Search ST-UI-600, Status Active, Sort date ExpectedReturnDate and checked Descending return exactly tripod Loan #2 followed by microphone Loan #3. Both are due 2026-11-20; the visible order agrees with ascending borrowing-ID tie breaking for equal dates."
+      ],
+      "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
+    },
+    {
+      "id": "Figure 33",
+      "image": "33-step8-no-match.png",
+      "heading": "Step 8 - Valid no-match result",
+      "source_filename": "Screenshot 2026-11-15 232835.png",
+      "explanation": [
+        "Search NON-EXISTENT-999 with the retained Active/date/descending criteria shows No borrowings match these criteria and an empty result area, without a visible connection error."
+      ],
+      "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
+    },
+    {
+      "id": "Figure 34",
+      "image": "34-step8-clear.png",
+      "heading": "Step 8 - Clear restores the default search",
+      "source_filename": "Screenshot 2026-11-15 232855.png",
+      "explanation": [
+        "After clearing, the search field is blank, Status is All, Sort date is CheckoutDate and Descending is unchecked. All three borrowing records are restored. The actual UI labels are CheckoutDate and ExpectedReturnDate, rather than the database names BorrowedAt and ExpectedReturnAt used in the earlier instructions."
+      ],
+      "scope": "Manual search/filter/sort/clear UI evidence; raw HTTP exchanges are not displayed."
+    },
+    {
+      "id": "Figure 35",
+      "image": "35-step9-before.png",
+      "heading": "Step 9 - Student before the external API edit",
+      "source_filename": "Screenshot 2026-11-15 234341.png",
+      "explanation": [
+        "The selected ST-UI-600 student is named Demo edited Student, with contact demo.student@example.edu and Eligible to borrow. This is the displayed state before the separate API update."
+      ],
+      "scope": "Independent API update, displayed client state and database/history readback; unshown user actions are not inferred."
+    },
+    {
+      "id": "Figure 36",
+      "image": "36-step9-put.png",
+      "heading": "Step 9 - Independent PUT succeeds with HTTP 200",
+      "source_filename": "Screenshot 2026-11-15 234626.png",
+      "explanation": [
+        "PowerShell sends PUT http://127.0.0.1:5085/api/v1/students/1 with studentNumber ST-UI-600, fullName Demo External Edit and contact null. The actual response is HTTP 200 with JSON id 1, the updated name, contact null and isEligible true."
+      ],
+      "scope": "Independent API update, displayed client state and database/history readback; unshown user actions are not inferred."
+    },
+    {
+      "id": "Figure 37",
+      "image": "37-step9-refreshed.png",
+      "heading": "Step 9 - Updated student visible with stale-selection feedback",
+      "source_filename": "Screenshot 2026-11-15 234805.png",
+      "explanation": [
+        "The student list and form display Demo External Edit with institutional number ST-UI-600 and a blank contact field. The bottom message says The student changed since selection. Refresh and select again. This captures stale-selection feedback alongside the updated displayed data; the screenshot alone does not identify which action triggered the feedback. Refresh and reselect before any further edit."
+      ],
+      "scope": "Independent API update, displayed client state and database/history readback; unshown user actions are not inferred."
+    },
+    {
+      "id": "Figure 38",
+      "image": "38-step9-sql.png",
+      "heading": "Step 9 - Database retains the identity and clears contact",
+      "source_filename": "Screenshot 2026-11-15 234834.png",
+      "explanation": [
+        "The SELECT returns one student with Id 1, institutional number ST-UI-600, ContactInformation NULL and IsEligibleToBorrow true. FullName is visually truncated to Demo External E...; the complete updated name is visible in the HTTP response and application screenshots."
+      ],
+      "scope": "Independent API update, displayed client state and database/history readback; unshown user actions are not inferred."
+    },
+    {
+      "id": "Figure 39",
+      "image": "39-step9-history.png",
+      "heading": "Step 9 - History remains linked after the student update",
+      "source_filename": "Screenshot 2026-11-15 234906.png",
+      "explanation": [
+        "Student ST-UI-600 / Demo External Edit is selected in Borrowing histories. Microphone Loan #3 and tripod Loan #2 remain Active; camera Loan #1 remains Returned. All show the updated related student name and retain their equipment identifiers and dates."
+      ],
+      "scope": "Independent API update, displayed client state and database/history readback; unshown user actions are not inferred."
+    },
+    {
+      "id": "Figure 40",
+      "image": "40-step10-offline-ui.png",
+      "heading": "Step 10 - Desktop reports no HTTP response",
+      "source_filename": "Screenshot 2026-11-15 235211.png",
+      "explanation": [
+        "The catalog is empty and the application reports No HTTP response was received from the API. Check its address and whether it is running. The borrowing button is disabled. The older borrowing-success message remains visible and does not describe this failed refresh."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 41",
+      "image": "41-step10-offline-curl.png",
+      "heading": "Step 10 - Stopped API produces a connection failure",
+      "source_filename": "Screenshot 2026-11-15 235323.png",
+      "explanation": [
+        "The terminal shows API shutdown followed by curl.exe GET /api/v1/equipment failing with curl error 7, Could not connect to server. No HTTP status is received for this request. Earlier migration/startup output is separate from the connection test."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 42",
+      "image": "42-step10-500-response.png",
+      "heading": "Step 10 - API responds with a safe HTTP 500",
+      "source_filename": "Screenshot 2026-11-15 235454.png",
+      "explanation": [
+        "A subsequent equipment request receives HTTP/1.1 500 Internal Server Error with JSON code server_error and a message to restore the connection and search or refresh again. The response does not expose a connection string or stack trace. This differs from the preceding no-response failure."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 43",
+      "image": "43-step10-500-ui.png",
+      "heading": "Step 10 - Desktop distinguishes the received server error",
+      "source_filename": "Screenshot 2026-11-15 235502.png",
+      "explanation": [
+        "The Desktop feedback explicitly states API returned HTTP 500: server/database failure. Restore service and refresh before retrying. The catalog is empty and borrowing is disabled. This records distinct UI feedback for a received server error."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 44",
+      "image": "44-step10-restored-http.png",
+      "heading": "Step 10 - Equipment endpoint recovers to HTTP 200",
+      "source_filename": "Screenshot 2026-11-15 235600.png",
+      "explanation": [
+        "After the failure, curl receives HTTP/1.1 200 OK and four equipment objects. Camera EQ-UI-600 has description null and isAvailable true; tablet is also available. Microphone and tripod have isAvailable false. The returned equipment state matches the earlier saved borrowing state."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 45",
+      "image": "45-step10-restored-ui.png",
+      "heading": "Step 10 - Desktop catalog reloads after service recovery",
+      "source_filename": "Screenshot 2026-11-15 235617.png",
+      "explanation": [
+        "The available-only catalog reloads camera EQ-UI-600 and tablet EQ-UI-603, both Available, without the earlier connection-error feedback. The selected filter explains why borrowed microphone and tripod are absent. The image records the recovered view; screenshots alone cannot prove process continuity."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 46",
+      "image": "46-step10-readback.png",
+      "heading": "Step 10 - Database readback preserves identities and loan state",
+      "source_filename": "Screenshot 2026-11-15 235709.png",
+      "explanation": [
+        "Fresh SQL returns student Id 1, ST-UI-600, NULL contact and three retained loans. Camera LoanId 1 has actual return date 2026-11-15 and available true; tripod LoanId 2 and microphone LoanId 3 remain Active with actual return NULL and available false. FullName and the camera Status cell are truncated, while earlier evidence supplies the complete name and Returned label."
+      ],
+      "scope": "Manual no-response, received-500 and recovery sequence with readback. No failed mutation or lost-acknowledgment experiment is claimed."
+    },
+    {
+      "id": "Figure 47",
+      "image": "47-step11-api-restart.png",
+      "heading": "Step 11 - API stopped and started again",
+      "source_filename": "Screenshot 2026-11-16 000027.png",
+      "explanation": [
+        "The terminal shows Application is shutting down followed by a new dotnet run for EquipmentBorrowing.Api and Now listening on http://127.0.0.1:5085. The environment assignment references the saved working connection without displaying its value."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 48",
+      "image": "48-step11-student.png",
+      "heading": "Step 11 - Student details displayed after reopening",
+      "source_filename": "Screenshot 2026-11-16 000125.png",
+      "explanation": [
+        "The student screen displays ST-UI-600 / Demo External Edit, Eligible to borrow and a blank contact field. This matches the saved external update from Step 9."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 49",
+      "image": "49-step11-active.png",
+      "heading": "Step 11 - Active borrowing identities retained",
+      "source_filename": "Screenshot 2026-11-16 000151.png",
+      "explanation": [
+        "Active borrowings still shows tripod Loan #2 and microphone Loan #3 for ST-UI-600 / Demo External Edit. Both remain Active, issued 2026-11-15 and due 2026-11-20."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 50",
+      "image": "50-step11-history.png",
+      "heading": "Step 11 - Returned and active history retained",
+      "source_filename": "Screenshot 2026-11-16 000237.png",
+      "explanation": [
+        "Student history retains microphone Loan #3 and tripod Loan #2 as Active and camera Loan #1 as Returned on 2026-11-15. Related identifiers and due dates remain consistent with the earlier captures."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 51",
+      "image": "51-step11-student-sql.png",
+      "heading": "Step 11 - Fresh student database readback",
+      "source_filename": "Screenshot 2026-11-16 000256.png",
+      "explanation": [
+        "The query includes current_database() and returns Id 1, student number ST-UI-600, NULL contact and eligibility true. The database name and full name are truncated in the result cells; the selected database is identified in pgAdmin and the complete student name appears in the application capture."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 52",
+      "image": "52-step11-equipment-sql.png",
+      "heading": "Step 11 - Equipment identities and saved fields retained",
+      "source_filename": "Screenshot 2026-11-16 000334.png",
+      "explanation": [
+        "The four equipment records retain Id values 1 through 4. Camera EQ-UI-600 retains Demo edited Camera with NULL description and availability true. Tripod and microphone availability is false; tablet availability remains true."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 53",
+      "image": "53-step11-loans-sql.png",
+      "heading": "Step 11 - Fresh loan database readback after restart",
+      "source_filename": "Screenshot 2026-11-16 000403.png",
+      "explanation": [
+        "The query returns the same LoanId values 1, 2 and 3. Camera LoanId 1 retains actual return 2026-11-15 and availability true. Tripod and microphone remain Active with NULL actual return dates and availability false. All expected return dates are 2026-11-20. The camera status text is truncated in SQL; the application history shows the full Returned label."
+      ],
+      "scope": "User-supplied restart sequence and fresh persistence readback. Screenshots support the observed states; complete Desktop process termination is not independently established by a still image."
+    },
+    {
+      "id": "Figure 54",
+      "image": "54-step12-http-composition.png",
+      "heading": "Step 12 - Desktop HTTP workflow registrations",
+      "source_filename": "Screenshot 2026-11-16 001336.png",
+      "explanation": [
+        "DesktopComposition.cs registers ApiTransport and HTTP implementations for student/equipment management, catalog, checkout, return, active loans, history and search. This shows how the Desktop workflows are composed using HTTP services."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    },
+    {
+      "id": "Figure 55",
+      "image": "55-step12-project.png",
+      "heading": "Step 12 - Desktop project dependencies",
+      "source_filename": "Screenshot 2026-11-16 001853.png",
+      "explanation": [
+        "The Desktop project directly references EquipmentBorrowing.Http and EquipmentBorrowing.Application. Its displayed packages do not include EF Core or Npgsql, and it has no Infrastructure project reference. This supports the client/server persistence boundary."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    },
+    {
+      "id": "Figure 56",
+      "image": "56-step12-backend.png",
+      "heading": "Step 12 - API owns persistence registrations",
+      "source_filename": "Screenshot 2026-11-16 001216.png",
+      "explanation": [
+        "BackendServices.cs registers the PostgreSQL DbContext factory, EF repositories, session factories and application services inside the API. This complements the Desktop HTTP registrations and locates database access on the server."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    },
+    {
+      "id": "Figure 57",
+      "image": "57-step12-ci-summary.png",
+      "heading": "Step 12 - Recorded CI run succeeded",
+      "source_filename": "Screenshot 2026-11-16 002347.png",
+      "explanation": [
+        "GitHub Actions run 43710719990 shows Success for code revision dc1e541 and a successful build-and-test job. The workflow annotations are separate tooling warnings/notices; they do not change the displayed successful conclusion. This is the recorded earlier run, not validation of every later documentation commit."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    },
+    {
+      "id": "Figure 58",
+      "image": "58-step12-ci-job.png",
+      "heading": "Step 12 - Successful verification job stages",
+      "source_filename": "Screenshot 2026-11-16 002406.png",
+      "explanation": [
+        "The build-and-test job shows successful build, PostgreSQL tests, headless workflow checks and persistence stages. The steps are collapsed, so the test totals are not visible in this screenshot. Retained session9-ci-summary.json records 76 backend and 23 UI/client tests with zero failures/skips; raw TRX is retained in evidence/ci-43710719990.zip."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    },
+    {
+      "id": "Figure 59",
+      "image": "59-step12-traceability.png",
+      "heading": "Step 12 - Requirements and implementation evidence mapping",
+      "source_filename": "Screenshot 2026-11-16 002451.png",
+      "explanation": [
+        "traceability.md maps use cases, business rules, API operations and acceptance cases to implementation and evidence references. This is a navigation aid for reviewing the corresponding source and raw evidence, not a test execution by itself."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    },
+    {
+      "id": "Figure 60",
+      "image": "60-step12-acceptance.png",
+      "heading": "Step 12 - Recorded acceptance ledger and remaining qualification",
+      "source_filename": "Screenshot 2026-11-16 002650.png",
+      "explanation": [
+        "The execution ledger shows T01 through T06 and T08 as Pass and T07 as Partial. Its T07 reason predates this manual screenshot collection. The new pictures expand rendered workflow evidence, but this capture is not an updated all-pass record. T05 cites session5-checkout-evidence.json for after-write rollback; the screenshot does not display the detailed before/after fault evidence."
+      ],
+      "scope": "Architecture and recorded verification references. No new runtime tests were executed while assembling this report."
+    }
+  ],
+  "review": [
+    "Reviewed screenshot collection: 60 figures across Steps 1 to 12. Captions describe visible results and qualify cropped cells, retained UI messages and unshown actions. This is a consolidated evidence report, not an unconditional certification that every acceptance branch passed.",
+    "Supporting automated evidence: docs/lab5/session9-ci-summary.json records 99 passing tests for revision dc1e541. Raw TRX/HTTP evidence is retained in docs/lab5/evidence/ci-43710719990.zip; controlled rollback evidence is in docs/lab5/session5-checkout-evidence.json. Submit these project references alongside the Word report.",
+    "Remaining screenshot qualifications: Step 1 uses an empty catalog and does not visibly establish that Desktop was closed; checked return confirmation before Step 5 was not captured; the initial controlled seven-item seed is not evidenced in this manual sequence. Step 9 shows stale-selection feedback, and later screenshots demonstrate the updated data. Some SQL cells are truncated, with related full values visible in other captures.",
+    "The Step 12 CI screenshots show success but not expanded test totals or detailed rollback comparisons. Those values require the retained raw evidence. The current acceptance ledger still marks T07 Partial; reconcile the new manual evidence against the supplied acceptance reference before declaring the entire submission complete or creating a final submitted tag."
+  ]
+}
