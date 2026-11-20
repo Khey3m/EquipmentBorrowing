@@ -1,6 +1,6 @@
 # Lab 6 test execution and defect record
 
-Sessions 1-5 executed. Seventeen automated objectives passed, including all fourteen use cases. Five automated objectives and both manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
+Sessions 1-6 executed. Nineteen automated objectives passed, including all fourteen use cases. Three automated objectives and both manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
 
 Each execution entry must record source commit, run date/environment, PostgreSQL version and isolated database alias, D/clock arrangement, exact test command or manual method, expected and observed behavior, status, evidence and any defect/correction/retest. Keep credentials out of commands and output. Link focused TRX, HTTP exchanges, fresh PostgreSQL reads and short manual captures rather than redundant screenshots.
 
@@ -22,11 +22,11 @@ The table records current status. Add dated execution entries below as work happ
 | TC6-U14 | 3 | Restrict/409 issue/return/permit/reissue; retained history | `ManagementApiTests.U14_RestrictionBlocksIssueButAllowsReturnAndReissue` | Restriction rejected checkout with 409. Return and re-enabled checkout succeeded with retained history. | Passed | None observed | [Session 3](evidence/session3-trx.zip) |
 | TC6-U15 | 3 | EQ-008 201/default/Location/GET; duplicate EQ-001 409; fresh row | `ManagementApiTests.U15_RegisterEquipmentAndRejectDuplicate` | 201 with generated ID and Location. Duplicate returned 409 with unchanged SQL. | Passed | None observed | [Session 3](evidence/session3-trx.zip) |
 | TC6-U16 | 3 | Edit E1 description; same ID/unavailable/active history | `ManagementApiTests.U16_EditEquipmentAndPreserveAvailabilityAndHistory` | Edits persisted with the same ID, unavailable state and unchanged loan rows. | Passed | None observed | [Session 3](evidence/session3-trx.zip) |
-| TC6-E01 | 6 | Normalized create/update duplicates 409; direct PostgreSQL rejects; fresh counts | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-E01 | 6 | Normalized create/update duplicates 409; direct PostgreSQL rejects; fresh counts | `ConstraintApiTests.E01_NormalizedIdentifiersAreUniqueThroughApiAndPostgres` | Four duplicate requests returned 409. Both normalized indexes rejected direct inserts with 23505. Rows and counts matched the baseline. | Passed | None observed | [Session 6 TRX](evidence/session6-trx.zip) |
 | TC6-E02 | 4 | Single/multi exactly-three 201; over-limit 409; reset each subcase | `LifecycleApiTests.E02_MultipleAtLimitSucceeds`, `LifecycleApiTests.E02_MultipleOverLimitLeavesBothItemsAvailable`, `LifecycleApiTests.E02_SingleAtLimitSucceeds` | Single and multi-item checkout reached exactly three active loans. Over-limit checkout returned 409 with no writes. | Passed | None observed | [Session 4](evidence/session4-trx.zip) |
 | TC6-E03 | 5 | Invalid 400/missing-route 404/method 405/conflict 409; safe/unchanged | `ProtocolApiTests.E03_ProtocolErrorsHaveSafeJsonAndNoWrites` | 10 requests returned the expected 400/404/405/409 JSON errors and preserved PostgreSQL state. | Passed | None observed | [Session 5 TRX](evidence/session5-trx.zip) |
 | TC6-E04 | 7 | Fault reached after PostgreSQL write attempt; safe 500; independent rollback state | Pending | Not executed | Not Run | None recorded | Pending |
-| TC6-E05 | 6 | Stale 409; one active E2; other item unchanged; direct DB rejects second active row | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-E05 | 6 | Stale 409; one active E2; other item unchanged; direct DB rejects second active row | `ConstraintApiTests.E05_StaleSelectionsAndSecondActiveLoanAreRejected` | Both stale requests returned 409. PostgreSQL rejected a second active loan with 23505. The original loan and other item remained intact. | Passed | None observed | [Session 6 TRX](evidence/session6-trx.zip) |
 | TC6-E06 | 3 | Null clearing 200; required/protected 400; duplicate 409; intact history | `ManagementApiTests.E06_ClearOptionalFieldsAndRejectInvalidEdits` | Null clears persisted. Blank/protected edits returned 400 and duplicates returned 409 with unchanged SQL. | Passed | None observed | [Session 3](evidence/session3-trx.zip) |
 | TC6-E07a | 7 | Controlled unreachable transport; no HTTP response/status | Pending | Not executed | Not Run | None recorded | Pending |
 | TC6-E07b | 7 | Reachable API safe 500; distinct client feedback; fresh known-failure state | Pending | Not executed | Not Run | None recorded | Pending |
@@ -130,9 +130,21 @@ The initial test build reported CS1061 because the new test file lacked the JSON
 
 [Session 5 TRX](evidence/session5-trx.zip). Archive SHA-256 is `7806396fd6d8a3f68e6797d9b5a9357d7e83067990c016ed234ce996cb3e41bb`.
 
+### Session 6 - PostgreSQL constraints and stale checkout
+
+Tested source `3112f89389856568edce549b3a9e82d24e8283ec` on Windows against local PostgreSQL 18 through ASP.NET Core TestServer. Each test used a disposable database and fixed campus date 2026-11-18.
+
+```powershell
+dotnet test tests/EquipmentBorrowing.ApiTests/EquipmentBorrowing.ApiTests.csproj -c Release --logger 'trx;LogFileName=api-constraints.trx' --results-directory TestResults/lab6/session6
+```
+
+All 25 API tests passed with zero failures or skips. E01 confirmed four duplicate create/edit requests returned HTTP 409 and both normalized identifier indexes rejected direct inserts with SQLSTATE 23505. E05 confirmed that after another client issued the selected laptop, stale single and multi-item requests returned HTTP 409. A direct second active loan was rejected by the filtered unique index with SQLSTATE 23505. The foreign keys rejected missing student and equipment references with 23503, and the due-date check rejected a same-day due date with 23514. Fresh snapshots matched after each rejection. The original loan remained active and the other item remained available.
+
+[Session 6 TRX](evidence/session6-trx.zip). Archive SHA-256 is `0d7f9b6a6baf77abf87c94d19f367949d3734919be79255c4d14f735c5ebefaf`.
+
 ## Defects, corrections and regression
 
-No application defect has been established in Sessions 1-5. The Session 5 test compilation correction is recorded above. The Lab 5 evidence reconciliation is recorded in baseline.md with its remaining qualifications.
+No application defect has been established in Sessions 1-6. The Session 5 test compilation correction is recorded above. The Lab 5 evidence reconciliation is recorded in baseline.md with its remaining qualifications.
 
 Use one record per discovered defect:
 

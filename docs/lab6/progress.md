@@ -1,6 +1,6 @@
 # Lab 6 progress
 
-Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 branch: test infrastructure/baseline audit followed by five read objectives, without production application changes. TC6-U01/U02/U04/U07/U08 passed; Session 3 completed six more objectives. Session 4 brought the total to 15 passed objectives. Session 5 brought the total to 17. Five automated objectives and both manual checks remain pending.
+Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 branch: test infrastructure/baseline audit followed by five read objectives, without production application changes. TC6-U01/U02/U04/U07/U08 passed; Session 3 completed six more objectives. Session 4 brought the total to 15 passed objectives. Session 5 brought the total to 17. Session 6 brought the total to 19. Three automated objectives and both manual checks remain pending.
 
 | Week | Session | Deliverable | Status |
 |---|---|---|---|
@@ -9,7 +9,7 @@ Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 
 | 1 | 3 | Management, eligibility, optional/protected fields | Complete |
 | 1 | 4 | Borrowing, returns, multi-checkout and exact limits | Complete |
 | 1 | 5 | Search, protocol errors, all sixteen API contracts/OpenAPI | Complete |
-| 2 | 6 | PostgreSQL constraints, uniqueness and stale conflicts | Not started |
+| 2 | 6 | PostgreSQL constraints, uniqueness and stale conflicts | Complete |
 | 2 | 7 | After-write rollback and E07a/b/c failure handling | Not started |
 | 2 | 8 | Fresh-connection persistence, actual API restart and CI | Not started |
 | 2 | 9 | MA6-01/02 and corrections/regression | Not started |
@@ -39,4 +39,8 @@ U03/U05/U06/E02 passed. All 20 API tests passed with zero failures or skips. The
 
 U09 and E03 passed. All 23 API tests passed with zero failures or skips. The live OpenAPI matched the reviewed contract for all sixteen business operations. Source commit `c7fdf61`. [Execution record](test-execution.md#session-5---search-protocol-responses-and-openapi).
 
-Next checkpoint is Session 6, covering PostgreSQL uniqueness, constraints and stale state.
+## Session 6 - completed
+
+E01 and E05 passed through the real API and direct PostgreSQL checks. All 25 API tests passed with zero failures or skips. Source commit `3112f89`. [Execution record](test-execution.md#session-6---postgresql-constraints-and-stale-checkout).
+
+Next checkpoint is Session 7, covering rollback after a write and client handling of uncertain outcomes.

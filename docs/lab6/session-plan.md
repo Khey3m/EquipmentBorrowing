@@ -1,6 +1,6 @@
 # Lab 6 session plan - automated verification and regression
 
-Sessions 1-5 are complete. Seventeen automated objectives passed, with five automated objectives and two manual checks pending. See the progress and execution records on `lab6/automated-verification`.
+Sessions 1-6 are complete. Nineteen automated objectives passed, with three automated objectives and two manual checks pending. See the progress and execution records on `lab6/automated-verification`.
 
 ## Requirements and scope
 
