@@ -35,15 +35,17 @@ internal sealed class ApiScenario : IDbContextFactory<EquipmentBorrowingDbContex
     private readonly string connection;
     private readonly ITestOutputHelper output;
     private readonly TestApi host;
+    private readonly ICheckoutWriteObserver? observer;
     private bool disposed;
     public string DatabaseName { get; } = "equipment_borrowing_lab6_" + Guid.NewGuid().ToString("N");
     public HttpClient Client { get; private set; } = null!;
     public IReadOnlyDictionary<string, StudentResponse> Students { get; private set; } = new Dictionary<string, StudentResponse>();
     public IReadOnlyDictionary<string, EquipmentResponse> Equipment { get; private set; } = new Dictionary<string, EquipmentResponse>();
 
-    private ApiScenario(ITestOutputHelper output)
+    private ApiScenario(ITestOutputHelper output, ICheckoutWriteObserver? observer)
     {
         this.output = output;
+        this.observer = observer;
         var builder = new NpgsqlConnectionStringBuilder(Environment.GetEnvironmentVariable(AdminSetting)
             ?? throw new InvalidOperationException($"Set {AdminSetting} privately."))
         {
@@ -56,9 +58,9 @@ internal sealed class ApiScenario : IDbContextFactory<EquipmentBorrowingDbContex
         host = new TestApi(this);
     }
 
-    public static async Task<ApiScenario> CreateAsync(ITestOutputHelper output)
+    public static async Task<ApiScenario> CreateAsync(ITestOutputHelper output, ICheckoutWriteObserver? observer = null)
     {
-        var scenario = new ApiScenario(output);
+        var scenario = new ApiScenario(output, observer);
         var created = false;
         try
         {
@@ -92,6 +94,8 @@ internal sealed class ApiScenario : IDbContextFactory<EquipmentBorrowingDbContex
     public NpgsqlConnection CreateFreshConnection() => new(connection);
 
     public HttpClient CreateClient() => host.CreateClient();
+
+    public HttpMessageHandler CreateHandler() => host.Server.CreateHandler();
 
     public async Task ResetAsync(bool seed = true)
     {
@@ -195,6 +199,8 @@ internal sealed class ApiScenario : IDbContextFactory<EquipmentBorrowingDbContex
                 services.AddSingleton<ICampusClock, FixedClock>();
                 services.RemoveAll<IDbContextFactory<EquipmentBorrowingDbContext>>();
                 services.AddSingleton<IDbContextFactory<EquipmentBorrowingDbContext>>(scenario);
+                if (scenario.observer is not null)
+                    services.AddSingleton<ICheckoutWriteObserver>(scenario.observer);
             });
         }
     }
