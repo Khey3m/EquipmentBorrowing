@@ -32,8 +32,8 @@ The table records current status. Add dated execution entries below as work happ
 | TC6-E07b | 7 | Reachable API safe 500; distinct client feedback; fresh known-failure state | `RecoveryApiTests.AfterWriteFailureRollsBackAndClientReceivesSafe500` | Client received safe HTTP 500 feedback and the fresh PostgreSQL state matched the baseline. | Passed | Response capture buffered before retest | [Session 7 TRX](evidence/session7-trx.zip) |
 | TC6-E07c | 7 | Unknown acknowledgement outcome; no replay; independent PostgreSQL verification before action | `RecoveryApiTests.LostCheckoutResponseIsUnknownWithoutReplayAndFreshReadFindsBothLoans` | Server returned 201 before the handler dropped the response. Client reported Unknown after one POST. Fresh PostgreSQL contained both loans. | Passed | None observed | [Session 7 TRX](evidence/session7-trx.zip) |
 | TC6-E08 | 8 | Automated fresh-connection create/issue/return state; actual API restart separately evidenced | `PersistenceApiTests.E08_RecordsAndReturnSurviveApiProcessRestarts` | Three real API processes used the same database. HTTP and fresh SQL agreed before and after return. | Passed | None observed | [Session 8 TRX](evidence/session8-trx.zip) |
-| MA6-01 | 9 | Delayed HTTP/loading; UI interaction; stopped/restored API; no unintended writes | Pending | Not observed | Not Run | None recorded | Pending |
-| MA6-02 | 9 | API independent; OpenAPI matches; external edit/refresh; HTTP-only dependencies | Pending | Not observed | Not Run | None recorded | Pending |
+| MA6-01 | 9 | Delayed HTTP/loading; UI interaction; stopped/restored API; no unintended writes | Supervised Windows Desktop run below | Delay, API interruption, recovery and unchanged SQL verified in setup rehearsal. Window observations pending. | Not Run | Setup command corrected and rehearsed | [Setup rehearsal](evidence/session9-setup-rehearsal.json) |
+| MA6-02 | 9 | API independent; OpenAPI matches; external edit/refresh; HTTP-only dependencies | Supervised Windows Desktop run below | Standalone API, 16 OpenAPI operations, HTTP-only dependency scan and persisted edit verified. Desktop refresh observation pending. | Not Run | None observed in rehearsal | [Setup rehearsal](evidence/session9-setup-rehearsal.json) |
 
 ## Execution entries
 
@@ -161,6 +161,31 @@ The first process created the student, equipment, and active loan. The second re
 Ran all three test projects in Release with TRX logging to `TestResults/lab6/session8`. The local result was 29 API, 76 backend, and 23 Desktop tests passed, totaling **128 passed with zero failures or skips**. [Session 8 TRX](evidence/session8-trx.zip).
 
 The GitHub Actions workflow includes the Lab 6 branch and enforces a passing restart case and zero skipped API results. It retains TRX and the existing live OpenAPI export. The local results above are from Windows.
+
+### Session 9 - supervised Desktop acceptance
+
+The setup rehearsal passed on Windows and local PostgreSQL 18. It created a disposable database, applied the migrations, and started the actual API. An independent client verified the equipment response and matched all 16 live OpenAPI operations and their schemas against the reviewed Lab 5 document. The Desktop project references the HTTP library and its Release dependency manifest contains no Infrastructure, EF Core, or Npgsql dependency. An independent student edit changed only the expected name field in a fresh SQL snapshot. The controlled delay, stopped API, restored API and unchanged database state were also verified. [Setup rehearsal evidence](evidence/session9-setup-rehearsal.json).
+
+The first setup attempt omitted the PostgreSQL client credentials due to PowerShell treating a property assignment as a connection-string key. The setup below uses the explicit setter. The second attempt passed the EF configuration through a shorthand reserved for context selection. Using `--configuration Release` fixed the migration command, and the subsequent setup rehearsal passed.
+
+Run from the repository root in a Windows terminal. Use the existing private API connection if its role can create and drop disposable databases. Otherwise set `POSTGRES_INTEGRATION_ADMIN_CONNECTION` using the private entry example in the README and omit the first line. If PostgreSQL is installed outside the standard PostgreSQL 18 path, set `PSQL_PATH` to its `psql.exe`.
+
+```powershell
+$env:POSTGRES_INTEGRATION_ADMIN_CONNECTION = $env:EQUIPMENT_BORROWING_CONNECTION_STRING
+$lab6Connection = New-Object System.Data.Common.DbConnectionStringBuilder
+$lab6Connection.set_ConnectionString($env:POSTGRES_INTEGRATION_ADMIN_CONNECTION)
+$env:PGHOST = $lab6Connection['Host']
+$env:PGPORT = if ($lab6Connection.ContainsKey('Port')) { $lab6Connection['Port'] } else { '5432' }
+$env:PGUSER = $lab6Connection['Username']
+$env:PGPASSWORD = $lab6Connection['Password']
+dotnet tool restore
+dotnet build EquipmentBorrowing.slnx -c Release
+python tools/verify-lab6-desktop.py
+```
+
+Follow the prompts in order. For MA6-01, watch the loading indicator, interact with the window during the eight-second student request, then observe the message and recovery after the API stops and restarts. For MA6-02, observe the same student before and after refreshing the independent edit. Capture a short recording or a few screenshots of those moments. Type what you observed at each prompt, including any discrepancy, and save the evidence before the owned Desktop, API, and database are cleaned up. The script saves the notes alongside the HTTP and SQL findings in `TestResults/lab6/session9/manual-observations.json`. Use `--prepare-only` for a rehearsal that leaves the UI observation fields blank.
+
+The current setup rehearsal contains no native window observations. MA6-01 and MA6-02 stay Not Run until a person performs and records those steps.
 
 ## Defects, corrections and regression
 

@@ -12,7 +12,7 @@ Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 
 | 2 | 6 | PostgreSQL constraints, uniqueness and stale conflicts | Complete |
 | 2 | 7 | After-write rollback and E07a/b/c failure handling | Complete |
 | 2 | 8 | Fresh-connection persistence, actual API restart and CI | Complete |
-| 2 | 9 | MA6-01/02 and corrections/regression | Not started |
+| 2 | 9 | MA6-01/02 and corrections/regression | Awaiting Desktop observations |
 | 2 | 10 | Traceability, evidence, reproducibility and final tag | Not started |
 
 ## Session 1 - completed
@@ -51,4 +51,6 @@ E04 and all E07 subcases passed. The full retest passed 28 API tests with zero f
 
 E08 passed across three API processes and fresh PostgreSQL reads. The local Release regression passed all 128 tests. The Lab 6 workflow now runs on branch pushes and rejects skipped API tests. Source commit `c19b67b`. [Execution record](test-execution.md#session-8---persistence-across-api-process-restarts).
 
-Next checkpoint is Session 9 for manual Desktop acceptance.
+## Session 9 - awaiting Desktop observations
+
+The Windows setup rehearsal passed against an isolated API and PostgreSQL database. It exercised the delay and recovery path, compared live OpenAPI, and verified the independent edit with fresh SQL. The supervised walkthrough is ready for MA6-01 and MA6-02. [Run instructions and evidence](test-execution.md#session-9---supervised-desktop-acceptance).
