@@ -1,6 +1,6 @@
 # Lab 6 progress
 
-Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 branch: test infrastructure/baseline audit followed by five read objectives, without production application changes. TC6-U01/U02/U04/U07/U08 passed; Session 3 completed six more objectives. Session 4 brought the total to 15 passed objectives. Session 5 brought the total to 17. Session 6 brought the total to 19. Session 7 brought the total to 21. E08 and both manual checks remain pending.
+Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 branch: test infrastructure/baseline audit followed by five read objectives, without production application changes. TC6-U01/U02/U04/U07/U08 passed; Session 3 completed six more objectives. Session 4 brought the total to 15 passed objectives. Session 5 brought the total to 17. Session 6 brought the total to 19. Session 7 brought the total to 21. Session 8 completed all 22 automated objectives. Both manual checks remain pending.
 
 | Week | Session | Deliverable | Status |
 |---|---|---|---|
@@ -11,7 +11,7 @@ Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 
 | 1 | 5 | Search, protocol errors, all sixteen API contracts/OpenAPI | Complete |
 | 2 | 6 | PostgreSQL constraints, uniqueness and stale conflicts | Complete |
 | 2 | 7 | After-write rollback and E07a/b/c failure handling | Complete |
-| 2 | 8 | Fresh-connection persistence, actual API restart and CI | Not started |
+| 2 | 8 | Fresh-connection persistence, actual API restart and CI | Complete |
 | 2 | 9 | MA6-01/02 and corrections/regression | Not started |
 | 2 | 10 | Traceability, evidence, reproducibility and final tag | Not started |
 
@@ -47,4 +47,8 @@ E01 and E05 passed through the real API and direct PostgreSQL checks. All 25 API
 
 E04 and all E07 subcases passed. The full retest passed 28 API tests with zero failures or skips. Source commit `bbdc298`. [Execution record](test-execution.md#session-7---rollback-and-uncertain-outcomes).
 
-Next checkpoint is Session 8, covering fresh database connections, actual API restart and CI.
+## Session 8 - completed
+
+E08 passed across three API processes and fresh PostgreSQL reads. The local Release regression passed all 128 tests. The Lab 6 workflow now runs on branch pushes and rejects skipped API tests. Source commit `c19b67b`. [Execution record](test-execution.md#session-8---persistence-across-api-process-restarts).
+
+Next checkpoint is Session 9 for manual Desktop acceptance.

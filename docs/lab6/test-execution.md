@@ -1,6 +1,6 @@
 # Lab 6 test execution and defect record
 
-Sessions 1-7 executed. Twenty-one automated objectives passed, including all fourteen use cases. E08 and both manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
+Sessions 1-8 executed. All 22 automated objectives passed. Both manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
 
 Each execution entry must record source commit, run date/environment, PostgreSQL version and isolated database alias, D/clock arrangement, exact test command or manual method, expected and observed behavior, status, evidence and any defect/correction/retest. Keep credentials out of commands and output. Link focused TRX, HTTP exchanges, fresh PostgreSQL reads and short manual captures rather than redundant screenshots.
 
@@ -31,7 +31,7 @@ The table records current status. Add dated execution entries below as work happ
 | TC6-E07a | 7 | Controlled unreachable transport; no HTTP response/status | `RecoveryApiTests.UnreachableReadHasNoHttpStatus` | Controlled connection failure returned no HTTP status and one attempt. | Passed | None observed | [Session 7 TRX](evidence/session7-trx.zip) |
 | TC6-E07b | 7 | Reachable API safe 500; distinct client feedback; fresh known-failure state | `RecoveryApiTests.AfterWriteFailureRollsBackAndClientReceivesSafe500` | Client received safe HTTP 500 feedback and the fresh PostgreSQL state matched the baseline. | Passed | Response capture buffered before retest | [Session 7 TRX](evidence/session7-trx.zip) |
 | TC6-E07c | 7 | Unknown acknowledgement outcome; no replay; independent PostgreSQL verification before action | `RecoveryApiTests.LostCheckoutResponseIsUnknownWithoutReplayAndFreshReadFindsBothLoans` | Server returned 201 before the handler dropped the response. Client reported Unknown after one POST. Fresh PostgreSQL contained both loans. | Passed | None observed | [Session 7 TRX](evidence/session7-trx.zip) |
-| TC6-E08 | 8 | Automated fresh-connection create/issue/return state; actual API restart separately evidenced | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-E08 | 8 | Automated fresh-connection create/issue/return state; actual API restart separately evidenced | `PersistenceApiTests.E08_RecordsAndReturnSurviveApiProcessRestarts` | Three real API processes used the same database. HTTP and fresh SQL agreed before and after return. | Passed | None observed | [Session 8 TRX](evidence/session8-trx.zip) |
 | MA6-01 | 9 | Delayed HTTP/loading; UI interaction; stopped/restored API; no unintended writes | Pending | Not observed | Not Run | None recorded | Pending |
 | MA6-02 | 9 | API independent; OpenAPI matches; external edit/refresh; HTTP-only dependencies | Pending | Not observed | Not Run | None recorded | Pending |
 
@@ -151,6 +151,16 @@ E04 and E07b used a test-only checkout observer. It threw after the first item's
 E07a used a handler that threw a controlled connection error and verified that the client reported no HTTP response. E07c passed the checkout to the actual API and then discarded its successful HTTP 201 at the client boundary. The client reported Unknown and sent exactly one POST. Independent PostgreSQL reads found both active loans and both items unavailable. The handler simulated loss of the response after a successful commit.
 
 The first run passed 27 tests and failed one because the test observer consumed the response stream before the HTTP client read it. The observer now buffers the response before inspecting the error. The full retest passed all 28 tests with zero failures or skips. Both runs are retained in the archive. [Session 7 TRX](evidence/session7-trx.zip).
+
+### Session 8 - persistence across API process restarts
+
+Tested source `c19b67beb491c219ed6e1a017918f92512101add` on Windows against local PostgreSQL 18. E08 started three separate `dotnet EquipmentBorrowing.Api.dll` processes on OS-assigned loopback ports. The test waited for readiness and stopped each owned process before starting the next. All three used the same disposable database without resetting it between phases.
+
+The first process created the student, equipment, and active loan. The second read the same records and returned the item. The third confirmed the same returned loan, restored availability, and unchanged PostgreSQL snapshot. Fresh connections with pooling disabled independently checked saved IDs, values, dates, availability, and relationships. The seed uses fixed D = 2026-11-18. The subprocess uses the production Manila clock. Initial campus date 2026-11-20. Borrowed 2026-11-20. Returned 2026-11-20.
+
+Ran all three test projects in Release with TRX logging to `TestResults/lab6/session8`. The local result was 29 API, 76 backend, and 23 Desktop tests passed, totaling **128 passed with zero failures or skips**. [Session 8 TRX](evidence/session8-trx.zip).
+
+The GitHub Actions workflow includes the Lab 6 branch and enforces a passing restart case and zero skipped API results. It retains TRX and the existing live OpenAPI export. The local results above are from Windows.
 
 ## Defects, corrections and regression
 
