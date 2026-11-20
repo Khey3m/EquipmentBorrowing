@@ -1,0 +1,16 @@
+{
+  "title": "Lab 6 Demonstration Screenshot Report",
+  "entries": [
+    {
+      "figure": 1,
+      "heading": "Final revision and Git branch status",
+      "image": "manual-evidence/01-final-revision.png",
+      "source_filename": "Screenshot 2026-11-20 131432.png",
+      "explanation": [
+        "The Developer PowerShell terminal displays commit 2a7199a with the Git identity Khey3m and the message ?Complete supervised Desktop acceptance and finalize Lab 6 evidence.? This identifies the revision shown at the start of the demonstration.",
+        "The branch-status line shows lab6/automated-verification tracking origin/lab6/automated-verification. The displayed output contains no ahead/behind counts or modified-file entries, consistent with a synchronized branch and a clean working tree at capture time.",
+        "The Solution Explorer shows the Lab 6 documentation and evidence folder, including the session test archives and manual-observation evidence. These files provide the supporting records for reviewing the implementation and its verification."
+      ]
+    }
+  ]
+}
