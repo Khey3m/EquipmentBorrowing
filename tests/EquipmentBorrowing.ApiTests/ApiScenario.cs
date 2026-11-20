@@ -93,6 +93,9 @@ internal sealed class ApiScenario : IDbContextFactory<EquipmentBorrowingDbContex
 
     public NpgsqlConnection CreateFreshConnection() => new(connection);
 
+    public void ConfigureProcessDatabase(System.Diagnostics.ProcessStartInfo start) =>
+        start.Environment[PostgresConfiguration.EnvironmentVariable] = connection;
+
     public HttpClient CreateClient() => host.CreateClient();
 
     public HttpMessageHandler CreateHandler() => host.Server.CreateHandler();
