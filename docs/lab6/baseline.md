@@ -9,7 +9,7 @@
 | Documentation reconciliation | Session 1 inspected all 60 caption entries, verified every referenced PNG exists and confirmed 60 embedded images in the Word screenshot report. Its final review explicitly qualifies T07; see the findings below. The older pending statements lack newer supporting references but do not establish an all-pass submission. |
 | Existing test projects | `tests/EquipmentBorrowing.Tests` and `tests/EquipmentBorrowing.UiTests`; assertion audit below. Historical CI results remain scoped to their original revision; Session 1 results are recorded separately in test-execution.md. |
 | Test environment | .NET SDK 10.0.404, .NET 10 API host via WebApplicationFactory/TestServer, real local PostgreSQL 18, generated per-scenario databases, fixed test-host D = 2026-11-18 local Asia/Manila. No production clock or process-wide database setting is changed by the fixture. |
-| Final Lab 6 revision/tag | Pending; no `lab6-submitted` created during planning. |
+| Final Lab 6 revision/tag | Annotated lab6-submitted identifies the final handoff commit. Resolve with git rev-parse lab6-submitted. |
 | Significant refactoring / execution instructions | Added `tests/EquipmentBorrowing.ApiTests` to the solution. Production application unchanged. Private admin setup, isolation and commands are in the root README Lab 6 section. |
 
 Source documents read locally from Downloads (not copied into the repository):
@@ -52,4 +52,4 @@ Legacy PostgreSQL helpers intentionally retain generated verification databases 
 
 The user requested consolidation of Lab 5 screenshot commits and correction of Session 2 attribution. The consolidated Lab 5 snapshot is e4c345da749cc9370df95290f81c04407f9b29af. Its tree matches the original d1be8c8 snapshot. The current Session 2 test and evidence commits are 56b94a9 and 4e47780. Original commit IDs in historical summaries and TRX remain records of the original executions.
 
-The latest complete local regression tested c19b67b. GitHub Actions run 44644519235 passed at 43d0fc7, including the actual API restart test and integrated verification. The Session 9 rehearsal was committed at 810577c. Final lab6-submitted remains pending the two manual checks and final handoff completion.
+The latest complete local regression tested c19b67b. GitHub Actions run 44644519235 passed at 43d0fc7, including the actual API restart test and integrated verification. The Session 9 rehearsal was committed at 810577c. Both manual checks subsequently passed in the supervised walkthrough. The final tagged revision includes their evidence and final regression output.

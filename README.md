@@ -1,6 +1,6 @@
 # Campus Equipment Borrowing System - Lab 5
 
-Lab 6 continues this implementation on `lab6/automated-verification`: [two-week session plan](docs/lab6/session-plan.md), [progress](docs/lab6/progress.md), [baseline and assertion audit](docs/lab6/baseline.md), [traceability](docs/lab6/traceability.md), and [execution/defect records](docs/lab6/test-execution.md). Sessions 1-8 are complete. The latest API run passed 29 tests, including all 22 Lab 6 objectives.
+Lab 6 continues this implementation on `lab6/automated-verification`: [two-week session plan](docs/lab6/session-plan.md), [progress](docs/lab6/progress.md), [baseline and assertion audit](docs/lab6/baseline.md), [traceability](docs/lab6/traceability.md), and [execution/defect records](docs/lab6/test-execution.md). All ten Lab 6 sessions are complete, including both supervised manual checks. The latest API run passed 29 tests, including all 22 Lab 6 objectives.
 
 Continues the Lab 4 Avalonia application with an independently runnable ASP.NET Core API and PostgreSQL. All sixteen API contracts are implemented. As of Session 8, all seven Desktop screens use asynchronous HTTP; Desktop has no Infrastructure, EF Core, Npgsql or direct database dependency.
 
@@ -133,12 +133,12 @@ Verified integrated checkpoint: [CI run 43710719990](https://github.com/Khey3m/E
 
 [Development report](docs/lab5/development-report.md), [architecture](docs/lab5/architecture.md), [submission inventory](docs/lab5/submission-handoff.md), [remaining rendered T07 script](docs/lab5/rendered-walkthrough.md), and [retained raw CI artifact](docs/lab5/evidence/ci-43710719990.zip). The source review package is generated from a clean commit with `python tools/package-lab4.py --lab 5 --output-dir "$env:USERPROFILE/Downloads/Lab5-submission"`. Its manifest states the pending rendered T07 and final-tag status; it is not yet a completed lab5-submitted handoff.
 
-## Lab 6 review package
+## Lab 6 final package
 
-The [submission handoff](docs/lab6/submission-handoff.md) links the source, automated evidence, setup and remaining manual observations. Create a source review ZIP from a clean committed checkout:
+The [submission handoff](docs/lab6/submission-handoff.md) links the source, automated evidence, setup and remaining manual observations. Create a source submission ZIP from a clean committed checkout:
 
 ```powershell
-python tools/package-lab4.py --lab 6 --output-dir "$env:USERPROFILE/Downloads/Lab6-review"
+python tools/package-lab4.py --lab 6 --output-dir "$env:USERPROFILE/Downloads/Lab6-final"
 ```
 
-The manifest includes the exact source revision, execution statuses and checksum. MA6-01 and MA6-02 remain pending supervised Desktop observations.
+The manifest includes the exact source revision, execution statuses and checksum. MA6-01 and MA6-02 passed in the supervised walkthrough. Use lab6-submitted to identify the final package revision.

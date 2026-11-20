@@ -1,6 +1,6 @@
 # Lab 6 progress
 
-Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 branch: test infrastructure/baseline audit followed by five read objectives, without production application changes. TC6-U01/U02/U04/U07/U08 passed; Session 3 completed six more objectives. Session 4 brought the total to 15 passed objectives. Session 5 brought the total to 17. Session 6 brought the total to 19. Session 7 brought the total to 21. Session 8 completed all 22 automated objectives. Both manual checks remain pending.
+Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 branch: test infrastructure/baseline audit followed by five read objectives, without production application changes. TC6-U01/U02/U04/U07/U08 passed; Session 3 completed six more objectives. Session 4 brought the total to 15 passed objectives. Session 5 brought the total to 17. Session 6 brought the total to 19. Session 7 brought the total to 21. Session 8 completed all 22 automated objectives. Both manual checks subsequently passed in the supervised walkthrough.
 
 | Week | Session | Deliverable | Status |
 |---|---|---|---|
@@ -12,8 +12,8 @@ Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 
 | 2 | 6 | PostgreSQL constraints, uniqueness and stale conflicts | Complete |
 | 2 | 7 | After-write rollback and E07a/b/c failure handling | Complete |
 | 2 | 8 | Fresh-connection persistence, actual API restart and CI | Complete |
-| 2 | 9 | MA6-01/02 and corrections/regression | Awaiting Desktop observations |
-| 2 | 10 | Traceability, evidence, reproducibility and final tag | Review handoff prepared; manual acceptance and final tag pending |
+| 2 | 9 | MA6-01/02 and corrections/regression | Complete |
+| 2 | 10 | Traceability, evidence, reproducibility and final tag | Complete |
 
 ## Session 1 - completed
 
@@ -51,14 +51,16 @@ E04 and all E07 subcases passed. The full retest passed 28 API tests with zero f
 
 E08 passed across three API processes and fresh PostgreSQL reads. The local Release regression passed all 128 tests. The Lab 6 workflow now runs on branch pushes and rejects skipped API tests. Source commit `c19b67b`. [Execution record](test-execution.md#session-8---persistence-across-api-process-restarts).
 
-## Session 9 - awaiting Desktop observations
+## Session 9 - completed
 
-The Windows setup rehearsal passed against an isolated API and PostgreSQL database. It exercised the delay and recovery path, compared live OpenAPI, and verified the independent edit with fresh SQL. The supervised walkthrough is ready for MA6-01 and MA6-02. [Run instructions and evidence](test-execution.md#session-9---supervised-desktop-acceptance).
+The supervised native Windows walkthrough passed MA6-01 and MA6-02. The user confirmed loading and responsiveness, provided the outage screenshot, confirmed recovery, and confirmed the external name change after refresh. The script verified the API contract, unchanged recovery state and the persisted edit through fresh SQL. [Run instructions and evidence](test-execution.md#session-9---supervised-desktop-acceptance).
 
-## Session 10 - review handoff prepared
+## Session 10 - final handoff
 
 Added the Lab 6 source-package option and submission inventory. Reconciled stale pending notes in traceability and documented history consolidation without changing original execution captures. The review package records all automated objectives and the two pending manual checks. [Handoff instructions](submission-handoff.md).
 
-Final submission completion depends on the observed Session 9 results and final revision tag.
+The user completed the supervised observations. The final handoff uses the annotated lab6-submitted revision and its generated package.
 
 Generated and verified the review archive at e69bb7d. [Package record](evidence/session10-package.json). The execution record includes the Session 10 audit.
+
+The supervised run saved the actual user observations, API checks and independent SQL findings. [Manual evidence](evidence/session9-manual-observations.json).

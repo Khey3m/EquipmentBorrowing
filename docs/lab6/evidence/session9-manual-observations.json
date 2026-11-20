@@ -1,0 +1,43 @@
+{
+  "mode": "supervised",
+  "database": "equipment_lab6_manual_d291bae4ccc74e70b6101b650d276dea",
+  "independent_api": {
+    "equipment": [
+      {
+        "id": 1,
+        "equipmentCode": "EQ-900",
+        "name": "Session Nine Camera",
+        "description": null,
+        "isAvailable": true
+      }
+    ],
+    "openapi_operations": 16
+  },
+  "desktop_http_dependency_check": "Passed",
+  "delayed_ui": "User confirmed yes when asked whether the loading indicator appeared and the window stayed responsive during the delayed request.",
+  "offline_ui": "User supplied screenshot of Students showing: No HTTP response was received from the API. Check its address and whether it is running. Student list is empty and edit fields are disabled.",
+  "recovered_ui": "User confirmed that ST-900 - Session Nine Before appeared after refreshing with the API restored.",
+  "recovery_sql_unchanged": true,
+  "before_edit_ui": "User confirmed in the immediately preceding recovery step that ST-900 displays Session Nine Before before the independent edit.",
+  "external_edit": {
+    "before": {
+      "id": 1,
+      "studentNumber": "ST-900",
+      "fullName": "Session Nine Before",
+      "contact": null,
+      "isEligible": true
+    },
+    "after": {
+      "id": 1,
+      "studentNumber": "ST-900",
+      "fullName": "Session Nine After",
+      "contact": null,
+      "isEligible": true
+    },
+    "sql_only_expected_field_changed": true
+  },
+  "after_edit_ui": "User confirmed yes that after Search / Refresh the same ST-900 record displays Session Nine After following the independent API edit.",
+  "recorded_at_utc": "2026-11-20T05:02:46.278147+00:00",
+  "tested_checkout": "da8c7f3a5a78cae1f4efd9284b8e76ea6e9c492b",
+  "observation_source": "User confirmations in conversation, plus supplied outage screenshot. Screenshot is in conversation; no PNG copied into repository."
+}

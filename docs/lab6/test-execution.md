@@ -1,6 +1,6 @@
 # Lab 6 test execution and defect record
 
-Sessions 1-8 executed. All 22 automated objectives passed. Both manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
+All 22 automated objectives and both supervised manual checks passed. The final regression and submission revision are recorded below. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
 
 Each execution entry must record source commit, run date/environment, PostgreSQL version and isolated database alias, D/clock arrangement, exact test command or manual method, expected and observed behavior, status, evidence and any defect/correction/retest. Keep credentials out of commands and output. Link focused TRX, HTTP exchanges, fresh PostgreSQL reads and short manual captures rather than redundant screenshots.
 
@@ -32,8 +32,8 @@ The table records current status. Add dated execution entries below as work happ
 | TC6-E07b | 7 | Reachable API safe 500; distinct client feedback; fresh known-failure state | `RecoveryApiTests.AfterWriteFailureRollsBackAndClientReceivesSafe500` | Client received safe HTTP 500 feedback and the fresh PostgreSQL state matched the baseline. | Passed | Response capture buffered before retest | [Session 7 TRX](evidence/session7-trx.zip) |
 | TC6-E07c | 7 | Unknown acknowledgement outcome; no replay; independent PostgreSQL verification before action | `RecoveryApiTests.LostCheckoutResponseIsUnknownWithoutReplayAndFreshReadFindsBothLoans` | Server returned 201 before the handler dropped the response. Client reported Unknown after one POST. Fresh PostgreSQL contained both loans. | Passed | None observed | [Session 7 TRX](evidence/session7-trx.zip) |
 | TC6-E08 | 8 | Automated fresh-connection create/issue/return state; actual API restart separately evidenced | `PersistenceApiTests.E08_RecordsAndReturnSurviveApiProcessRestarts` | Three real API processes used the same database. HTTP and fresh SQL agreed before and after return. | Passed | None observed | [Session 8 TRX](evidence/session8-trx.zip) |
-| MA6-01 | 9 | Delayed HTTP/loading; UI interaction; stopped/restored API; no unintended writes | Supervised Windows Desktop run below | Delay, API interruption, recovery and unchanged SQL verified in setup rehearsal. Window observations pending. | Not Run | Setup command corrected and rehearsed | [Setup rehearsal](evidence/session9-setup-rehearsal.json) |
-| MA6-02 | 9 | API independent; OpenAPI matches; external edit/refresh; HTTP-only dependencies | Supervised Windows Desktop run below | Standalone API, 16 OpenAPI operations, HTTP-only dependency scan and persisted edit verified. Desktop refresh observation pending. | Not Run | None observed in rehearsal | [Setup rehearsal](evidence/session9-setup-rehearsal.json) |
+| MA6-01 | 9 | Delayed HTTP/loading; UI interaction; stopped/restored API; no unintended writes | Supervised native Windows walkthrough and user observations | User confirmed loading and responsiveness, supplied outage screenshot, and confirmed recovery. Fresh SQL unchanged. | Passed | No application defect reported | [Supervised evidence](evidence/session9-manual-observations.json) |
+| MA6-02 | 9 | API independent; OpenAPI matches; external edit/refresh; HTTP-only dependencies | Supervised native Windows walkthrough and user observations | User confirmed ST-900 before and after external edit and refresh. HTTP, SQL, OpenAPI and dependency checks passed. | Passed | No application defect reported | [Supervised evidence](evidence/session9-manual-observations.json) |
 
 ## Execution entries
 
@@ -185,7 +185,7 @@ python tools/verify-lab6-desktop.py
 
 Follow the prompts in order. For MA6-01, watch the loading indicator, interact with the window during the eight-second student request, then observe the message and recovery after the API stops and restarts. For MA6-02, observe the same student before and after refreshing the independent edit. Capture a short recording or a few screenshots of those moments. Type what you observed at each prompt, including any discrepancy, and save the evidence before the owned Desktop, API, and database are cleaned up. The script saves the notes alongside the HTTP and SQL findings in `TestResults/lab6/session9/manual-observations.json`. Use `--prepare-only` for a rehearsal that leaves the UI observation fields blank.
 
-The current setup rehearsal contains no native window observations. MA6-01 and MA6-02 stay Not Run until a person performs and records those steps.
+The subsequent supervised run completed both checks. The user confirmed the loading indicator and responsive window during the delayed request, supplied a screenshot showing the no-response message, and confirmed ST-900 reappeared after service recovery. The user then confirmed that refreshing the same record displayed Session Nine After following the independent API edit. Fresh SQL confirmed recovery caused no writes and the external edit changed only the name. [Supervised evidence](evidence/session9-manual-observations.json). The walkthrough exited successfully after cleaning up its owned Desktop, API and disposable database.
 
 ### Session 10 - source review package and evidence audit
 
@@ -194,6 +194,16 @@ Created the review package from source revision e69bb7dbea7a983651108ec79de50d31
 The audit verified every automated method reference in this execution table against the Session 8 archive containing 128 passing tests. Local documentation links resolved. The consolidated Lab 5 snapshot tree matches its original recorded snapshot. Stale pending annotations in traceability were corrected to match the completed executions.
 
 The package tool passed Python compilation and an actual package-generation run. The packaged application and automated tests retain the tested Session 8 behavior. MA6-01 and MA6-02 still require supervised native observations. The final lab6-submitted revision remains pending those results.
+
+### Final acceptance and regression
+
+The user completed the supervised Session 9 walkthrough and confirmed the loading indicator, responsive window, recovery of ST-900 after the outage, and refreshed Session Nine After value after the independent edit. The outage screenshot was supplied in conversation. The saved observations and API/SQL findings are retained in evidence/session9-manual-observations.json.
+
+Final Release verification passed 29 API, 76 backend and 23 UI/client tests, totaling 128 passes with zero failures or skips. [Final TRX archive](evidence/final-regression-trx.zip). These tests exercised the final application source, fixtures and process harness. The submission commit adds the recorded results and handoff documentation.
+
+The initial regression attempt launched two builds with shared output paths and hit a compiler file lock. Running the remaining projects sequentially resolved the build conflict. No application correction was required.
+
+All 22 automated objectives and both manual checks passed. The annotated lab6-submitted tag identifies the final committed handoff. The source ZIP is generated from that revision and its manifest records the exact commit, execution statuses and checksum.
 
 ## Defects, corrections and regression
 
