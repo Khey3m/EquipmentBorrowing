@@ -1,6 +1,6 @@
 # Lab 6 test execution and defect record
 
-Sessions 1-6 executed. Nineteen automated objectives passed, including all fourteen use cases. Three automated objectives and both manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
+Sessions 1-7 executed. Twenty-one automated objectives passed, including all fourteen use cases. E08 and both manual checks remain pending. Use Passed, Failed, Blocked or Not Run. Passed requires an actual execution with relevant assertions enabled; skipped tests remain explicitly identified and do not prove an objective. Infrastructure and supporting regression results are recorded separately.
 
 Each execution entry must record source commit, run date/environment, PostgreSQL version and isolated database alias, D/clock arrangement, exact test command or manual method, expected and observed behavior, status, evidence and any defect/correction/retest. Keep credentials out of commands and output. Link focused TRX, HTTP exchanges, fresh PostgreSQL reads and short manual captures rather than redundant screenshots.
 
@@ -25,12 +25,12 @@ The table records current status. Add dated execution entries below as work happ
 | TC6-E01 | 6 | Normalized create/update duplicates 409; direct PostgreSQL rejects; fresh counts | `ConstraintApiTests.E01_NormalizedIdentifiersAreUniqueThroughApiAndPostgres` | Four duplicate requests returned 409. Both normalized indexes rejected direct inserts with 23505. Rows and counts matched the baseline. | Passed | None observed | [Session 6 TRX](evidence/session6-trx.zip) |
 | TC6-E02 | 4 | Single/multi exactly-three 201; over-limit 409; reset each subcase | `LifecycleApiTests.E02_MultipleAtLimitSucceeds`, `LifecycleApiTests.E02_MultipleOverLimitLeavesBothItemsAvailable`, `LifecycleApiTests.E02_SingleAtLimitSucceeds` | Single and multi-item checkout reached exactly three active loans. Over-limit checkout returned 409 with no writes. | Passed | None observed | [Session 4](evidence/session4-trx.zip) |
 | TC6-E03 | 5 | Invalid 400/missing-route 404/method 405/conflict 409; safe/unchanged | `ProtocolApiTests.E03_ProtocolErrorsHaveSafeJsonAndNoWrites` | 10 requests returned the expected 400/404/405/409 JSON errors and preserved PostgreSQL state. | Passed | None observed | [Session 5 TRX](evidence/session5-trx.zip) |
-| TC6-E04 | 7 | Fault reached after PostgreSQL write attempt; safe 500; independent rollback state | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-E04 | 7 | Fault reached after PostgreSQL write attempt; safe 500; independent rollback state | `RecoveryApiTests.AfterWriteFailureRollsBackAndClientReceivesSafe500` | Observer reached after first item write. HTTP 500 and independently identical PostgreSQL snapshots confirmed rollback. | Passed | Response capture buffered before retest | [Session 7 TRX](evidence/session7-trx.zip) |
 | TC6-E05 | 6 | Stale 409; one active E2; other item unchanged; direct DB rejects second active row | `ConstraintApiTests.E05_StaleSelectionsAndSecondActiveLoanAreRejected` | Both stale requests returned 409. PostgreSQL rejected a second active loan with 23505. The original loan and other item remained intact. | Passed | None observed | [Session 6 TRX](evidence/session6-trx.zip) |
 | TC6-E06 | 3 | Null clearing 200; required/protected 400; duplicate 409; intact history | `ManagementApiTests.E06_ClearOptionalFieldsAndRejectInvalidEdits` | Null clears persisted. Blank/protected edits returned 400 and duplicates returned 409 with unchanged SQL. | Passed | None observed | [Session 3](evidence/session3-trx.zip) |
-| TC6-E07a | 7 | Controlled unreachable transport; no HTTP response/status | Pending | Not executed | Not Run | None recorded | Pending |
-| TC6-E07b | 7 | Reachable API safe 500; distinct client feedback; fresh known-failure state | Pending | Not executed | Not Run | None recorded | Pending |
-| TC6-E07c | 7 | Unknown acknowledgement outcome; no replay; independent PostgreSQL verification before action | Pending | Not executed | Not Run | None recorded | Pending |
+| TC6-E07a | 7 | Controlled unreachable transport; no HTTP response/status | `RecoveryApiTests.UnreachableReadHasNoHttpStatus` | Controlled connection failure returned no HTTP status and one attempt. | Passed | None observed | [Session 7 TRX](evidence/session7-trx.zip) |
+| TC6-E07b | 7 | Reachable API safe 500; distinct client feedback; fresh known-failure state | `RecoveryApiTests.AfterWriteFailureRollsBackAndClientReceivesSafe500` | Client received safe HTTP 500 feedback and the fresh PostgreSQL state matched the baseline. | Passed | Response capture buffered before retest | [Session 7 TRX](evidence/session7-trx.zip) |
+| TC6-E07c | 7 | Unknown acknowledgement outcome; no replay; independent PostgreSQL verification before action | `RecoveryApiTests.LostCheckoutResponseIsUnknownWithoutReplayAndFreshReadFindsBothLoans` | Server returned 201 before the handler dropped the response. Client reported Unknown after one POST. Fresh PostgreSQL contained both loans. | Passed | None observed | [Session 7 TRX](evidence/session7-trx.zip) |
 | TC6-E08 | 8 | Automated fresh-connection create/issue/return state; actual API restart separately evidenced | Pending | Not executed | Not Run | None recorded | Pending |
 | MA6-01 | 9 | Delayed HTTP/loading; UI interaction; stopped/restored API; no unintended writes | Pending | Not observed | Not Run | None recorded | Pending |
 | MA6-02 | 9 | API independent; OpenAPI matches; external edit/refresh; HTTP-only dependencies | Pending | Not observed | Not Run | None recorded | Pending |
@@ -141,6 +141,16 @@ dotnet test tests/EquipmentBorrowing.ApiTests/EquipmentBorrowing.ApiTests.csproj
 All 25 API tests passed with zero failures or skips. E01 confirmed four duplicate create/edit requests returned HTTP 409 and both normalized identifier indexes rejected direct inserts with SQLSTATE 23505. E05 confirmed that after another client issued the selected laptop, stale single and multi-item requests returned HTTP 409. A direct second active loan was rejected by the filtered unique index with SQLSTATE 23505. The foreign keys rejected missing student and equipment references with 23503, and the due-date check rejected a same-day due date with 23514. Fresh snapshots matched after each rejection. The original loan remained active and the other item remained available.
 
 [Session 6 TRX](evidence/session6-trx.zip). Archive SHA-256 is `0d7f9b6a6baf77abf87c94d19f367949d3734919be79255c4d14f735c5ebefaf`.
+
+### Session 7 - rollback and uncertain outcomes
+
+Tested source `bbdc29812eaee06fab483847fa2a7eb596ed8bd2` on Windows via ASP.NET Core TestServer with disposable PostgreSQL 18 databases and fixed campus date 2026-11-18. Ran the Release API test project using the private PostgreSQL test setting and the TRX logger, with output in `TestResults/lab6/session7`.
+
+E04 and E07b used a test-only checkout observer. It threw after the first item's equipment update and loan insert completed their database saves and before the transaction committed. After the request returned HTTP 500, an independent physical connection confirmed identical before and after snapshots. The HTTP client received safe server failure feedback.
+
+E07a used a handler that threw a controlled connection error and verified that the client reported no HTTP response. E07c passed the checkout to the actual API and then discarded its successful HTTP 201 at the client boundary. The client reported Unknown and sent exactly one POST. Independent PostgreSQL reads found both active loans and both items unavailable. The handler simulated loss of the response after a successful commit.
+
+The first run passed 27 tests and failed one because the test observer consumed the response stream before the HTTP client read it. The observer now buffers the response before inspecting the error. The full retest passed all 28 tests with zero failures or skips. Both runs are retained in the archive. [Session 7 TRX](evidence/session7-trx.zip).
 
 ## Defects, corrections and regression
 
