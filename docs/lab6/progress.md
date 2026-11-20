@@ -60,3 +60,5 @@ The Windows setup rehearsal passed against an isolated API and PostgreSQL databa
 Added the Lab 6 source-package option and submission inventory. Reconciled stale pending notes in traceability and documented history consolidation without changing original execution captures. The review package records all automated objectives and the two pending manual checks. [Handoff instructions](submission-handoff.md).
 
 Final submission completion depends on the observed Session 9 results and final revision tag.
+
+Generated and verified the review archive at e69bb7d. [Package record](evidence/session10-package.json). The execution record includes the Session 10 audit.

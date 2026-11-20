@@ -187,6 +187,14 @@ Follow the prompts in order. For MA6-01, watch the loading indicator, interact w
 
 The current setup rehearsal contains no native window observations. MA6-01 and MA6-02 stay Not Run until a person performs and records those steps.
 
+### Session 10 - source review package and evidence audit
+
+Created the review package from source revision e69bb7dbea7a983651108ec79de50d31fe57561f using the Lab 6 packaging command in submission-handoff.md. ZIP integrity, required source/evidence files, the embedded revision/history and all 26 execution rows were verified. The package was written to Downloads/Lab6-review. [Package manifest and checksum](evidence/session10-package.json).
+
+The audit verified every automated method reference in this execution table against the Session 8 archive containing 128 passing tests. Local documentation links resolved. The consolidated Lab 5 snapshot tree matches its original recorded snapshot. Stale pending annotations in traceability were corrected to match the completed executions.
+
+The package tool passed Python compilation and an actual package-generation run. The packaged application and automated tests retain the tested Session 8 behavior. MA6-01 and MA6-02 still require supervised native observations. The final lab6-submitted revision remains pending those results.
+
 ## Defects, corrections and regression
 
 No application defect has been established in Sessions 1-6. The Session 5 test compilation correction is recorded above. The Lab 5 evidence reconciliation is recorded in baseline.md with its remaining qualifications.
