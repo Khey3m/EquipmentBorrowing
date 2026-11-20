@@ -47,3 +47,9 @@ All test paths below are relative to `tests/`. This is source inspection of enab
 | `tools/verify-student-api.py` and `verify-api-foundation.py` | Existing real-process HTTP/SQL/restart harness with Lab 5 expected/observed captures | Python is not the required xUnit mapping; current-date shifts differ from fixed D. Reuse actual API restart mechanics in Session 8 |
 
 Legacy PostgreSQL helpers intentionally retain generated verification databases and skip when the private admin setting is missing. They remain unchanged as historical regression support. The new Lab 6 fixture owns and removes only its own generated databases; it never cleans up legacy/demo databases.
+
+## History consolidation and review revision
+
+The user requested consolidation of Lab 5 screenshot commits and correction of Session 2 attribution. The consolidated Lab 5 snapshot is e4c345da749cc9370df95290f81c04407f9b29af. Its tree matches the original d1be8c8 snapshot. The current Session 2 test and evidence commits are 56b94a9 and 4e47780. Original commit IDs in historical summaries and TRX remain records of the original executions.
+
+The latest complete local regression tested c19b67b. GitHub Actions run 44644519235 passed at 43d0fc7, including the actual API restart test and integrated verification. The Session 9 rehearsal was committed at 810577c. Final lab6-submitted remains pending the two manual checks and final handoff completion.

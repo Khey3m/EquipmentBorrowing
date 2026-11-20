@@ -1,6 +1,6 @@
 # Lab 6 session plan - automated verification and regression
 
-Sessions 1-8 are complete. All 22 automated objectives passed locally. Both manual checks are pending. See the progress and execution records on `lab6/automated-verification`.
+Sessions 1-8 are complete. All 22 automated objectives passed locally. Session 10 review handoff is prepared. Both manual checks and the final submission tag are pending. See the progress and execution records on `lab6/automated-verification`.
 
 ## Requirements and scope
 

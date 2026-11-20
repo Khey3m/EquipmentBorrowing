@@ -13,7 +13,7 @@ Planning checkpoint prepared on 2026-11-18. Sessions 1-2 completed on the Lab 6 
 | 2 | 7 | After-write rollback and E07a/b/c failure handling | Complete |
 | 2 | 8 | Fresh-connection persistence, actual API restart and CI | Complete |
 | 2 | 9 | MA6-01/02 and corrections/regression | Awaiting Desktop observations |
-| 2 | 10 | Traceability, evidence, reproducibility and final tag | Not started |
+| 2 | 10 | Traceability, evidence, reproducibility and final tag | Review handoff prepared; manual acceptance and final tag pending |
 
 ## Session 1 - completed
 
@@ -54,3 +54,9 @@ E08 passed across three API processes and fresh PostgreSQL reads. The local Rele
 ## Session 9 - awaiting Desktop observations
 
 The Windows setup rehearsal passed against an isolated API and PostgreSQL database. It exercised the delay and recovery path, compared live OpenAPI, and verified the independent edit with fresh SQL. The supervised walkthrough is ready for MA6-01 and MA6-02. [Run instructions and evidence](test-execution.md#session-9---supervised-desktop-acceptance).
+
+## Session 10 - review handoff prepared
+
+Added the Lab 6 source-package option and submission inventory. Reconciled stale pending notes in traceability and documented history consolidation without changing original execution captures. The review package records all automated objectives and the two pending manual checks. [Handoff instructions](submission-handoff.md).
+
+Final submission completion depends on the observed Session 9 results and final revision tag.
