@@ -1,0 +1,40 @@
+{
+  "mode": "setup rehearsal",
+  "database": "equipment_lab6_manual_b42508fe8e304f029ac18811e180b1f6",
+  "independent_api": {
+    "equipment": [
+      {
+        "id": 1,
+        "equipmentCode": "EQ-900",
+        "name": "Session Nine Camera",
+        "description": null,
+        "isAvailable": true
+      }
+    ],
+    "openapi_operations": 16
+  },
+  "desktop_http_dependency_check": "Passed",
+  "delayed_ui": "",
+  "offline_ui": "",
+  "recovered_ui": "",
+  "recovery_sql_unchanged": true,
+  "before_edit_ui": "",
+  "external_edit": {
+    "before": {
+      "id": 1,
+      "studentNumber": "ST-900",
+      "fullName": "Session Nine Before",
+      "contact": null,
+      "isEligible": true
+    },
+    "after": {
+      "id": 1,
+      "studentNumber": "ST-900",
+      "fullName": "Session Nine After",
+      "contact": null,
+      "isEligible": true
+    },
+    "sql_only_expected_field_changed": true
+  },
+  "after_edit_ui": ""
+}

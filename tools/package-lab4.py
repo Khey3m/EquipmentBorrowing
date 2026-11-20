@@ -15,7 +15,7 @@ def git(root, *args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, required=True)
-    parser.add_argument("--lab", type=int, choices=[4, 5], default=4)
+    parser.add_argument("--lab", type=int, choices=[4, 5, 6], default=4)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     output = args.output_dir.resolve()
@@ -39,6 +39,20 @@ def main():
         complete = all(value == "Pass" for value in statuses.values()) and submitted_tag
         acceptance = ("Recorded acceptance cases pass and lab5-submitted identifies this revision; private submission actions remain separate."
             if complete else "Review draft: incomplete acceptance and/or lab5-submitted tag remains pending. See docs/lab5/submission-handoff.md.")
+    if args.lab == 6:
+        for line in (root / "docs/lab6/test-execution.md").read_text(encoding="utf-8").splitlines():
+            if line.startswith(("| TC6-", "| MA6-")):
+                columns = line.split("|")
+                statuses[columns[1].strip()] = columns[6].strip()
+        expected = {f"TC6-U{i:02}" for i in [*range(1, 10), *range(12, 17)]}
+        expected |= {f"TC6-E{i:02}" for i in range(1, 9) if i != 7}
+        expected |= {"TC6-E07a", "TC6-E07b", "TC6-E07c", "MA6-01", "MA6-02"}
+        if set(statuses) != expected:
+            parser.error("The Lab 6 objective and manual-check inventory is incomplete.")
+        submitted_tag = "lab6-submitted" in git(root, "tag", "--points-at", commit).splitlines()
+        complete = all(value == "Passed" for value in statuses.values()) and submitted_tag
+        acceptance = ("Recorded Lab 6 checks pass and lab6-submitted identifies this revision."
+            if complete else "Review draft. See recorded pending checks and docs/lab6/submission-handoff.md.")
     paths = [output / (stem + suffix) for suffix in (".zip", ".json", "-history.txt")]
     if any(path.exists() for path in paths):
         parser.error("This revision already has output files; choose another directory.")
@@ -49,7 +63,10 @@ def main():
     history_text = git(root, "log", "--reverse", "--date=iso-strict", "--format=%H %ad %s", commit) + "\n"
     revision = {"commit": commit, "lab": args.lab, "acceptance": acceptance,
                 "acceptance_cases": statuses, "lab5_submitted_at_head": submitted_tag}
-    if args.lab == 5:
+    if args.lab == 6:
+        revision.pop("lab5_submitted_at_head")
+        revision["lab6_submitted_at_head"] = submitted_tag
+    if args.lab in (5, 6):
         with zipfile.ZipFile(archive, "a", compression=zipfile.ZIP_DEFLATED) as package:
             package.writestr("submission/git-history.txt", history_text)
             package.writestr("submission/revision.json", json.dumps(revision, indent=2) + "\n")
@@ -69,6 +86,13 @@ def main():
             operations = {op.get("operationId") for path in document["paths"].values() for op in path.values() if isinstance(op, dict)}
             if not {f"API-{i:02}" for i in range(1, 17)} <= operations:
                 raise RuntimeError("Required sixteen-operation OpenAPI inventory is incomplete.")
+        if args.lab == 6:
+            required += [f"docs/lab6/{name}.md" for name in
+                ["baseline", "traceability", "test-execution", "progress", "submission-handoff"]]
+            required += ["tests/EquipmentBorrowing.ApiTests/PersistenceApiTests.cs",
+                "tests/EquipmentBorrowing.ApiTests/RecoveryApiTests.cs",
+                "tools/verify-lab6-desktop.py", "submission/revision.json", "submission/git-history.txt"]
+            required += [f"docs/lab6/evidence/session{i}-trx.zip" for i in range(1, 9)]
         if any(name not in entries for name in required):
             raise RuntimeError("Required submission files are missing.")
     history.write_text(history_text, encoding="utf-8")
@@ -79,11 +103,14 @@ def main():
         "archive_bytes": archive.stat().st_size,
         "archive_entries": len(entries),
         "history": history.name,
-        "scope": "Committed source/documentation; Lab 5 also embeds generated revision/history. Git database is not embedded.",
+        "scope": "Committed source and documentation. Labs 5 and 6 embed revision and history records.",
         "acceptance": acceptance,
         "acceptance_cases": statuses,
         "lab5_submitted_at_head": submitted_tag,
     }
+    if args.lab == 6:
+        record.pop("lab5_submitted_at_head")
+        record["lab6_submitted_at_head"] = submitted_tag
     manifest.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(record, indent=2))
     print(f"Output directory: {output}")

@@ -1,0 +1,128 @@
+{
+  "title": "Lab 6 Demonstration Screenshot Report",
+  "entries": [
+    {
+      "figure": 1,
+      "heading": "Final revision and Git branch status",
+      "image": "manual-evidence/01-final-revision.png",
+      "source_filename": "Screenshot 2026-11-20 131432.png",
+      "explanation": [
+        "The Developer PowerShell terminal displays commit 2a7199a with the Git identity Khey3m and the message ?Complete supervised Desktop acceptance and finalize Lab 6 evidence.? This identifies the revision shown at the start of the demonstration.",
+        "The branch-status line shows lab6/automated-verification tracking origin/lab6/automated-verification. The displayed output contains no ahead/behind counts or modified-file entries, consistent with a synchronized branch and a clean working tree at capture time.",
+        "The Solution Explorer shows the Lab 6 documentation and evidence folder, including the session test archives and manual-observation evidence. These files provide the supporting records for reviewing the implementation and its verification."
+      ]
+    },
+    {
+      "figure": 2,
+      "heading": "Automated API test execution results",
+      "image": "manual-evidence/02-api-test-results.png",
+      "source_filename": "Screenshot 2026-11-20 131753.png",
+      "explanation": [
+        "The Developer PowerShell terminal runs dotnet test tests/EquipmentBorrowing.ApiTests -c Release --no-build. The command executes the compiled Release version of the API test project.",
+        "The xUnit discovery, start and finish messages show that the API test assembly was discovered and executed. The test summary reports 29 total tests, 29 succeeded, zero failed and zero skipped, with a test duration of 38.5 seconds. The command also reports successful completion in 39.5 seconds.",
+        "This screenshot records a successful execution of the API test suite. The suite covers the Lab 6 automated objectives through multiple tests and subcases. The execution record and retained HTTP and PostgreSQL evidence identify the assertions and results behind this summary."
+      ]
+    },
+    {
+      "figure": 3,
+      "heading": "Rollback verification output and focused test result",
+      "image": "manual-evidence/03-rollback-test-result.png",
+      "source_filename": "Screenshot 2026-11-20 131934.png",
+      "explanation": [
+        "The screenshot shows the final portion of the detailed database output for the focused rollback demonstration. Laptop EQ-002 and Tripod EQ-006 have IsAvailable set to true. The displayed borrowing snapshot contains the four original fixture records, including the returned Projector loan and the active Camera, Tablet and Microphone loans.",
+        "The terminal reports that the owned verification database was dropped after execution. The final summary shows one test executed, one succeeded, zero failed and zero skipped, with a duration of 8.7 seconds. This records the successful focused test and its cleanup.",
+        "The associated test, RecoveryApiTests.AfterWriteFailureRollsBackAndClientReceivesSafe500, injects a failure after the first checkout item has been saved inside the transaction. Its assertions verify that the failure point was reached, the API returned a safe HTTP 500, and fresh PostgreSQL snapshots before and after the request are identical. The image captures the ending snapshot and passing summary; the detailed failure-point and response output can be reviewed in the full test output and retained TRX evidence."
+      ]
+    },
+    {
+      "figure": 4,
+      "heading": "Persistence across actual API process restarts",
+      "image": "manual-evidence/04-api-restart-persistence.png",
+      "source_filename": "Screenshot 2026-11-20 132135.png",
+      "explanation": [
+        "The terminal shows the successful execution of PersistenceApiTests.E08_RecordsAndReturnSurviveApiProcessRestarts. The test creates student ST-800 with ID 5, equipment EQ-800 with ID 8, and borrowing ID 5 through HTTP requests that each return 201 Created. The borrowing is initially Active, issued on 2026-11-20 and due on 2026-11-23.",
+        "The first API process has ID 6328. After restarting as process 10196, the test confirms that the issued loan is still retrievable. Returning borrowing ID 5 produces HTTP 200, keeps the original loan identity and records Returned status with return date 2026-11-20. A further restart as process 15096 confirms the returned history and restored availability through HTTP and fresh PostgreSQL reads.",
+        "The fixture reports fixed campus D = 2026-11-18, while the actual API subprocess uses the production Manila clock and records 2026-11-20 for this execution. The terminal reports cleanup of the owned database and a final summary of one successful test, zero failures and zero skips. This demonstrates persistence of the created records and return state across actual API process restarts."
+      ]
+    },
+    {
+      "figure": "5a",
+      "step": 5,
+      "heading": "Student Management during a delayed request",
+      "image": "manual-evidence/05a-student-loading.png",
+      "source_filename": "Screenshot 2026-11-20 132403.png",
+      "explanation": [
+        "Student Management displays ST-900, Session Nine Before, with eligibility shown as Eligible to borrow. At the bottom, the progress indicator and ?Loading students...? message show that a student retrieval request is still in progress.",
+        "Search / Refresh, New student and the editing controls are greyed out during this captured loading state. The existing student row remains visible while the request is pending. This provides staff with loading feedback and prevents submitting edits during the refresh."
+      ]
+    },
+    {
+      "figure": "5b",
+      "step": 5,
+      "heading": "Navigation to Borrowing Histories during loading",
+      "image": "manual-evidence/05b-history-navigation-during-loading.png",
+      "source_filename": "Screenshot 2026-11-20 132411.png",
+      "explanation": [
+        "The next screenshot displays the Borrowing Histories page, with History for set to Student. The page shows ?Loading subjects...? and a progress indicator while the subject list is being retrieved. The history area prompts the user to select a student or equipment item.",
+        "Together, the supplied sequence records a transition from Student Management to Borrowing Histories during the controlled-delay demonstration. The different window position is also visible. These captures support the observed navigation and loading feedback for MA6-01. The supervised observation record provides the accompanying confirmation that the window remained responsive."
+      ]
+    },
+    {
+      "figure": 6,
+      "heading": "Desktop feedback while the API is unavailable",
+      "image": "manual-evidence/06-api-unreachable.png",
+      "source_filename": "Screenshot 2026-11-20 133220.png",
+      "explanation": [
+        "Student Management displays the message ?No HTTP response was received from the API. Check its address and whether it is running.? The capture was taken during the controlled outage step, after the walkthrough stopped its isolated API process.",
+        "The student list is empty and the New student button and editing fields are disabled. Search / Refresh remains available so staff can request fresh data after service is restored. The message identifies a communication failure and directs staff to check the API address and running state.",
+        "This image records the native Desktop feedback for the unavailable API portion of MA6-01. The following recovery capture will show the result after restarting the same isolated API and refreshing the student list."
+      ]
+    },
+    {
+      "figure": 7,
+      "heading": "Student list restored after API recovery",
+      "image": "manual-evidence/07-api-recovery.png",
+      "source_filename": "Screenshot 2026-11-20 133335.png",
+      "explanation": [
+        "After the isolated API is restored and the student list is refreshed, Student Management displays ST-900 with the name Session Nine Before and the status Eligible to borrow. The student row is visible again following the empty list captured during the outage.",
+        "The loading indicator and no-response message are absent from the visible page. The New student and Register student buttons and the entry fields are available again. This captures the recovered screen state for the API outage and recovery sequence in MA6-01.",
+        "The student number ST-900 and the displayed name also establish the visible before state for the independent-client update in MA6-02. The next capture will show the result after changing the name through the API and refreshing Desktop."
+      ]
+    },
+    {
+      "figure": 8,
+      "heading": "Desktop refresh reflects an independent API update",
+      "image": "manual-evidence/08-external-update-refresh.png",
+      "source_filename": "Screenshot 2026-11-20 202257.png",
+      "explanation": [
+        "Student Management now displays Session Nine After for institutional student number ST-900. Figure 7 showed the same student number with the name Session Nine Before. The eligibility label remains Eligible to borrow.",
+        "Between these captures, the walkthrough sent an update through an independent API client. After Search / Refresh, the Desktop list displays the changed name. The paired images document the visible before-and-after result for MA6-02.",
+        "The walkthrough independently checks that the API response keeps the same generated student ID and that fresh PostgreSQL state changes only the student name. Those checks establish persistence and identity alongside the displayed student number. This screenshot records the updated value shown by the Desktop after refresh."
+      ]
+    },
+    {
+      "figure": "9a",
+      "step": 9,
+      "heading": "Consolidated Lab 6 test execution record",
+      "image": "manual-evidence/09a-execution-record.png",
+      "source_filename": "Screenshot 2026-11-20 202513.png",
+      "explanation": [
+        "Visual Studio displays docs/lab6/test-execution.md. Its opening statement records that all 22 automated objectives and both supervised manual checks passed. The table lists objective identifiers, planned sessions, expected behavior, actual test implementations or manual methods, observed results, status, corrections and evidence references.",
+        "The visible rows include the fourteen use-case objectives, the edge objectives, separate E07 transport and uncertain-outcome subcases, and MA6-01/MA6-02. Below the table, the dated session execution entries begin with Session 1. These entries connect the consolidated status to the recorded test runs.",
+        "The Markdown source is displayed at 61% zoom and some table columns extend beyond the viewport. The original execution file provides the complete observations, statuses and evidence links for inspection."
+      ]
+    },
+    {
+      "figure": "9b",
+      "step": 9,
+      "heading": "Requirements, API and test traceability",
+      "image": "manual-evidence/09b-traceability-matrix.png",
+      "source_filename": "Screenshot 2026-11-20 202450.png",
+      "explanation": [
+        "Visual Studio displays docs/lab6/traceability.md. The upper matrix relates use cases and business rules to API operations, TC6 objectives, actual test implementations, execution results and retained evidence. The lower matrix identifies automated HTTP tests for the sixteen API contracts.",
+        "Visible implementation references include catalog and history tests, management tests, borrowing lifecycle tests, protocol checks, constraint checks, rollback and response-loss checks, and persistence across API restarts. The evidence links direct reviewers to the corresponding session TRX archives and summaries.",
+        "The editor is horizontally scrolled and the long rows extend beyond the viewport. The complete matrix is available in the source file. Together with Figure 9a, this capture shows how the report connects requirements, implemented assertions and actual execution evidence."
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Lab 6 session plan - automated verification and regression
 
-Status: Sessions 1-2 completed; Sessions 3-10 pending. TC6-U01/U02/U04/U07/U08 passed in Session 2 alongside the three foundation regressions; the other 17 automated objectives and both manual checks remain pending. The 99 existing backend/UI regression cases last ran in Session 1. See progress and execution records. Work on `lab6/automated-verification`, continuing the existing solution and history.
+Sessions 1-10 are complete after the final regression and annotated lab6-submitted revision. All 22 automated objectives and both supervised manual checks passed. See the progress and execution records on `lab6/automated-verification`.
 
 ## Requirements and scope
 

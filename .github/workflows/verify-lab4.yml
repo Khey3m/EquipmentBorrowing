@@ -1,7 +1,7 @@
 name: Verify CampusEQ API and Desktop
 on:
   push:
-    branches: [main, lab4/postgresql-workflows, lab5/api-integration]
+    branches: [main, lab4/postgresql-workflows, lab5/api-integration, lab6/automated-verification]
   pull_request:
   workflow_dispatch:
 permissions:
@@ -42,6 +42,12 @@ jobs:
         run: dotnet test tests/EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj --no-build --configuration Release --logger "trx;LogFileName=lab4.trx" --results-directory TestResults
       - name: Verify headless workflow controls and asynchronous bindings
         run: dotnet test tests/EquipmentBorrowing.UiTests/EquipmentBorrowing.UiTests.csproj --no-build --configuration Release --logger "trx;LogFileName=ui.trx" --results-directory TestResults
+      - name: Verify Lab 6 HTTP, PostgreSQL and API process restart
+        if: ${{ hashFiles('tests/EquipmentBorrowing.ApiTests/EquipmentBorrowing.ApiTests.csproj') != '' }}
+        run: |
+          test -n "$POSTGRES_INTEGRATION_ADMIN_CONNECTION"
+          dotnet test tests/EquipmentBorrowing.ApiTests/EquipmentBorrowing.ApiTests.csproj --no-build --configuration Release --logger "trx;LogFileName=api.trx" --results-directory TestResults/lab6
+          python3 -c 'import xml.etree.ElementTree as E; r=E.parse("TestResults/lab6/api.trx"); results=r.findall(".//{*}UnitTestResult"); assert results and all(t.get("outcome") == "Passed" for t in results), "Lab 6 tests include skipped or failed cases"; assert any("E08_RecordsAndReturnSurviveApiProcessRestarts" in t.get("testName", "") for t in results), "API restart test missing"'
       - name: Verify persistence across separate application-service processes
         env:
           EQUIPMENT_BORROWING_CONNECTION_STRING: Host=localhost;Port=5432;Database=equipment_borrowing_verify_process_${{ github.run_id }}_${{ github.run_attempt }};Username=postgres;Password=ci-${{ github.run_id }}-${{ github.run_attempt }};Include Error Detail=false
