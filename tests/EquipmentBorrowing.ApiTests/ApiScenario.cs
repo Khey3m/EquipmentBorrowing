@@ -91,6 +91,8 @@ internal sealed class ApiScenario : IDbContextFactory<EquipmentBorrowingDbContex
 
     public NpgsqlConnection CreateFreshConnection() => new(connection);
 
+    public HttpClient CreateClient() => host.CreateClient();
+
     public async Task ResetAsync(bool seed = true)
     {
         await using (var context = CreateDbContext())
